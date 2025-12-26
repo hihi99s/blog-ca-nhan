@@ -1,8 +1,429 @@
-<!doctype html><html lang=vi dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Bảo mật cơ bản trong Giao tiếp Mạng | Blog cá nhân – Ngô Phạm Ngọc Tú</title><meta name=keywords content="Security,HTTPS,SSL,Network"><meta name=description content='Bảo mật cơ bản trong Giao tiếp Mạng
-Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. Bài viết này sẽ giới thiệu các khái niệm và kỹ thuật bảo mật cơ bản khi phát triển ứng dụng web và mạng.
-Tại sao cần Bảo mật Mạng?
-Các mối đe dọa phổ biến
-┌───────────────┐
+<!DOCTYPE html>
+<html lang="vi">
+
+<head><script src="/blog-ca-nhan/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=blog-ca-nhan/livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bảo mật cơ bản trong Giao tiếp Mạng – Blog cá nhân – Ngô Phạm Ngọc Tú</title>
+<meta name="description" content="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Bảo mật cơ bản trong Giao tiếp Mạng – Blog cá nhân – Ngô Phạm Ngọc Tú</title>
+    <meta name="description" content="Bảo mật cơ bản trong Giao tiếp Mạng
+Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. Bài viết này sẽ giới thiệu các khái niệm và kỹ thuật bảo mật cơ …">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --bg-gradient: linear-gradient(135deg, #0a0e1a 0%, #1a2332 50%, #0f172a 100%);
+            --card-bg: rgba(30, 41, 59, 0.6);
+            --card-glow: rgba(125, 211, 252, 0.1);
+            --text: #f8fafc;
+            --text-2nd: #e2e8f0;
+            --muted: #94a3b8;
+            --accent: #7dd3fc;
+            --accent-glow: rgba(125, 211, 252, 0.4);
+            --border: rgba(125, 211, 252, 0.1);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="light"] {
+            --bg: #f8fafc;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-glow: rgba(14, 165, 233, 0.1);
+            --text: #0f172a;
+            --text-2nd: #1e293b;
+            --muted: #64748b;
+            --accent: #0ea5e9;
+            --accent-glow: rgba(14, 165, 233, 0.3);
+            --border: rgba(14, 165, 233, 0.15);
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text);
+            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.8;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .back-nav {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 40px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            color: var(--text);
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-link:hover {
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px var(--card-glow);
+            transform: translateY(-4px);
+            text-decoration: none;
+        }
+
+        .back-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .back-link:hover::before {
+            left: 100%;
+        }
+
+        .article-header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .article-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--text) 0%, var(--accent) 50%, var(--text-2nd) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 1rem;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        .article-tags {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .tag {
+            background: var(--accent-glow);
+            color: var(--accent);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .tag:hover {
+            background: var(--accent);
+            color: #0f172a;
+            transform: translateY(-4px);
+        }
+
+        .article-content {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            padding: 48px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            animation: fadeInUp 1.2s ease-out 0.2s both;
+        }
+
+        .article-content h1,
+        .article-content h2,
+        .article-content h3,
+        .article-content h4 {
+            color: var(--accent);
+            margin: 40px 0 20px;
+            font-weight: 700;
+        }
+
+        .article-content h1 {
+            font-size: 2.2rem;
+        }
+
+        .article-content h2 {
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        .article-content h3 {
+            font-size: 1.5rem;
+        }
+
+        .article-content h4 {
+            font-size: 1.2rem;
+        }
+
+        .article-content p,
+        .article-content ul,
+        .article-content ol {
+            color: var(--text-2nd);
+            margin-bottom: 24px;
+        }
+
+        .article-content blockquote {
+            border-left: 5px solid var(--accent);
+            background: var(--accent-glow);
+            padding: 24px;
+            border-radius: 0 16px 16px 0;
+            margin: 32px 0;
+            font-style: italic;
+        }
+
+        .article-content pre {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.9));
+            border-radius: 20px;
+            padding: 32px;
+            overflow-x: auto;
+            margin: 32px 0;
+            border: 1px solid var(--border);
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .article-content pre code {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text);
+            background: transparent;
+            padding: 0;
+        }
+
+        .article-content code {
+            background: rgba(125, 211, 252, 0.15);
+            color: #f472b6;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .article-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .article-content th,
+        .article-content td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .article-content th {
+            background: rgba(125, 211, 252, 0.1);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            z-index: 1000;
+        }
+
+        .theme-toggle button {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--border);
+            color: var(--text);
+            padding: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 64px;
+            height: 64px;
+            font-size: 1.4rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle button:hover {
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: 0 20px 40px var(--card-glow);
+            border-color: var(--accent);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            .article-content {
+                padding: 32px;
+            }
+
+            .article-title {
+                font-size: 2.5rem;
+            }
+
+            .back-link {
+                padding: 14px 24px;
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root:not([data-theme]) {
+                --bg: #f8fafc;
+                --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+                --card-bg: rgba(255, 255, 255, 0.9);
+                --text: #0f172a;
+                --text-2nd: #1e293b;
+                --muted: #64748b;
+                --accent: #0ea5e9;
+                --border: rgba(14, 165, 233, 0.15);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <nav class="back-nav">
+            <a href="/blog-ca-nhan/posts/" class="back-link">← Quay lại danh sách bài viết</a>
+        </nav>
+
+        <header class="article-header">
+            <h1 class="article-title">Bảo mật cơ bản trong Giao tiếp Mạng</h1>
+            <div class="article-meta">
+                <span>📅 12/12/2025</span>
+                <span>⏱️ 5 phút đọc</span>
+                <span>📁 Lập trình mạng</span>
+            </div>
+            
+            <div class="article-tags">
+                
+                <span class="tag">#Security</span>
+                
+                <span class="tag">#HTTPS</span>
+                
+                <span class="tag">#SSL</span>
+                
+                <span class="tag">#Network</span>
+                
+            </div>
+            
+        </header>
+
+        <article class="article-content">
+            <h1 id="bảo-mật-cơ-bản-trong-giao-tiếp-mạng">Bảo mật cơ bản trong Giao tiếp Mạng</h1>
+<p>Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. Bài viết này sẽ giới thiệu các khái niệm và kỹ thuật bảo mật cơ bản khi phát triển ứng dụng web và mạng.</p>
+<h2 id="tại-sao-cần-bảo-mật-mạng">Tại sao cần Bảo mật Mạng?</h2>
+<h3 id="các-mối-đe-dọa-phổ-biến">Các mối đe dọa phổ biến</h3>
+<pre tabindex="0"><code>┌───────────────┐
 │   ATTACKER    │
 └───────┬───────┘
         │
@@ -19,92 +440,27 @@ Các mối đe dọa phổ biến
 │  │ Attack      │                │ Tampering   │   │
 │  └─────────────┘                └─────────────┘   │
 └───────────────────────────────────────────────────┘
-
-Eavesdropping (Nghe lén): Đọc dữ liệu truyền tải
-Man-in-the-Middle: Chặn và sửa đổi dữ liệu
-Replay Attack: Gửi lại request cũ
-Data Tampering: Thay đổi dữ liệu
-
-HTTP vs HTTPS
-HTTP - Không an toàn
-Client ──────── Plain Text ────────► Server
-         "password=123456"
-              ↑
-         Attacker có thể đọc!
-HTTPS - An toàn
-Client ──────── Encrypted ────────► Server
-         "x#$%^&*@!..."
-              ↑
-         Attacker không hiểu!
-SSL/TLS là gì?
-SSL (Secure Sockets Layer) và TLS (Transport Layer Security) là các giao thức mã hóa bảo vệ dữ liệu truyền tải.'><meta name=author content="Ngô Phạm Ngọc Tú"><link rel=canonical href=https://hihi99s.github.io/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/><link crossorigin=anonymous href=/blog-ca-nhan/assets/css/stylesheet.fd5566c526ae48aadabd950798a2dc3568536401560eae5caac3765a42a9e7b5.css integrity="sha256-/VVmxSauSKravZUHmKLcNWhTZAFWDq5cqsN2WkKp57U=" rel="preload stylesheet" as=style><link rel=icon href=https://hihi99s.github.io/blog-ca-nhan/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://hihi99s.github.io/blog-ca-nhan/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://hihi99s.github.io/blog-ca-nhan/favicon-32x32.png><link rel=apple-touch-icon href=https://hihi99s.github.io/blog-ca-nhan/apple-touch-icon.png><link rel=mask-icon href=https://hihi99s.github.io/blog-ca-nhan/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=vi href=https://hihi99s.github.io/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}@media(prefers-color-scheme:light){.list::-webkit-scrollbar-thumb{border-color:var(--code-bg)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><meta property="og:url" content="https://hihi99s.github.io/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/"><meta property="og:site_name" content="Blog cá nhân – Ngô Phạm Ngọc Tú"><meta property="og:title" content="Bảo mật cơ bản trong Giao tiếp Mạng"><meta property="og:description" content='Bảo mật cơ bản trong Giao tiếp Mạng Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. Bài viết này sẽ giới thiệu các khái niệm và kỹ thuật bảo mật cơ bản khi phát triển ứng dụng web và mạng.
-Tại sao cần Bảo mật Mạng? Các mối đe dọa phổ biến ┌───────────────┐│ ATTACKER │└───────┬───────┘│▼┌───────────────────────────────────────────────────┐│ INTERNET ││ ┌─────────────┐ ┌─────────────┐ ││ │ Eavesdrop │ ┌────────┐ │ Man-in-the │ ││ │ (Nghe lén) │◄──│ Data │──►│ Middle │ ││ └─────────────┘ └────────┘ └─────────────┘ ││ ││ ┌─────────────┐ ┌─────────────┐ ││ │ Replay │ │ Data │ ││ │ Attack │ │ Tampering │ ││ └─────────────┘ └─────────────┘ │└───────────────────────────────────────────────────┘ Eavesdropping (Nghe lén): Đọc dữ liệu truyền tải Man-in-the-Middle: Chặn và sửa đổi dữ liệu Replay Attack: Gửi lại request cũ Data Tampering: Thay đổi dữ liệu HTTP vs HTTPS HTTP - Không an toàn Client ──────── Plain Text ────────► Server"password=123456"↑Attacker có thể đọc! HTTPS - An toàn Client ──────── Encrypted ────────► Server"x#$%^&*@!..."↑Attacker không hiểu! SSL/TLS là gì? SSL (Secure Sockets Layer) và TLS (Transport Layer Security) là các giao thức mã hóa bảo vệ dữ liệu truyền tải.'><meta property="og:locale" content="vi"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-12-12T10:00:00+07:00"><meta property="article:modified_time" content="2025-12-12T10:00:00+07:00"><meta property="article:tag" content="Security"><meta property="article:tag" content="HTTPS"><meta property="article:tag" content="SSL"><meta property="article:tag" content="Network"><meta name=twitter:card content="summary"><meta name=twitter:title content="Bảo mật cơ bản trong Giao tiếp Mạng"><meta name=twitter:description content='Bảo mật cơ bản trong Giao tiếp Mạng
-Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. Bài viết này sẽ giới thiệu các khái niệm và kỹ thuật bảo mật cơ bản khi phát triển ứng dụng web và mạng.
-Tại sao cần Bảo mật Mạng?
-Các mối đe dọa phổ biến
-┌───────────────┐
-│   ATTACKER    │
-└───────┬───────┘
-        │
-        ▼
-┌───────────────────────────────────────────────────┐
-│                    INTERNET                        │
-│  ┌─────────────┐                ┌─────────────┐   │
-│  │ Eavesdrop   │   ┌────────┐   │ Man-in-the  │   │
-│  │ (Nghe lén)  │◄──│ Data   │──►│ Middle      │   │
-│  └─────────────┘   └────────┘   └─────────────┘   │
-│                                                    │
-│  ┌─────────────┐                ┌─────────────┐   │
-│  │ Replay      │                │ Data        │   │
-│  │ Attack      │                │ Tampering   │   │
-│  └─────────────┘                └─────────────┘   │
-└───────────────────────────────────────────────────┘
-
-Eavesdropping (Nghe lén): Đọc dữ liệu truyền tải
-Man-in-the-Middle: Chặn và sửa đổi dữ liệu
-Replay Attack: Gửi lại request cũ
-Data Tampering: Thay đổi dữ liệu
-
-HTTP vs HTTPS
-HTTP - Không an toàn
-Client ──────── Plain Text ────────► Server
-         "password=123456"
-              ↑
-         Attacker có thể đọc!
-HTTPS - An toàn
-Client ──────── Encrypted ────────► Server
-         "x#$%^&*@!..."
-              ↑
-         Attacker không hiểu!
-SSL/TLS là gì?
-SSL (Secure Sockets Layer) và TLS (Transport Layer Security) là các giao thức mã hóa bảo vệ dữ liệu truyền tải.'><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://hihi99s.github.io/blog-ca-nhan/posts/"},{"@type":"ListItem","position":2,"name":"Bảo mật cơ bản trong Giao tiếp Mạng","item":"https://hihi99s.github.io/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Bảo mật cơ bản trong Giao tiếp Mạng","name":"Bảo mật cơ bản trong Giao tiếp Mạng","description":"Bảo mật cơ bản trong Giao tiếp Mạng Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. Bài viết này sẽ giới thiệu các khái niệm và kỹ thuật bảo mật cơ bản khi phát triển ứng dụng web và mạng.\nTại sao cần Bảo mật Mạng? Các mối đe dọa phổ biến ┌───────────────┐\r│ ATTACKER │\r└───────┬───────┘\r│\r▼\r┌───────────────────────────────────────────────────┐\r│ INTERNET │\r│ ┌─────────────┐ ┌─────────────┐ │\r│ │ Eavesdrop │ ┌────────┐ │ Man-in-the │ │\r│ │ (Nghe lén) │◄──│ Data │──►│ Middle │ │\r│ └─────────────┘ └────────┘ └─────────────┘ │\r│ │\r│ ┌─────────────┐ ┌─────────────┐ │\r│ │ Replay │ │ Data │ │\r│ │ Attack │ │ Tampering │ │\r│ └─────────────┘ └─────────────┘ │\r└───────────────────────────────────────────────────┘ Eavesdropping (Nghe lén): Đọc dữ liệu truyền tải Man-in-the-Middle: Chặn và sửa đổi dữ liệu Replay Attack: Gửi lại request cũ Data Tampering: Thay đổi dữ liệu HTTP vs HTTPS HTTP - Không an toàn Client ──────── Plain Text ────────► Server\r\u0026#34;password=123456\u0026#34;\r↑\rAttacker có thể đọc! HTTPS - An toàn Client ──────── Encrypted ────────► Server\r\u0026#34;x#$%^\u0026amp;*@!...\u0026#34;\r↑\rAttacker không hiểu! SSL/TLS là gì? SSL (Secure Sockets Layer) và TLS (Transport Layer Security) là các giao thức mã hóa bảo vệ dữ liệu truyền tải.\n","keywords":["Security","HTTPS","SSL","Network"],"articleBody":"Bảo mật cơ bản trong Giao tiếp Mạng Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. Bài viết này sẽ giới thiệu các khái niệm và kỹ thuật bảo mật cơ bản khi phát triển ứng dụng web và mạng.\nTại sao cần Bảo mật Mạng? Các mối đe dọa phổ biến ┌───────────────┐\r│ ATTACKER │\r└───────┬───────┘\r│\r▼\r┌───────────────────────────────────────────────────┐\r│ INTERNET │\r│ ┌─────────────┐ ┌─────────────┐ │\r│ │ Eavesdrop │ ┌────────┐ │ Man-in-the │ │\r│ │ (Nghe lén) │◄──│ Data │──►│ Middle │ │\r│ └─────────────┘ └────────┘ └─────────────┘ │\r│ │\r│ ┌─────────────┐ ┌─────────────┐ │\r│ │ Replay │ │ Data │ │\r│ │ Attack │ │ Tampering │ │\r│ └─────────────┘ └─────────────┘ │\r└───────────────────────────────────────────────────┘ Eavesdropping (Nghe lén): Đọc dữ liệu truyền tải Man-in-the-Middle: Chặn và sửa đổi dữ liệu Replay Attack: Gửi lại request cũ Data Tampering: Thay đổi dữ liệu HTTP vs HTTPS HTTP - Không an toàn Client ──────── Plain Text ────────► Server\r\"password=123456\"\r↑\rAttacker có thể đọc! HTTPS - An toàn Client ──────── Encrypted ────────► Server\r\"x#$%^\u0026*@!...\"\r↑\rAttacker không hiểu! SSL/TLS là gì? SSL (Secure Sockets Layer) và TLS (Transport Layer Security) là các giao thức mã hóa bảo vệ dữ liệu truyền tải.\nTLS Handshake Client Server\r│ │\r│──────── Client Hello ────────────────►│\r│ (Supported ciphers, TLS version)\r│ │\r│◄─────── Server Hello ─────────────────│\r│ (Chosen cipher, Certificate) │\r│ │\r│ Verify Certificate │\r│ Generate Pre-Master Secret │\r│ │\r│──────── Key Exchange ────────────────►│\r│ │\r│ Generate Session Keys │\r│ │\r│◄═══════ Encrypted Communication ══════│ Các thành phần Certificate: Chứng chỉ xác thực server Public Key: Khóa công khai để mã hóa Private Key: Khóa riêng để giải mã Session Key: Khóa phiên cho symmetric encryption Các phương pháp Mã hóa Symmetric Encryption (Mã hóa đối xứng) Cùng một key để mã hóa và giải mã:\n┌─────────────┐ Key ┌─────────────┐\r│ Plain Text │────────────►│ Cipher Text │\r│ \"Hello\" │ Encrypt │ \"x8#k@\" │\r└─────────────┘ └─────────────┘\r┌─────────────┐ Key ┌─────────────┐\r│ Cipher Text │────────────►│ Plain Text │\r│ \"x8#k@\" │ Decrypt │ \"Hello\" │\r└─────────────┘ └─────────────┘ Ví dụ: AES, DES, 3DES\n// Ví dụ với Web Crypto API async function encryptAES(plainText, key) { const encoder = new TextEncoder(); const data = encoder.encode(plainText); const cryptoKey = await crypto.subtle.importKey( 'raw', key, { name: 'AES-GCM', length: 256 }, false, ['encrypt'] ); const iv = crypto.getRandomValues(new Uint8Array(12)); const encrypted = await crypto.subtle.encrypt( { name: 'AES-GCM', iv }, cryptoKey, data ); return { encrypted, iv }; } Asymmetric Encryption (Mã hóa bất đối xứng) Dùng cặp Public Key và Private Key:\n┌─────────────┐\r│ Public Key │◄── Ai cũng có\r└──────┬──────┘\r│ Encrypt\r▼\r┌─────────────┐ ┌─────────────┐\r│ Plain Text │────────►│ Cipher Text │\r└─────────────┘ └──────┬──────┘\r│ Decrypt\r▼\r┌─────────────┐\r│ Private Key │◄── Chỉ server có\r└─────────────┘ Ví dụ: RSA, ECC\nHashing (Băm) Chuyển đổi một chiều, không thể giải mã:\n\"password123\" ──► SHA256 ──► \"ef92b778bafe771e89245b89ecb...\"\r↑\rKhông thể đảo ngược! // Hash password với SHA-256 async function hashPassword(password) { const encoder = new TextEncoder(); const data = encoder.encode(password); const hashBuffer = await crypto.subtle.digest('SHA-256', data); const hashArray = Array.from(new Uint8Array(hashBuffer)); return hashArray.map(b =\u003e b.toString(16).padStart(2, '0')).join(''); } // Sử dụng const hash = await hashPassword('mypassword'); console.log(hash); Authentication \u0026 Authorization Authentication (Xác thực) Xác minh “Bạn là ai?”\n// JWT Authentication async function login(email, password) { const response = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) }); if (response.ok) { const { token } = await response.json(); localStorage.setItem('jwt', token); return true; } return false; } // Gửi request có xác thực async function authenticatedRequest(url) { const token = localStorage.getItem('jwt'); return fetch(url, { headers: { 'Authorization': `Bearer ${token}` } }); } Authorization (Phân quyền) Xác minh “Bạn được phép làm gì?”\n// Server-side authorization check function checkPermission(user, resource, action) { const permissions = { admin: ['read', 'write', 'delete'], editor: ['read', 'write'], viewer: ['read'] }; return permissions[user.role]?.includes(action); } Các lỗ hổng bảo mật phổ biến 1. SQL Injection // ❌ Nguy hiểm const query = `SELECT * FROM users WHERE id = ${userId}`; // userId = \"1; DROP TABLE users;--\" =\u003e Xóa toàn bộ bảng! // ✅ An toàn - Parameterized Query const query = 'SELECT * FROM users WHERE id = ?'; db.query(query, [userId]); 2. XSS (Cross-Site Scripting) // ❌ Nguy hiểm element.innerHTML = userInput; // userInput = \"\" // ✅ An toàn element.textContent = userInput; // Hoặc escape HTML function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; } 3. CSRF (Cross-Site Request Forgery) \u003cimg src=\"https://yourbank.com/transfer?amount=1000\u0026to=attacker\" /\u003e Phòng chống: CSRF Token\n// Server generate token const csrfToken = generateRandomToken(); session.csrfToken = csrfToken; // Client gửi kèm token fetch('/api/transfer', { method: 'POST', headers: { 'X-CSRF-Token': csrfToken }, body: JSON.stringify(data) }); Best Practices 1. Luôn dùng HTTPS // Redirect HTTP to HTTPS (server-side) if (req.protocol !== 'https') { res.redirect(`https://${req.hostname}${req.url}`); } 2. Validate Input function validateEmail(email) { const regex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/; return regex.test(email); } function validatePassword(password) { // Ít nhất 8 ký tự, có chữ hoa, chữ thường, số const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$/; return regex.test(password); } 3. Hash Passwords (không lưu plain text) // Sử dụng bcrypt (Node.js) const bcrypt = require('bcrypt'); // Hash password const hashedPassword = await bcrypt.hash(password, 10); // Verify password const isMatch = await bcrypt.compare(inputPassword, hashedPassword); 4. Secure Headers // Express.js với helmet const helmet = require('helmet'); app.use(helmet()); // Các headers quan trọng: // X-Content-Type-Options: nosniff // X-Frame-Options: DENY // Content-Security-Policy: ... // Strict-Transport-Security: max-age=... 5. Rate Limiting // Express rate limit const rateLimit = require('express-rate-limit'); const limiter = rateLimit({ windowMs: 15 * 60 * 1000, // 15 phút max: 100 // 100 requests/IP }); app.use('/api/', limiter); 6. Cors Configuration const cors = require('cors'); app.use(cors({ origin: 'https://yourdomain.com', methods: ['GET', 'POST'], credentials: true })); Checklist Bảo mật Sử dụng HTTPS Validate tất cả input Hash passwords với salt Implement authentication/authorization Protect against SQL Injection Protect against XSS Implement CSRF protection Set secure HTTP headers Rate limiting Log security events Keep dependencies updated Kết luận Bảo mật là yếu tố không thể thiếu trong lập trình mạng. Hiểu về HTTPS/TLS, mã hóa, và các lỗ hổng phổ biến giúp bạn xây dựng ứng dụng an toàn. Luôn áp dụng các best practices và cập nhật kiến thức bảo mật thường xuyên.\nBài viết thuộc series Lập trình mạng - Blog Ngô Phạm Ngọc Tú\n","wordCount":"1057","inLanguage":"vi","datePublished":"2025-12-12T10:00:00+07:00","dateModified":"2025-12-12T10:00:00+07:00","author":{"@type":"Person","name":"Ngô Phạm Ngọc Tú"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://hihi99s.github.io/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/"},"publisher":{"@type":"Organization","name":"Blog cá nhân – Ngô Phạm Ngọc Tú","logo":{"@type":"ImageObject","url":"https://hihi99s.github.io/blog-ca-nhan/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=nav><div class=logo><a href=https://hihi99s.github.io/blog-ca-nhan/ accesskey=h title="Blog cá nhân – Ngô Phạm Ngọc Tú (Alt + H)">Blog cá nhân – Ngô Phạm Ngọc Tú</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
-<svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-<svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://hihi99s.github.io/blog-ca-nhan/ title=Home><span>Home</span></a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/posts/ title=Blog><span>Blog</span></a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/profile/ title=Profile><span>Profile</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">Bảo mật cơ bản trong Giao tiếp Mạng</h1><div class=post-meta><span title='2025-12-12 10:00:00 +0700 +07'>12 tháng 12, 2025</span>&nbsp;·&nbsp;<span>Ngô Phạm Ngọc Tú</span></div></header><div class=post-content><h1 id=bảo-mật-cơ-bản-trong-giao-tiếp-mạng>Bảo mật cơ bản trong Giao tiếp Mạng<a hidden class=anchor aria-hidden=true href=#bảo-mật-cơ-bản-trong-giao-tiếp-mạng>#</a></h1><p>Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. Bài viết này sẽ giới thiệu các khái niệm và kỹ thuật bảo mật cơ bản khi phát triển ứng dụng web và mạng.</p><h2 id=tại-sao-cần-bảo-mật-mạng>Tại sao cần Bảo mật Mạng?<a hidden class=anchor aria-hidden=true href=#tại-sao-cần-bảo-mật-mạng>#</a></h2><h3 id=các-mối-đe-dọa-phổ-biến>Các mối đe dọa phổ biến<a hidden class=anchor aria-hidden=true href=#các-mối-đe-dọa-phổ-biến>#</a></h3><pre tabindex=0><code>┌───────────────┐
-│   ATTACKER    │
-└───────┬───────┘
-        │
-        ▼
-┌───────────────────────────────────────────────────┐
-│                    INTERNET                        │
-│  ┌─────────────┐                ┌─────────────┐   │
-│  │ Eavesdrop   │   ┌────────┐   │ Man-in-the  │   │
-│  │ (Nghe lén)  │◄──│ Data   │──►│ Middle      │   │
-│  └─────────────┘   └────────┘   └─────────────┘   │
-│                                                    │
-│  ┌─────────────┐                ┌─────────────┐   │
-│  │ Replay      │                │ Data        │   │
-│  │ Attack      │                │ Tampering   │   │
-│  └─────────────┘                └─────────────┘   │
-└───────────────────────────────────────────────────┘
-</code></pre><ol><li><strong>Eavesdropping (Nghe lén)</strong>: Đọc dữ liệu truyền tải</li><li><strong>Man-in-the-Middle</strong>: Chặn và sửa đổi dữ liệu</li><li><strong>Replay Attack</strong>: Gửi lại request cũ</li><li><strong>Data Tampering</strong>: Thay đổi dữ liệu</li></ol><h2 id=http-vs-https>HTTP vs HTTPS<a hidden class=anchor aria-hidden=true href=#http-vs-https>#</a></h2><h3 id=http---không-an-toàn>HTTP - Không an toàn<a hidden class=anchor aria-hidden=true href=#http---không-an-toàn>#</a></h3><pre tabindex=0><code>Client ──────── Plain Text ────────► Server
+</code></pre><ol>
+<li><strong>Eavesdropping (Nghe lén)</strong>: Đọc dữ liệu truyền tải</li>
+<li><strong>Man-in-the-Middle</strong>: Chặn và sửa đổi dữ liệu</li>
+<li><strong>Replay Attack</strong>: Gửi lại request cũ</li>
+<li><strong>Data Tampering</strong>: Thay đổi dữ liệu</li>
+</ol>
+<h2 id="http-vs-https">HTTP vs HTTPS</h2>
+<h3 id="http---không-an-toàn">HTTP - Không an toàn</h3>
+<pre tabindex="0"><code>Client ──────── Plain Text ────────► Server
          &#34;password=123456&#34;
               ↑
          Attacker có thể đọc!
-</code></pre><h3 id=https---an-toàn>HTTPS - An toàn<a hidden class=anchor aria-hidden=true href=#https---an-toàn>#</a></h3><pre tabindex=0><code>Client ──────── Encrypted ────────► Server
+</code></pre><h3 id="https---an-toàn">HTTPS - An toàn</h3>
+<pre tabindex="0"><code>Client ──────── Encrypted ────────► Server
          &#34;x#$%^&amp;*@!...&#34;
               ↑
          Attacker không hiểu!
-</code></pre><h2 id=ssltls-là-gì>SSL/TLS là gì?<a hidden class=anchor aria-hidden=true href=#ssltls-là-gì>#</a></h2><p><strong>SSL (Secure Sockets Layer)</strong> và <strong>TLS (Transport Layer Security)</strong> là các giao thức mã hóa bảo vệ dữ liệu truyền tải.</p><h3 id=tls-handshake>TLS Handshake<a hidden class=anchor aria-hidden=true href=#tls-handshake>#</a></h3><pre tabindex=0><code>Client                                    Server
+</code></pre><h2 id="ssltls-là-gì">SSL/TLS là gì?</h2>
+<p><strong>SSL (Secure Sockets Layer)</strong> và <strong>TLS (Transport Layer Security)</strong> là các giao thức mã hóa bảo vệ dữ liệu truyền tải.</p>
+<h3 id="tls-handshake">TLS Handshake</h3>
+<pre tabindex="0"><code>Client                                    Server
    │                                        │
    │──────── Client Hello ────────────────►│
    │         (Supported ciphers, TLS version)
@@ -120,7 +476,17 @@ SSL (Secure Sockets Layer) và TLS (Transport Layer Security) là các giao th�
    │         Generate Session Keys          │
    │                                        │
    │◄═══════ Encrypted Communication ══════│
-</code></pre><h3 id=các-thành-phần>Các thành phần<a hidden class=anchor aria-hidden=true href=#các-thành-phần>#</a></h3><ol><li><strong>Certificate</strong>: Chứng chỉ xác thực server</li><li><strong>Public Key</strong>: Khóa công khai để mã hóa</li><li><strong>Private Key</strong>: Khóa riêng để giải mã</li><li><strong>Session Key</strong>: Khóa phiên cho symmetric encryption</li></ol><h2 id=các-phương-pháp-mã-hóa>Các phương pháp Mã hóa<a hidden class=anchor aria-hidden=true href=#các-phương-pháp-mã-hóa>#</a></h2><h3 id=symmetric-encryption-mã-hóa-đối-xứng>Symmetric Encryption (Mã hóa đối xứng)<a hidden class=anchor aria-hidden=true href=#symmetric-encryption-mã-hóa-đối-xứng>#</a></h3><p>Cùng một key để mã hóa và giải mã:</p><pre tabindex=0><code>┌─────────────┐     Key      ┌─────────────┐
+</code></pre><h3 id="các-thành-phần">Các thành phần</h3>
+<ol>
+<li><strong>Certificate</strong>: Chứng chỉ xác thực server</li>
+<li><strong>Public Key</strong>: Khóa công khai để mã hóa</li>
+<li><strong>Private Key</strong>: Khóa riêng để giải mã</li>
+<li><strong>Session Key</strong>: Khóa phiên cho symmetric encryption</li>
+</ol>
+<h2 id="các-phương-pháp-mã-hóa">Các phương pháp Mã hóa</h2>
+<h3 id="symmetric-encryption-mã-hóa-đối-xứng">Symmetric Encryption (Mã hóa đối xứng)</h3>
+<p>Cùng một key để mã hóa và giải mã:</p>
+<pre tabindex="0"><code>┌─────────────┐     Key      ┌─────────────┐
 │ Plain Text  │────────────►│ Cipher Text │
 │ &#34;Hello&#34;     │   Encrypt   │ &#34;x8#k@&#34;     │
 └─────────────┘              └─────────────┘
@@ -129,29 +495,32 @@ SSL (Secure Sockets Layer) và TLS (Transport Layer Security) là các giao th�
 │ Cipher Text │────────────►│ Plain Text  │
 │ &#34;x8#k@&#34;     │   Decrypt   │ &#34;Hello&#34;     │
 └─────────────┘              └─────────────┘
-</code></pre><p><strong>Ví dụ</strong>: AES, DES, 3DES</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// Ví dụ với Web Crypto API
-</span></span></span><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>encryptAES</span><span class=p>(</span><span class=nx>plainText</span><span class=p>,</span> <span class=nx>key</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>encoder</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>TextEncoder</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>data</span> <span class=o>=</span> <span class=nx>encoder</span><span class=p>.</span><span class=nx>encode</span><span class=p>(</span><span class=nx>plainText</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>cryptoKey</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>crypto</span><span class=p>.</span><span class=nx>subtle</span><span class=p>.</span><span class=nx>importKey</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>        <span class=s1>&#39;raw&#39;</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>        <span class=nx>key</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>        <span class=p>{</span> <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;AES-GCM&#39;</span><span class=p>,</span> <span class=nx>length</span><span class=o>:</span> <span class=mi>256</span> <span class=p>},</span>
-</span></span><span class=line><span class=cl>        <span class=kc>false</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=s1>&#39;encrypt&#39;</span><span class=p>]</span>
-</span></span><span class=line><span class=cl>    <span class=p>);</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>iv</span> <span class=o>=</span> <span class=nx>crypto</span><span class=p>.</span><span class=nx>getRandomValues</span><span class=p>(</span><span class=k>new</span> <span class=nx>Uint8Array</span><span class=p>(</span><span class=mi>12</span><span class=p>));</span>
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>encrypted</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>crypto</span><span class=p>.</span><span class=nx>subtle</span><span class=p>.</span><span class=nx>encrypt</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>        <span class=p>{</span> <span class=nx>name</span><span class=o>:</span> <span class=s1>&#39;AES-GCM&#39;</span><span class=p>,</span> <span class=nx>iv</span> <span class=p>},</span>
-</span></span><span class=line><span class=cl>        <span class=nx>cryptoKey</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>        <span class=nx>data</span>
-</span></span><span class=line><span class=cl>    <span class=p>);</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=p>{</span> <span class=nx>encrypted</span><span class=p>,</span> <span class=nx>iv</span> <span class=p>};</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></div><h3 id=asymmetric-encryption-mã-hóa-bất-đối-xứng>Asymmetric Encryption (Mã hóa bất đối xứng)<a hidden class=anchor aria-hidden=true href=#asymmetric-encryption-mã-hóa-bất-đối-xứng>#</a></h3><p>Dùng cặp Public Key và Private Key:</p><pre tabindex=0><code>                         ┌─────────────┐
+</code></pre><p><strong>Ví dụ</strong>: AES, DES, 3DES</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// Ví dụ với Web Crypto API
+</span></span></span><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">encryptAES</span><span class="p">(</span><span class="nx">plainText</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">encoder</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TextEncoder</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">encoder</span><span class="p">.</span><span class="nx">encode</span><span class="p">(</span><span class="nx">plainText</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">cryptoKey</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">crypto</span><span class="p">.</span><span class="nx">subtle</span><span class="p">.</span><span class="nx">importKey</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;raw&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">key</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;AES-GCM&#39;</span><span class="p">,</span> <span class="nx">length</span><span class="o">:</span> <span class="mi">256</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">[</span><span class="s1">&#39;encrypt&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">iv</span> <span class="o">=</span> <span class="nx">crypto</span><span class="p">.</span><span class="nx">getRandomValues</span><span class="p">(</span><span class="k">new</span> <span class="nx">Uint8Array</span><span class="p">(</span><span class="mi">12</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">encrypted</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">crypto</span><span class="p">.</span><span class="nx">subtle</span><span class="p">.</span><span class="nx">encrypt</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;AES-GCM&#39;</span><span class="p">,</span> <span class="nx">iv</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">cryptoKey</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">data</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">encrypted</span><span class="p">,</span> <span class="nx">iv</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="asymmetric-encryption-mã-hóa-bất-đối-xứng">Asymmetric Encryption (Mã hóa bất đối xứng)</h3>
+<p>Dùng cặp Public Key và Private Key:</p>
+<pre tabindex="0"><code>                         ┌─────────────┐
                          │ Public Key  │◄── Ai cũng có
                          └──────┬──────┘
                                 │ Encrypt
@@ -164,140 +533,214 @@ SSL (Secure Sockets Layer) và TLS (Transport Layer Security) là các giao th�
                         ┌─────────────┐
                         │ Private Key │◄── Chỉ server có
                         └─────────────┘
-</code></pre><p><strong>Ví dụ</strong>: RSA, ECC</p><h3 id=hashing-băm>Hashing (Băm)<a hidden class=anchor aria-hidden=true href=#hashing-băm>#</a></h3><p>Chuyển đổi một chiều, không thể giải mã:</p><pre tabindex=0><code>&#34;password123&#34; ──► SHA256 ──► &#34;ef92b778bafe771e89245b89ecb...&#34;
+</code></pre><p><strong>Ví dụ</strong>: RSA, ECC</p>
+<h3 id="hashing-băm">Hashing (Băm)</h3>
+<p>Chuyển đổi một chiều, không thể giải mã:</p>
+<pre tabindex="0"><code>&#34;password123&#34; ──► SHA256 ──► &#34;ef92b778bafe771e89245b89ecb...&#34;
                                       ↑
                               Không thể đảo ngược!
-</code></pre><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// Hash password với SHA-256
-</span></span></span><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>hashPassword</span><span class=p>(</span><span class=nx>password</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>encoder</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>TextEncoder</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>data</span> <span class=o>=</span> <span class=nx>encoder</span><span class=p>.</span><span class=nx>encode</span><span class=p>(</span><span class=nx>password</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>hashBuffer</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>crypto</span><span class=p>.</span><span class=nx>subtle</span><span class=p>.</span><span class=nx>digest</span><span class=p>(</span><span class=s1>&#39;SHA-256&#39;</span><span class=p>,</span> <span class=nx>data</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>hashArray</span> <span class=o>=</span> <span class=nb>Array</span><span class=p>.</span><span class=nx>from</span><span class=p>(</span><span class=k>new</span> <span class=nx>Uint8Array</span><span class=p>(</span><span class=nx>hashBuffer</span><span class=p>));</span>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nx>hashArray</span><span class=p>.</span><span class=nx>map</span><span class=p>(</span><span class=nx>b</span> <span class=p>=&gt;</span> <span class=nx>b</span><span class=p>.</span><span class=nx>toString</span><span class=p>(</span><span class=mi>16</span><span class=p>).</span><span class=nx>padStart</span><span class=p>(</span><span class=mi>2</span><span class=p>,</span> <span class=s1>&#39;0&#39;</span><span class=p>)).</span><span class=nx>join</span><span class=p>(</span><span class=s1>&#39;&#39;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=c1>// Sử dụng
-</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>hash</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>hashPassword</span><span class=p>(</span><span class=s1>&#39;mypassword&#39;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>hash</span><span class=p>);</span>
-</span></span></code></pre></div><h2 id=authentication--authorization>Authentication & Authorization<a hidden class=anchor aria-hidden=true href=#authentication--authorization>#</a></h2><h3 id=authentication-xác-thực>Authentication (Xác thực)<a hidden class=anchor aria-hidden=true href=#authentication-xác-thực>#</a></h3><p>Xác minh &ldquo;Bạn là ai?&rdquo;</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// JWT Authentication
-</span></span></span><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>login</span><span class=p>(</span><span class=nx>email</span><span class=p>,</span> <span class=nx>password</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>response</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>fetch</span><span class=p>(</span><span class=s1>&#39;/api/login&#39;</span><span class=p>,</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=nx>method</span><span class=o>:</span> <span class=s1>&#39;POST&#39;</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>        <span class=nx>headers</span><span class=o>:</span> <span class=p>{</span> <span class=s1>&#39;Content-Type&#39;</span><span class=o>:</span> <span class=s1>&#39;application/json&#39;</span> <span class=p>},</span>
-</span></span><span class=line><span class=cl>        <span class=nx>body</span><span class=o>:</span> <span class=nx>JSON</span><span class=p>.</span><span class=nx>stringify</span><span class=p>({</span> <span class=nx>email</span><span class=p>,</span> <span class=nx>password</span> <span class=p>})</span>
-</span></span><span class=line><span class=cl>    <span class=p>});</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nx>response</span><span class=p>.</span><span class=nx>ok</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=kr>const</span> <span class=p>{</span> <span class=nx>token</span> <span class=p>}</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>response</span><span class=p>.</span><span class=nx>json</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>        <span class=nx>localStorage</span><span class=p>.</span><span class=nx>setItem</span><span class=p>(</span><span class=s1>&#39;jwt&#39;</span><span class=p>,</span> <span class=nx>token</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=kc>true</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=kc>false</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=c1>// Gửi request có xác thực
-</span></span></span><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>authenticatedRequest</span><span class=p>(</span><span class=nx>url</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>token</span> <span class=o>=</span> <span class=nx>localStorage</span><span class=p>.</span><span class=nx>getItem</span><span class=p>(</span><span class=s1>&#39;jwt&#39;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nx>fetch</span><span class=p>(</span><span class=nx>url</span><span class=p>,</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=nx>headers</span><span class=o>:</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>            <span class=s1>&#39;Authorization&#39;</span><span class=o>:</span> <span class=sb>`Bearer </span><span class=si>${</span><span class=nx>token</span><span class=si>}</span><span class=sb>`</span>
-</span></span><span class=line><span class=cl>        <span class=p>}</span>
-</span></span><span class=line><span class=cl>    <span class=p>});</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></div><h3 id=authorization-phân-quyền>Authorization (Phân quyền)<a hidden class=anchor aria-hidden=true href=#authorization-phân-quyền>#</a></h3><p>Xác minh &ldquo;Bạn được phép làm gì?&rdquo;</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// Server-side authorization check
-</span></span></span><span class=line><span class=cl><span class=kd>function</span> <span class=nx>checkPermission</span><span class=p>(</span><span class=nx>user</span><span class=p>,</span> <span class=nx>resource</span><span class=p>,</span> <span class=nx>action</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>permissions</span> <span class=o>=</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=nx>admin</span><span class=o>:</span> <span class=p>[</span><span class=s1>&#39;read&#39;</span><span class=p>,</span> <span class=s1>&#39;write&#39;</span><span class=p>,</span> <span class=s1>&#39;delete&#39;</span><span class=p>],</span>
-</span></span><span class=line><span class=cl>        <span class=nx>editor</span><span class=o>:</span> <span class=p>[</span><span class=s1>&#39;read&#39;</span><span class=p>,</span> <span class=s1>&#39;write&#39;</span><span class=p>],</span>
-</span></span><span class=line><span class=cl>        <span class=nx>viewer</span><span class=o>:</span> <span class=p>[</span><span class=s1>&#39;read&#39;</span><span class=p>]</span>
-</span></span><span class=line><span class=cl>    <span class=p>};</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nx>permissions</span><span class=p>[</span><span class=nx>user</span><span class=p>.</span><span class=nx>role</span><span class=p>]</span><span class=o>?</span><span class=p>.</span><span class=nx>includes</span><span class=p>(</span><span class=nx>action</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></div><h2 id=các-lỗ-hổng-bảo-mật-phổ-biến>Các lỗ hổng bảo mật phổ biến<a hidden class=anchor aria-hidden=true href=#các-lỗ-hổng-bảo-mật-phổ-biến>#</a></h2><h3 id=1-sql-injection>1. SQL Injection<a hidden class=anchor aria-hidden=true href=#1-sql-injection>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// ❌ Nguy hiểm
-</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>query</span> <span class=o>=</span> <span class=sb>`SELECT * FROM users WHERE id = </span><span class=si>${</span><span class=nx>userId</span><span class=si>}</span><span class=sb>`</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=c1>// userId = &#34;1; DROP TABLE users;--&#34; =&gt; Xóa toàn bộ bảng!
-</span></span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=c1>// ✅ An toàn - Parameterized Query
-</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>query</span> <span class=o>=</span> <span class=s1>&#39;SELECT * FROM users WHERE id = ?&#39;</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=nx>db</span><span class=p>.</span><span class=nx>query</span><span class=p>(</span><span class=nx>query</span><span class=p>,</span> <span class=p>[</span><span class=nx>userId</span><span class=p>]);</span>
-</span></span></code></pre></div><h3 id=2-xss-cross-site-scripting>2. XSS (Cross-Site Scripting)<a hidden class=anchor aria-hidden=true href=#2-xss-cross-site-scripting>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// ❌ Nguy hiểm
-</span></span></span><span class=line><span class=cl><span class=nx>element</span><span class=p>.</span><span class=nx>innerHTML</span> <span class=o>=</span> <span class=nx>userInput</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=c1>// userInput = &#34;&lt;script&gt;stealCookies()&lt;/script&gt;&#34;
-</span></span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=c1>// ✅ An toàn
-</span></span></span><span class=line><span class=cl><span class=nx>element</span><span class=p>.</span><span class=nx>textContent</span> <span class=o>=</span> <span class=nx>userInput</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=c1>// Hoặc escape HTML
-</span></span></span><span class=line><span class=cl><span class=kd>function</span> <span class=nx>escapeHtml</span><span class=p>(</span><span class=nx>text</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>div</span> <span class=o>=</span> <span class=nb>document</span><span class=p>.</span><span class=nx>createElement</span><span class=p>(</span><span class=s1>&#39;div&#39;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=nx>div</span><span class=p>.</span><span class=nx>textContent</span> <span class=o>=</span> <span class=nx>text</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nx>div</span><span class=p>.</span><span class=nx>innerHTML</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></div><h3 id=3-csrf-cross-site-request-forgery>3. CSRF (Cross-Site Request Forgery)<a hidden class=anchor aria-hidden=true href=#3-csrf-cross-site-request-forgery>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-html data-lang=html><span class=line><span class=cl><span class=c>&lt;!-- Attacker&#39;s website --&gt;</span>
-</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>img</span> <span class=na>src</span><span class=o>=</span><span class=s>&#34;https://yourbank.com/transfer?amount=1000&amp;to=attacker&#34;</span> <span class=p>/&gt;</span>
-</span></span></code></pre></div><p><strong>Phòng chống</strong>: CSRF Token</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// Server generate token
-</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>csrfToken</span> <span class=o>=</span> <span class=nx>generateRandomToken</span><span class=p>();</span>
-</span></span><span class=line><span class=cl><span class=nx>session</span><span class=p>.</span><span class=nx>csrfToken</span> <span class=o>=</span> <span class=nx>csrfToken</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=c1>// Client gửi kèm token
-</span></span></span><span class=line><span class=cl><span class=nx>fetch</span><span class=p>(</span><span class=s1>&#39;/api/transfer&#39;</span><span class=p>,</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=nx>method</span><span class=o>:</span> <span class=s1>&#39;POST&#39;</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>    <span class=nx>headers</span><span class=o>:</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=s1>&#39;X-CSRF-Token&#39;</span><span class=o>:</span> <span class=nx>csrfToken</span>
-</span></span><span class=line><span class=cl>    <span class=p>},</span>
-</span></span><span class=line><span class=cl>    <span class=nx>body</span><span class=o>:</span> <span class=nx>JSON</span><span class=p>.</span><span class=nx>stringify</span><span class=p>(</span><span class=nx>data</span><span class=p>)</span>
-</span></span><span class=line><span class=cl><span class=p>});</span>
-</span></span></code></pre></div><h2 id=best-practices>Best Practices<a hidden class=anchor aria-hidden=true href=#best-practices>#</a></h2><h3 id=1-luôn-dùng-https>1. Luôn dùng HTTPS<a hidden class=anchor aria-hidden=true href=#1-luôn-dùng-https>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// Redirect HTTP to HTTPS (server-side)
-</span></span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=nx>req</span><span class=p>.</span><span class=nx>protocol</span> <span class=o>!==</span> <span class=s1>&#39;https&#39;</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=nx>res</span><span class=p>.</span><span class=nx>redirect</span><span class=p>(</span><span class=sb>`https://</span><span class=si>${</span><span class=nx>req</span><span class=p>.</span><span class=nx>hostname</span><span class=si>}${</span><span class=nx>req</span><span class=p>.</span><span class=nx>url</span><span class=si>}</span><span class=sb>`</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></div><h3 id=2-validate-input>2. Validate Input<a hidden class=anchor aria-hidden=true href=#2-validate-input>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kd>function</span> <span class=nx>validateEmail</span><span class=p>(</span><span class=nx>email</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>regex</span> <span class=o>=</span> <span class=sr>/^[^\s@]+@[^\s@]+\.[^\s@]+$/</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nx>regex</span><span class=p>.</span><span class=nx>test</span><span class=p>(</span><span class=nx>email</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=kd>function</span> <span class=nx>validatePassword</span><span class=p>(</span><span class=nx>password</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=c1>// Ít nhất 8 ký tự, có chữ hoa, chữ thường, số
-</span></span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>regex</span> <span class=o>=</span> <span class=sr>/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nx>regex</span><span class=p>.</span><span class=nx>test</span><span class=p>(</span><span class=nx>password</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></div><h3 id=3-hash-passwords-không-lưu-plain-text>3. Hash Passwords (không lưu plain text)<a hidden class=anchor aria-hidden=true href=#3-hash-passwords-không-lưu-plain-text>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// Sử dụng bcrypt (Node.js)
-</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>bcrypt</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;bcrypt&#39;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=c1>// Hash password
-</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>hashedPassword</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>bcrypt</span><span class=p>.</span><span class=nx>hash</span><span class=p>(</span><span class=nx>password</span><span class=p>,</span> <span class=mi>10</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=c1>// Verify password
-</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>isMatch</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>bcrypt</span><span class=p>.</span><span class=nx>compare</span><span class=p>(</span><span class=nx>inputPassword</span><span class=p>,</span> <span class=nx>hashedPassword</span><span class=p>);</span>
-</span></span></code></pre></div><h3 id=4-secure-headers>4. Secure Headers<a hidden class=anchor aria-hidden=true href=#4-secure-headers>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// Express.js với helmet
-</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>helmet</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;helmet&#39;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=nx>app</span><span class=p>.</span><span class=nx>use</span><span class=p>(</span><span class=nx>helmet</span><span class=p>());</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=c1>// Các headers quan trọng:
-</span></span></span><span class=line><span class=cl><span class=c1>// X-Content-Type-Options: nosniff
-</span></span></span><span class=line><span class=cl><span class=c1>// X-Frame-Options: DENY
-</span></span></span><span class=line><span class=cl><span class=c1>// Content-Security-Policy: ...
-</span></span></span><span class=line><span class=cl><span class=c1>// Strict-Transport-Security: max-age=...
-</span></span></span></code></pre></div><h3 id=5-rate-limiting>5. Rate Limiting<a hidden class=anchor aria-hidden=true href=#5-rate-limiting>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// Express rate limit
-</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>rateLimit</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;express-rate-limit&#39;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>limiter</span> <span class=o>=</span> <span class=nx>rateLimit</span><span class=p>({</span>
-</span></span><span class=line><span class=cl>    <span class=nx>windowMs</span><span class=o>:</span> <span class=mi>15</span> <span class=o>*</span> <span class=mi>60</span> <span class=o>*</span> <span class=mi>1000</span><span class=p>,</span> <span class=c1>// 15 phút
-</span></span></span><span class=line><span class=cl>    <span class=nx>max</span><span class=o>:</span> <span class=mi>100</span> <span class=c1>// 100 requests/IP
-</span></span></span><span class=line><span class=cl><span class=p>});</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>app</span><span class=p>.</span><span class=nx>use</span><span class=p>(</span><span class=s1>&#39;/api/&#39;</span><span class=p>,</span> <span class=nx>limiter</span><span class=p>);</span>
-</span></span></code></pre></div><h3 id=6-cors-configuration>6. Cors Configuration<a hidden class=anchor aria-hidden=true href=#6-cors-configuration>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>const</span> <span class=nx>cors</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;cors&#39;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>app</span><span class=p>.</span><span class=nx>use</span><span class=p>(</span><span class=nx>cors</span><span class=p>({</span>
-</span></span><span class=line><span class=cl>    <span class=nx>origin</span><span class=o>:</span> <span class=s1>&#39;https://yourdomain.com&#39;</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>    <span class=nx>methods</span><span class=o>:</span> <span class=p>[</span><span class=s1>&#39;GET&#39;</span><span class=p>,</span> <span class=s1>&#39;POST&#39;</span><span class=p>],</span>
-</span></span><span class=line><span class=cl>    <span class=nx>credentials</span><span class=o>:</span> <span class=kc>true</span>
-</span></span><span class=line><span class=cl><span class=p>}));</span>
-</span></span></code></pre></div><h2 id=checklist-bảo-mật>Checklist Bảo mật<a hidden class=anchor aria-hidden=true href=#checklist-bảo-mật>#</a></h2><ul><li><input disabled type=checkbox> Sử dụng HTTPS</li><li><input disabled type=checkbox> Validate tất cả input</li><li><input disabled type=checkbox> Hash passwords với salt</li><li><input disabled type=checkbox> Implement authentication/authorization</li><li><input disabled type=checkbox> Protect against SQL Injection</li><li><input disabled type=checkbox> Protect against XSS</li><li><input disabled type=checkbox> Implement CSRF protection</li><li><input disabled type=checkbox> Set secure HTTP headers</li><li><input disabled type=checkbox> Rate limiting</li><li><input disabled type=checkbox> Log security events</li><li><input disabled type=checkbox> Keep dependencies updated</li></ul><h2 id=kết-luận>Kết luận<a hidden class=anchor aria-hidden=true href=#kết-luận>#</a></h2><p><strong>Bảo mật</strong> là yếu tố không thể thiếu trong lập trình mạng. Hiểu về HTTPS/TLS, mã hóa, và các lỗ hổng phổ biến giúp bạn xây dựng ứng dụng an toàn. Luôn áp dụng các best practices và cập nhật kiến thức bảo mật thường xuyên.</p><hr><p><em>Bài viết thuộc series Lập trình mạng - Blog Ngô Phạm Ngọc Tú</em></p></div><footer class=post-footer><ul class=post-tags><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/security/>Security</a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/https/>HTTPS</a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/ssl/>SSL</a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/network/>Network</a></li></ul></footer></article></main><footer class=footer><span>&copy; 2025 <a href=https://hihi99s.github.io/blog-ca-nhan/>Blog cá nhân – Ngô Phạm Ngọc Tú</a></span> ·
-<span>Powered by
-<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
-<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentColor"><path d="M12 6H0l6-6z"/></svg>
-</a><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script></body></html>
+</code></pre><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// Hash password với SHA-256
+</span></span></span><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">hashPassword</span><span class="p">(</span><span class="nx">password</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">encoder</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TextEncoder</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">encoder</span><span class="p">.</span><span class="nx">encode</span><span class="p">(</span><span class="nx">password</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">hashBuffer</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">crypto</span><span class="p">.</span><span class="nx">subtle</span><span class="p">.</span><span class="nx">digest</span><span class="p">(</span><span class="s1">&#39;SHA-256&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">hashArray</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">from</span><span class="p">(</span><span class="k">new</span> <span class="nx">Uint8Array</span><span class="p">(</span><span class="nx">hashBuffer</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">hashArray</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">b</span> <span class="p">=&gt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="mi">16</span><span class="p">).</span><span class="nx">padStart</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Sử dụng
+</span></span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">hash</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">hashPassword</span><span class="p">(</span><span class="s1">&#39;mypassword&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">hash</span><span class="p">);</span>
+</span></span></code></pre></div><h2 id="authentication--authorization">Authentication &amp; Authorization</h2>
+<h3 id="authentication-xác-thực">Authentication (Xác thực)</h3>
+<p>Xác minh &ldquo;Bạn là ai?&rdquo;</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// JWT Authentication
+</span></span></span><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">login</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/api/login&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span> <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">body</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">password</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="p">{</span> <span class="nx">token</span> <span class="p">}</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">&#39;jwt&#39;</span><span class="p">,</span> <span class="nx">token</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Gửi request có xác thực
+</span></span></span><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">authenticatedRequest</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">token</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">&#39;jwt&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="sb">`Bearer </span><span class="si">${</span><span class="nx">token</span><span class="si">}</span><span class="sb">`</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="authorization-phân-quyền">Authorization (Phân quyền)</h3>
+<p>Xác minh &ldquo;Bạn được phép làm gì?&rdquo;</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// Server-side authorization check
+</span></span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">checkPermission</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">resource</span><span class="p">,</span> <span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">permissions</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">admin</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="s1">&#39;write&#39;</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">editor</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="s1">&#39;write&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">viewer</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">permissions</span><span class="p">[</span><span class="nx">user</span><span class="p">.</span><span class="nx">role</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">action</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="các-lỗ-hổng-bảo-mật-phổ-biến">Các lỗ hổng bảo mật phổ biến</h2>
+<h3 id="1-sql-injection">1. SQL Injection</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// ❌ Nguy hiểm
+</span></span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">query</span> <span class="o">=</span> <span class="sb">`SELECT * FROM users WHERE id = </span><span class="si">${</span><span class="nx">userId</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// userId = &#34;1; DROP TABLE users;--&#34; =&gt; Xóa toàn bộ bảng!
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// ✅ An toàn - Parameterized Query
+</span></span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">query</span> <span class="o">=</span> <span class="s1">&#39;SELECT * FROM users WHERE id = ?&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="p">[</span><span class="nx">userId</span><span class="p">]);</span>
+</span></span></code></pre></div><h3 id="2-xss-cross-site-scripting">2. XSS (Cross-Site Scripting)</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// ❌ Nguy hiểm
+</span></span></span><span class="line"><span class="cl"><span class="nx">element</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">userInput</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// userInput = &#34;&lt;script&gt;stealCookies()&lt;/script&gt;&#34;
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// ✅ An toàn
+</span></span></span><span class="line"><span class="cl"><span class="nx">element</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="nx">userInput</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Hoặc escape HTML
+</span></span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">escapeHtml</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">div</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="nx">text</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">div</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="3-csrf-cross-site-request-forgery">3. CSRF (Cross-Site Request Forgery)</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="c">&lt;!-- Attacker&#39;s website --&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://yourbank.com/transfer?amount=1000&amp;to=attacker&#34;</span> <span class="p">/&gt;</span>
+</span></span></code></pre></div><p><strong>Phòng chống</strong>: CSRF Token</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// Server generate token
+</span></span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">csrfToken</span> <span class="o">=</span> <span class="nx">generateRandomToken</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="nx">session</span><span class="p">.</span><span class="nx">csrfToken</span> <span class="o">=</span> <span class="nx">csrfToken</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Client gửi kèm token
+</span></span></span><span class="line"><span class="cl"><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/api/transfer&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;X-CSRF-Token&#39;</span><span class="o">:</span> <span class="nx">csrfToken</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">body</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></div><h2 id="best-practices">Best Practices</h2>
+<h3 id="1-luôn-dùng-https">1. Luôn dùng HTTPS</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// Redirect HTTP to HTTPS (server-side)
+</span></span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">protocol</span> <span class="o">!==</span> <span class="s1">&#39;https&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">res</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="sb">`https://</span><span class="si">${</span><span class="nx">req</span><span class="p">.</span><span class="nx">hostname</span><span class="si">}${</span><span class="nx">req</span><span class="p">.</span><span class="nx">url</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="2-validate-input">2. Validate Input</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">validateEmail</span><span class="p">(</span><span class="nx">email</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">regex</span> <span class="o">=</span> <span class="sr">/^[^\s@]+@[^\s@]+\.[^\s@]+$/</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">regex</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">email</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">validatePassword</span><span class="p">(</span><span class="nx">password</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Ít nhất 8 ký tự, có chữ hoa, chữ thường, số
+</span></span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">regex</span> <span class="o">=</span> <span class="sr">/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">regex</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">password</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="3-hash-passwords-không-lưu-plain-text">3. Hash Passwords (không lưu plain text)</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// Sử dụng bcrypt (Node.js)
+</span></span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">bcrypt</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;bcrypt&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Hash password
+</span></span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">hashedPassword</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">hash</span><span class="p">(</span><span class="nx">password</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Verify password
+</span></span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">isMatch</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">compare</span><span class="p">(</span><span class="nx">inputPassword</span><span class="p">,</span> <span class="nx">hashedPassword</span><span class="p">);</span>
+</span></span></code></pre></div><h3 id="4-secure-headers">4. Secure Headers</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// Express.js với helmet
+</span></span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">helmet</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;helmet&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">helmet</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Các headers quan trọng:
+</span></span></span><span class="line"><span class="cl"><span class="c1">// X-Content-Type-Options: nosniff
+</span></span></span><span class="line"><span class="cl"><span class="c1">// X-Frame-Options: DENY
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Content-Security-Policy: ...
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Strict-Transport-Security: max-age=...
+</span></span></span></code></pre></div><h3 id="5-rate-limiting">5. Rate Limiting</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// Express rate limit
+</span></span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">rateLimit</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;express-rate-limit&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">limiter</span> <span class="o">=</span> <span class="nx">rateLimit</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">windowMs</span><span class="o">:</span> <span class="mi">15</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span> <span class="c1">// 15 phút
+</span></span></span><span class="line"><span class="cl">    <span class="nx">max</span><span class="o">:</span> <span class="mi">100</span> <span class="c1">// 100 requests/IP
+</span></span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">&#39;/api/&#39;</span><span class="p">,</span> <span class="nx">limiter</span><span class="p">);</span>
+</span></span></code></pre></div><h3 id="6-cors-configuration">6. Cors Configuration</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">cors</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;cors&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">cors</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">origin</span><span class="o">:</span> <span class="s1">&#39;https://yourdomain.com&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">methods</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">credentials</span><span class="o">:</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl"><span class="p">}));</span>
+</span></span></code></pre></div><h2 id="checklist-bảo-mật">Checklist Bảo mật</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Sử dụng HTTPS</li>
+<li><input disabled="" type="checkbox"> Validate tất cả input</li>
+<li><input disabled="" type="checkbox"> Hash passwords với salt</li>
+<li><input disabled="" type="checkbox"> Implement authentication/authorization</li>
+<li><input disabled="" type="checkbox"> Protect against SQL Injection</li>
+<li><input disabled="" type="checkbox"> Protect against XSS</li>
+<li><input disabled="" type="checkbox"> Implement CSRF protection</li>
+<li><input disabled="" type="checkbox"> Set secure HTTP headers</li>
+<li><input disabled="" type="checkbox"> Rate limiting</li>
+<li><input disabled="" type="checkbox"> Log security events</li>
+<li><input disabled="" type="checkbox"> Keep dependencies updated</li>
+</ul>
+<h2 id="kết-luận">Kết luận</h2>
+<p><strong>Bảo mật</strong> là yếu tố không thể thiếu trong lập trình mạng. Hiểu về HTTPS/TLS, mã hóa, và các lỗ hổng phổ biến giúp bạn xây dựng ứng dụng an toàn. Luôn áp dụng các best practices và cập nhật kiến thức bảo mật thường xuyên.</p>
+<hr>
+<p><em>Bài viết thuộc series Lập trình mạng - Blog Ngô Phạm Ngọc Tú</em></p>
+
+        </article>
+    </div>
+
+    <div class="theme-toggle">
+        <button id="btn-theme" aria-label="Chuyển đổi theme">🌙</button>
+    </div>
+
+    <script>
+        const root = document.documentElement;
+        const btn = document.getElementById('btn-theme');
+        const stored = localStorage.getItem('theme');
+        let isDark = !stored || stored !== 'light';
+
+        function applyTheme(isDarkMode) {
+            if (isDarkMode) {
+                root.removeAttribute('data-theme');
+                btn.textContent = '☀️';
+            } else {
+                root.setAttribute('data-theme', 'light');
+                btn.textContent = '🌙';
+            }
+        }
+
+        if (stored) isDark = stored !== 'light';
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches) isDark = true;
+        applyTheme(isDark);
+
+        btn.addEventListener('click', () => {
+            isDark = !isDark;
+            applyTheme(isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+    </script>
+</body>
+
+</html>
+
+</body>
+
+</html>

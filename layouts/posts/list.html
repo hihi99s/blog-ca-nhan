@@ -248,14 +248,17 @@
             transform: translateY(-4px);
         }
 
-        .theme-toggle {
+        .floating-buttons {
             position: fixed;
             bottom: 32px;
             right: 32px;
             z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .theme-toggle button {
+        .floating-buttons button {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
             border: 2px solid var(--border);
@@ -270,7 +273,7 @@
             transition: all 0.3s ease;
         }
 
-        .theme-toggle button:hover {
+        .floating-buttons button:hover {
             transform: scale(1.1) rotate(180deg);
             box-shadow: 0 20px 40px var(--card-glow);
             border-color: var(--accent);
@@ -382,7 +385,7 @@
 <body>
     <div class="container">
         <nav class="back-nav">
-            <a href="{{ " /" | relURL }}" class="back-link">← Quay lại Trang chủ</a>
+            <a href="{{ `/blog-ca-nhan` | relURL }}" class="back-link">← Quay lại Trang chủ</a>
         </nav>
 
         <header class="page-header">
@@ -413,7 +416,13 @@
         </div>
     </div>
 
-    <div class="theme-toggle">
+    <!-- Background Music -->
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="floating-buttons">
+        <button id="btn-music" aria-label="Bật/Tắt nhạc" title="Bật nhạc nền">🎵</button>
         <button id="btn-theme" aria-label="Chuyển đổi theme">🌙</button>
     </div>
 
@@ -441,6 +450,29 @@
             isDark = !isDark;
             applyTheme(isDark);
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+        // Music toggle
+        const musicBtn = document.getElementById('btn-music');
+        const audio = document.getElementById('bg-music');
+        let isPlaying = localStorage.getItem('musicPlaying') === 'true';
+
+        if (isPlaying) {
+            audio.play().catch(() => { });
+            musicBtn.textContent = '🔇';
+        }
+
+        musicBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                musicBtn.textContent = '🎵';
+                localStorage.setItem('musicPlaying', 'false');
+            } else {
+                audio.play();
+                musicBtn.textContent = '🔇';
+                localStorage.setItem('musicPlaying', 'true');
+            }
+            isPlaying = !isPlaying;
         });
     </script>
 </body>

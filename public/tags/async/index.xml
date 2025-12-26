@@ -1,8 +1,33 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Async on Blog cá nhân – Ngô Phạm Ngọc Tú</title><link>https://hihi99s.github.io/blog-ca-nhan/tags/async/</link><description>Recent content in Async on Blog cá nhân – Ngô Phạm Ngọc Tú</description><generator>Hugo -- 0.153.2</generator><language>vi</language><lastBuildDate>Sat, 20 Dec 2025 10:00:00 +0700</lastBuildDate><atom:link href="https://hihi99s.github.io/blog-ca-nhan/tags/async/index.xml" rel="self" type="application/rss+xml"/><item><title>Async/Await trong JavaScript: Hướng dẫn chi tiết</title><link>https://hihi99s.github.io/blog-ca-nhan/posts/async-await-javascript/</link><pubDate>Sat, 20 Dec 2025 10:00:00 +0700</pubDate><guid>https://hihi99s.github.io/blog-ca-nhan/posts/async-await-javascript/</guid><description>&lt;h1 id="asyncawait-trong-javascript-hướng-dẫn-chi-tiết"&gt;Async/Await trong JavaScript: Hướng dẫn chi tiết&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Async on Blog cá nhân – Ngô Phạm Ngọc Tú</title>
+    <link>http://localhost:1313/blog-ca-nhan/tags/async/</link>
+    <description>Recent content in Async on Blog cá nhân – Ngô Phạm Ngọc Tú</description>
+    <generator>Hugo -- 0.153.2</generator>
+    <language>vi</language>
+    <lastBuildDate>Sat, 20 Dec 2025 10:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/blog-ca-nhan/tags/async/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Async/Await trong JavaScript: Hướng dẫn chi tiết</title>
+      <link>http://localhost:1313/blog-ca-nhan/posts/async-await-javascript/</link>
+      <pubDate>Sat, 20 Dec 2025 10:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/blog-ca-nhan/posts/async-await-javascript/</guid>
+      <description>&lt;h1 id=&#34;asyncawait-trong-javascript-hướng-dẫn-chi-tiết&#34;&gt;Async/Await trong JavaScript: Hướng dẫn chi tiết&lt;/h1&gt;
 &lt;p&gt;Trong lập trình JavaScript hiện đại, việc xử lý các tác vụ bất đồng bộ là điều không thể tránh khỏi. &lt;strong&gt;Async/Await&lt;/strong&gt; là cú pháp được giới thiệu trong ES2017 (ES8) giúp code bất đồng bộ trở nên dễ đọc và dễ bảo trì hơn rất nhiều.&lt;/p&gt;
-&lt;h2 id="tại-sao-cần-asyncawait"&gt;Tại sao cần Async/Await?&lt;/h2&gt;
-&lt;p&gt;Trước khi có Async/Await, chúng ta phải sử dụng &lt;strong&gt;callback&lt;/strong&gt; hoặc &lt;strong&gt;Promise chains&lt;/strong&gt;, dẫn đến code khó đọc:&lt;/p&gt;</description></item><item><title>Bất đồng bộ và Xử lý đồng thời trong Lập trình</title><link>https://hihi99s.github.io/blog-ca-nhan/posts/bat-dong-bo-xu-ly-dong-thoi/</link><pubDate>Sun, 14 Dec 2025 10:00:00 +0700</pubDate><guid>https://hihi99s.github.io/blog-ca-nhan/posts/bat-dong-bo-xu-ly-dong-thoi/</guid><description>&lt;h1 id="bất-đồng-bộ-và-xử-lý-đồng-thời-trong-lập-trình"&gt;Bất đồng bộ và Xử lý đồng thời trong Lập trình&lt;/h1&gt;
+&lt;h2 id=&#34;tại-sao-cần-asyncawait&#34;&gt;Tại sao cần Async/Await?&lt;/h2&gt;
+&lt;p&gt;Trước khi có Async/Await, chúng ta phải sử dụng &lt;strong&gt;callback&lt;/strong&gt; hoặc &lt;strong&gt;Promise chains&lt;/strong&gt;, dẫn đến code khó đọc:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Bất đồng bộ và Xử lý đồng thời trong Lập trình</title>
+      <link>http://localhost:1313/blog-ca-nhan/posts/bat-dong-bo-xu-ly-dong-thoi/</link>
+      <pubDate>Sun, 14 Dec 2025 10:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/blog-ca-nhan/posts/bat-dong-bo-xu-ly-dong-thoi/</guid>
+      <description>&lt;h1 id=&#34;bất-đồng-bộ-và-xử-lý-đồng-thời-trong-lập-trình&#34;&gt;Bất đồng bộ và Xử lý đồng thời trong Lập trình&lt;/h1&gt;
 &lt;p&gt;Trong lập trình hiện đại, việc xử lý nhiều tác vụ cùng lúc là điều cần thiết. Bài viết này sẽ giải thích khái niệm &lt;strong&gt;bất đồng bộ (Asynchronous)&lt;/strong&gt; và &lt;strong&gt;xử lý đồng thời (Concurrency)&lt;/strong&gt; trong JavaScript và Java.&lt;/p&gt;
-&lt;h2 id="đồng-bộ-vs-bất-đồng-bộ"&gt;Đồng bộ vs Bất đồng bộ&lt;/h2&gt;
-&lt;h3 id="xử-lý-đồng-bộ-synchronous"&gt;Xử lý đồng bộ (Synchronous)&lt;/h3&gt;
-&lt;p&gt;Các tác vụ thực hiện &lt;strong&gt;tuần tự&lt;/strong&gt;, tác vụ sau phải chờ tác vụ trước hoàn thành:&lt;/p&gt;</description></item></channel></rss>
+&lt;h2 id=&#34;đồng-bộ-vs-bất-đồng-bộ&#34;&gt;Đồng bộ vs Bất đồng bộ&lt;/h2&gt;
+&lt;h3 id=&#34;xử-lý-đồng-bộ-synchronous&#34;&gt;Xử lý đồng bộ (Synchronous)&lt;/h3&gt;
+&lt;p&gt;Các tác vụ thực hiện &lt;strong&gt;tuần tự&lt;/strong&gt;, tác vụ sau phải chờ tác vụ trước hoàn thành:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

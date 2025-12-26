@@ -1,13 +1,429 @@
-<!doctype html><html lang=vi dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>TCP và UDP: Hai giao thức vận chuyển cơ bản | Blog cá nhân – Ngô Phạm Ngọc Tú</title><meta name=keywords content="Network,TCP,UDP,Protocol"><meta name=description content="TCP và UDP: Hai giao thức vận chuyển cơ bản
-Trong lập trình mạng, TCP và UDP là hai giao thức vận chuyển (Transport Layer) quan trọng nhất. Hiểu rõ đặc điểm và use case của từng giao thức giúp bạn thiết kế ứng dụng mạng hiệu quả.
-Mô hình OSI và TCP/IP
-Trước khi đi vào chi tiết, hãy nhìn lại vị trí của TCP/UDP trong mô hình mạng:"><meta name=author content="Ngô Phạm Ngọc Tú"><link rel=canonical href=https://hihi99s.github.io/blog-ca-nhan/posts/tcp-udp-co-ban/><link crossorigin=anonymous href=/blog-ca-nhan/assets/css/stylesheet.fd5566c526ae48aadabd950798a2dc3568536401560eae5caac3765a42a9e7b5.css integrity="sha256-/VVmxSauSKravZUHmKLcNWhTZAFWDq5cqsN2WkKp57U=" rel="preload stylesheet" as=style><link rel=icon href=https://hihi99s.github.io/blog-ca-nhan/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://hihi99s.github.io/blog-ca-nhan/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://hihi99s.github.io/blog-ca-nhan/favicon-32x32.png><link rel=apple-touch-icon href=https://hihi99s.github.io/blog-ca-nhan/apple-touch-icon.png><link rel=mask-icon href=https://hihi99s.github.io/blog-ca-nhan/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=vi href=https://hihi99s.github.io/blog-ca-nhan/posts/tcp-udp-co-ban/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}@media(prefers-color-scheme:light){.list::-webkit-scrollbar-thumb{border-color:var(--code-bg)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><meta property="og:url" content="https://hihi99s.github.io/blog-ca-nhan/posts/tcp-udp-co-ban/"><meta property="og:site_name" content="Blog cá nhân – Ngô Phạm Ngọc Tú"><meta property="og:title" content="TCP và UDP: Hai giao thức vận chuyển cơ bản"><meta property="og:description" content="TCP và UDP: Hai giao thức vận chuyển cơ bản Trong lập trình mạng, TCP và UDP là hai giao thức vận chuyển (Transport Layer) quan trọng nhất. Hiểu rõ đặc điểm và use case của từng giao thức giúp bạn thiết kế ứng dụng mạng hiệu quả.
-Mô hình OSI và TCP/IP Trước khi đi vào chi tiết, hãy nhìn lại vị trí của TCP/UDP trong mô hình mạng:"><meta property="og:locale" content="vi"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-12-17T10:00:00+07:00"><meta property="article:modified_time" content="2025-12-17T10:00:00+07:00"><meta property="article:tag" content="Network"><meta property="article:tag" content="TCP"><meta property="article:tag" content="UDP"><meta property="article:tag" content="Protocol"><meta name=twitter:card content="summary"><meta name=twitter:title content="TCP và UDP: Hai giao thức vận chuyển cơ bản"><meta name=twitter:description content="TCP và UDP: Hai giao thức vận chuyển cơ bản
-Trong lập trình mạng, TCP và UDP là hai giao thức vận chuyển (Transport Layer) quan trọng nhất. Hiểu rõ đặc điểm và use case của từng giao thức giúp bạn thiết kế ứng dụng mạng hiệu quả.
-Mô hình OSI và TCP/IP
-Trước khi đi vào chi tiết, hãy nhìn lại vị trí của TCP/UDP trong mô hình mạng:"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://hihi99s.github.io/blog-ca-nhan/posts/"},{"@type":"ListItem","position":2,"name":"TCP và UDP: Hai giao thức vận chuyển cơ bản","item":"https://hihi99s.github.io/blog-ca-nhan/posts/tcp-udp-co-ban/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"TCP và UDP: Hai giao thức vận chuyển cơ bản","name":"TCP và UDP: Hai giao thức vận chuyển cơ bản","description":"TCP và UDP: Hai giao thức vận chuyển cơ bản Trong lập trình mạng, TCP và UDP là hai giao thức vận chuyển (Transport Layer) quan trọng nhất. Hiểu rõ đặc điểm và use case của từng giao thức giúp bạn thiết kế ứng dụng mạng hiệu quả.\nMô hình OSI và TCP/IP Trước khi đi vào chi tiết, hãy nhìn lại vị trí của TCP/UDP trong mô hình mạng:\n","keywords":["Network","TCP","UDP","Protocol"],"articleBody":"TCP và UDP: Hai giao thức vận chuyển cơ bản Trong lập trình mạng, TCP và UDP là hai giao thức vận chuyển (Transport Layer) quan trọng nhất. Hiểu rõ đặc điểm và use case của từng giao thức giúp bạn thiết kế ứng dụng mạng hiệu quả.\nMô hình OSI và TCP/IP Trước khi đi vào chi tiết, hãy nhìn lại vị trí của TCP/UDP trong mô hình mạng:\n┌─────────────────────┐\r│ Application Layer │ ← HTTP, FTP, SMTP, DNS\r├─────────────────────┤\r│ Transport Layer │ ← TCP, UDP ⭐\r├─────────────────────┤\r│ Network Layer │ ← IP, ICMP\r├─────────────────────┤\r│ Data Link Layer │ ← Ethernet, WiFi\r├─────────────────────┤\r│ Physical Layer │ ← Cáp, sóng radio\r└─────────────────────┘ TCP (Transmission Control Protocol) Đặc điểm chính Hướng kết nối (Connection-oriented): Phải thiết lập kết nối trước khi truyền dữ liệu Đáng tin cậy (Reliable): Đảm bảo dữ liệu đến đúng thứ tự, không mất mát Kiểm soát luồng (Flow Control): Điều chỉnh tốc độ truyền phù hợp Kiểm soát tắc nghẽn (Congestion Control): Tránh quá tải mạng Quy trình bắt tay 3 bước (Three-way Handshake) Client Server\r│ │\r│──────── SYN ──────────────────►│\r│ │\r│◄───── SYN + ACK ───────────────│\r│ │\r│──────── ACK ──────────────────►│\r│ │\r│ Kết nối được thiết lập │\r│◄════════════════════════════════│ Giải thích:\nSYN: Client gửi yêu cầu kết nối SYN + ACK: Server chấp nhận và phản hồi ACK: Client xác nhận, kết nối được thiết lập Quy trình đóng kết nối (Four-way Handshake) Client Server\r│ │\r│──────── FIN ──────────────────►│\r│ │\r│◄──────── ACK ──────────────────│\r│ │\r│◄──────── FIN ──────────────────│\r│ │\r│──────── ACK ──────────────────►│\r│ │\r│ Kết nối đóng │ Cấu trúc TCP Segment ┌────────────────────────────────────────────────┐\r│ Source Port (16 bit) │\r├────────────────────────────────────────────────┤\r│ Destination Port (16 bit) │\r├────────────────────────────────────────────────┤\r│ Sequence Number (32 bit) │\r├────────────────────────────────────────────────┤\r│ Acknowledgment Number (32 bit) │\r├────────────────────────────────────────────────┤\r│ Flags: SYN, ACK, FIN, RST, PSH, URG │\r├────────────────────────────────────────────────┤\r│ Window Size (16 bit) │\r├────────────────────────────────────────────────┤\r│ Checksum + Urgent Pointer │\r├────────────────────────────────────────────────┤\r│ Data (payload) │\r└────────────────────────────────────────────────┘ Ví dụ TCP trong Java // TCP Server import java.net.*; import java.io.*; public class TCPServer { public static void main(String[] args) throws IOException { ServerSocket serverSocket = new ServerSocket(8080); System.out.println(\"Server đang chờ kết nối...\"); Socket clientSocket = serverSocket.accept(); System.out.println(\"Client đã kết nối!\"); BufferedReader in = new BufferedReader( new InputStreamReader(clientSocket.getInputStream())); PrintWriter out = new PrintWriter( clientSocket.getOutputStream(), true); String message = in.readLine(); System.out.println(\"Nhận được: \" + message); out.println(\"Xin chào từ server!\"); clientSocket.close(); serverSocket.close(); } } // TCP Client import java.net.*; import java.io.*; public class TCPClient { public static void main(String[] args) throws IOException { Socket socket = new Socket(\"localhost\", 8080); PrintWriter out = new PrintWriter( socket.getOutputStream(), true); BufferedReader in = new BufferedReader( new InputStreamReader(socket.getInputStream())); out.println(\"Xin chào từ client!\"); String response = in.readLine(); System.out.println(\"Server trả lời: \" + response); socket.close(); } } UDP (User Datagram Protocol) Đặc điểm chính Không hướng kết nối (Connectionless): Không cần thiết lập kết nối Không đáng tin cậy (Unreliable): Không đảm bảo dữ liệu đến đích Nhanh và nhẹ: Ít overhead hơn TCP Hỗ trợ Broadcast/Multicast: Gửi đến nhiều đích cùng lúc Cấu trúc UDP Datagram ┌────────────────────────────────────────────────┐\r│ Source Port (16 bit) │\r├────────────────────────────────────────────────┤\r│ Destination Port (16 bit) │\r├────────────────────────────────────────────────┤\r│ Length (16 bit) │\r├────────────────────────────────────────────────┤\r│ Checksum (16 bit) │\r├────────────────────────────────────────────────┤\r│ Data (payload) │\r└────────────────────────────────────────────────┘ Lưu ý: Header UDP chỉ có 8 bytes, nhỏ hơn nhiều so với TCP (20+ bytes).\nVí dụ UDP trong Java // UDP Server import java.net.*; public class UDPServer { public static void main(String[] args) throws Exception { DatagramSocket socket = new DatagramSocket(9090); byte[] buffer = new byte[1024]; System.out.println(\"UDP Server đang chờ...\"); // Nhận datagram DatagramPacket request = new DatagramPacket(buffer, buffer.length); socket.receive(request); String message = new String(request.getData(), 0, request.getLength()); System.out.println(\"Nhận được: \" + message); // Gửi phản hồi String response = \"Đã nhận: \" + message; byte[] responseData = response.getBytes(); DatagramPacket responsePacket = new DatagramPacket( responseData, responseData.length, request.getAddress(), request.getPort()); socket.send(responsePacket); socket.close(); } } // UDP Client import java.net.*; public class UDPClient { public static void main(String[] args) throws Exception { DatagramSocket socket = new DatagramSocket(); InetAddress serverAddress = InetAddress.getByName(\"localhost\"); // Gửi datagram String message = \"Xin chào UDP!\"; byte[] sendData = message.getBytes(); DatagramPacket sendPacket = new DatagramPacket( sendData, sendData.length, serverAddress, 9090); socket.send(sendPacket); // Nhận phản hồi byte[] buffer = new byte[1024]; DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length); socket.receive(receivePacket); String response = new String(receivePacket.getData(), 0, receivePacket.getLength()); System.out.println(\"Server trả lời: \" + response); socket.close(); } } So sánh TCP vs UDP Tiêu chí TCP UDP Kết nối Hướng kết nối Không kết nối Độ tin cậy Đảm bảo giao hàng Không đảm bảo Thứ tự Đúng thứ tự Không đảm bảo Tốc độ Chậm hơn Nhanh hơn Header 20-60 bytes 8 bytes Flow Control Có Không Use case Web, Email, File transfer Streaming, Gaming, DNS Khi nào dùng TCP? Khi nào dùng UDP? Sử dụng TCP khi: Cần đảm bảo dữ liệu đến đầy đủ, đúng thứ tự Ứng dụng web (HTTP/HTTPS) Transfer file (FTP) Email (SMTP, IMAP) Database connections Sử dụng UDP khi: Cần tốc độ cao, chấp nhận mất mát nhỏ Live streaming video/audio Online gaming VoIP (Voice over IP) DNS queries IoT sensors Ví dụ thực tế Trường hợp 1: Chat Application → Dùng TCP\rLý do: Tin nhắn phải đến đầy đủ và đúng thứ tự Trường hợp 2: Live Video Streaming → Dùng UDP\rLý do: Chấp nhận mất vài frame, ưu tiên realtime Trường hợp 3: File Download → Dùng TCP\rLý do: File phải hoàn chỉnh, không mất bytes Trường hợp 4: Online Game → Dùng UDP (với custom reliability layer nếu cần)\rLý do: Cần độ trễ thấp, vị trí cũ không quan trọng Kết luận TCP và UDP là hai giao thức nền tảng trong lập trình mạng. TCP đảm bảo độ tin cậy cao, phù hợp với ứng dụng cần dữ liệu chính xác. UDP ưu tiên tốc độ, phù hợp với ứng dụng realtime. Việc chọn đúng giao thức ảnh hưởng trực tiếp đến hiệu năng và trải nghiệm người dùng.\nBài viết thuộc series Lập trình mạng cơ bản - Blog Ngô Phạm Ngọc Tú\n","wordCount":"1012","inLanguage":"vi","datePublished":"2025-12-17T10:00:00+07:00","dateModified":"2025-12-17T10:00:00+07:00","author":{"@type":"Person","name":"Ngô Phạm Ngọc Tú"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://hihi99s.github.io/blog-ca-nhan/posts/tcp-udp-co-ban/"},"publisher":{"@type":"Organization","name":"Blog cá nhân – Ngô Phạm Ngọc Tú","logo":{"@type":"ImageObject","url":"https://hihi99s.github.io/blog-ca-nhan/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=nav><div class=logo><a href=https://hihi99s.github.io/blog-ca-nhan/ accesskey=h title="Blog cá nhân – Ngô Phạm Ngọc Tú (Alt + H)">Blog cá nhân – Ngô Phạm Ngọc Tú</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
-<svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-<svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://hihi99s.github.io/blog-ca-nhan/ title=Home><span>Home</span></a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/posts/ title=Blog><span>Blog</span></a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/profile/ title=Profile><span>Profile</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">TCP và UDP: Hai giao thức vận chuyển cơ bản</h1><div class=post-meta><span title='2025-12-17 10:00:00 +0700 +07'>17 tháng 12, 2025</span>&nbsp;·&nbsp;<span>Ngô Phạm Ngọc Tú</span></div></header><div class=post-content><h1 id=tcp-và-udp-hai-giao-thức-vận-chuyển-cơ-bản>TCP và UDP: Hai giao thức vận chuyển cơ bản<a hidden class=anchor aria-hidden=true href=#tcp-và-udp-hai-giao-thức-vận-chuyển-cơ-bản>#</a></h1><p>Trong lập trình mạng, <strong>TCP</strong> và <strong>UDP</strong> là hai giao thức vận chuyển (Transport Layer) quan trọng nhất. Hiểu rõ đặc điểm và use case của từng giao thức giúp bạn thiết kế ứng dụng mạng hiệu quả.</p><h2 id=mô-hình-osi-và-tcpip>Mô hình OSI và TCP/IP<a hidden class=anchor aria-hidden=true href=#mô-hình-osi-và-tcpip>#</a></h2><p>Trước khi đi vào chi tiết, hãy nhìn lại vị trí của TCP/UDP trong mô hình mạng:</p><pre tabindex=0><code>┌─────────────────────┐
+<!DOCTYPE html>
+<html lang="vi">
+
+<head><script src="/blog-ca-nhan/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=blog-ca-nhan/livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TCP và UDP: Hai giao thức vận chuyển cơ bản – Blog cá nhân – Ngô Phạm Ngọc Tú</title>
+<meta name="description" content="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>TCP và UDP: Hai giao thức vận chuyển cơ bản – Blog cá nhân – Ngô Phạm Ngọc Tú</title>
+    <meta name="description" content="TCP và UDP: Hai giao thức vận chuyển cơ bản
+Trong lập trình mạng, TCP và UDP là hai giao thức vận chuyển (Transport Layer) quan trọng nhất. Hiểu rõ đặc điểm và …">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --bg-gradient: linear-gradient(135deg, #0a0e1a 0%, #1a2332 50%, #0f172a 100%);
+            --card-bg: rgba(30, 41, 59, 0.6);
+            --card-glow: rgba(125, 211, 252, 0.1);
+            --text: #f8fafc;
+            --text-2nd: #e2e8f0;
+            --muted: #94a3b8;
+            --accent: #7dd3fc;
+            --accent-glow: rgba(125, 211, 252, 0.4);
+            --border: rgba(125, 211, 252, 0.1);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="light"] {
+            --bg: #f8fafc;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-glow: rgba(14, 165, 233, 0.1);
+            --text: #0f172a;
+            --text-2nd: #1e293b;
+            --muted: #64748b;
+            --accent: #0ea5e9;
+            --accent-glow: rgba(14, 165, 233, 0.3);
+            --border: rgba(14, 165, 233, 0.15);
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text);
+            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.8;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .back-nav {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 40px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            color: var(--text);
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-link:hover {
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px var(--card-glow);
+            transform: translateY(-4px);
+            text-decoration: none;
+        }
+
+        .back-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .back-link:hover::before {
+            left: 100%;
+        }
+
+        .article-header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .article-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--text) 0%, var(--accent) 50%, var(--text-2nd) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 1rem;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        .article-tags {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .tag {
+            background: var(--accent-glow);
+            color: var(--accent);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .tag:hover {
+            background: var(--accent);
+            color: #0f172a;
+            transform: translateY(-4px);
+        }
+
+        .article-content {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            padding: 48px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            animation: fadeInUp 1.2s ease-out 0.2s both;
+        }
+
+        .article-content h1,
+        .article-content h2,
+        .article-content h3,
+        .article-content h4 {
+            color: var(--accent);
+            margin: 40px 0 20px;
+            font-weight: 700;
+        }
+
+        .article-content h1 {
+            font-size: 2.2rem;
+        }
+
+        .article-content h2 {
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        .article-content h3 {
+            font-size: 1.5rem;
+        }
+
+        .article-content h4 {
+            font-size: 1.2rem;
+        }
+
+        .article-content p,
+        .article-content ul,
+        .article-content ol {
+            color: var(--text-2nd);
+            margin-bottom: 24px;
+        }
+
+        .article-content blockquote {
+            border-left: 5px solid var(--accent);
+            background: var(--accent-glow);
+            padding: 24px;
+            border-radius: 0 16px 16px 0;
+            margin: 32px 0;
+            font-style: italic;
+        }
+
+        .article-content pre {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.9));
+            border-radius: 20px;
+            padding: 32px;
+            overflow-x: auto;
+            margin: 32px 0;
+            border: 1px solid var(--border);
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .article-content pre code {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text);
+            background: transparent;
+            padding: 0;
+        }
+
+        .article-content code {
+            background: rgba(125, 211, 252, 0.15);
+            color: #f472b6;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .article-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .article-content th,
+        .article-content td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .article-content th {
+            background: rgba(125, 211, 252, 0.1);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            z-index: 1000;
+        }
+
+        .theme-toggle button {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--border);
+            color: var(--text);
+            padding: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 64px;
+            height: 64px;
+            font-size: 1.4rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle button:hover {
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: 0 20px 40px var(--card-glow);
+            border-color: var(--accent);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            .article-content {
+                padding: 32px;
+            }
+
+            .article-title {
+                font-size: 2.5rem;
+            }
+
+            .back-link {
+                padding: 14px 24px;
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root:not([data-theme]) {
+                --bg: #f8fafc;
+                --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+                --card-bg: rgba(255, 255, 255, 0.9);
+                --text: #0f172a;
+                --text-2nd: #1e293b;
+                --muted: #64748b;
+                --accent: #0ea5e9;
+                --border: rgba(14, 165, 233, 0.15);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <nav class="back-nav">
+            <a href="/blog-ca-nhan/posts/" class="back-link">← Quay lại danh sách bài viết</a>
+        </nav>
+
+        <header class="article-header">
+            <h1 class="article-title">TCP và UDP: Hai giao thức vận chuyển cơ bản</h1>
+            <div class="article-meta">
+                <span>📅 17/12/2025</span>
+                <span>⏱️ 5 phút đọc</span>
+                <span>📁 Lập trình mạng</span>
+            </div>
+            
+            <div class="article-tags">
+                
+                <span class="tag">#Network</span>
+                
+                <span class="tag">#TCP</span>
+                
+                <span class="tag">#UDP</span>
+                
+                <span class="tag">#Protocol</span>
+                
+            </div>
+            
+        </header>
+
+        <article class="article-content">
+            <h1 id="tcp-và-udp-hai-giao-thức-vận-chuyển-cơ-bản">TCP và UDP: Hai giao thức vận chuyển cơ bản</h1>
+<p>Trong lập trình mạng, <strong>TCP</strong> và <strong>UDP</strong> là hai giao thức vận chuyển (Transport Layer) quan trọng nhất. Hiểu rõ đặc điểm và use case của từng giao thức giúp bạn thiết kế ứng dụng mạng hiệu quả.</p>
+<h2 id="mô-hình-osi-và-tcpip">Mô hình OSI và TCP/IP</h2>
+<p>Trước khi đi vào chi tiết, hãy nhìn lại vị trí của TCP/UDP trong mô hình mạng:</p>
+<pre tabindex="0"><code>┌─────────────────────┐
 │  Application Layer  │ ← HTTP, FTP, SMTP, DNS
 ├─────────────────────┤
 │  Transport Layer    │ ← TCP, UDP ⭐
@@ -18,7 +434,16 @@ Trước khi đi vào chi tiết, hãy nhìn lại vị trí của TCP/UDP trong
 ├─────────────────────┤
 │  Physical Layer     │ ← Cáp, sóng radio
 └─────────────────────┘
-</code></pre><h2 id=tcp-transmission-control-protocol>TCP (Transmission Control Protocol)<a hidden class=anchor aria-hidden=true href=#tcp-transmission-control-protocol>#</a></h2><h3 id=đặc-điểm-chính>Đặc điểm chính<a hidden class=anchor aria-hidden=true href=#đặc-điểm-chính>#</a></h3><ol><li><strong>Hướng kết nối (Connection-oriented)</strong>: Phải thiết lập kết nối trước khi truyền dữ liệu</li><li><strong>Đáng tin cậy (Reliable)</strong>: Đảm bảo dữ liệu đến đúng thứ tự, không mất mát</li><li><strong>Kiểm soát luồng (Flow Control)</strong>: Điều chỉnh tốc độ truyền phù hợp</li><li><strong>Kiểm soát tắc nghẽn (Congestion Control)</strong>: Tránh quá tải mạng</li></ol><h3 id=quy-trình-bắt-tay-3-bước-three-way-handshake>Quy trình bắt tay 3 bước (Three-way Handshake)<a hidden class=anchor aria-hidden=true href=#quy-trình-bắt-tay-3-bước-three-way-handshake>#</a></h3><pre tabindex=0><code>Client                            Server
+</code></pre><h2 id="tcp-transmission-control-protocol">TCP (Transmission Control Protocol)</h2>
+<h3 id="đặc-điểm-chính">Đặc điểm chính</h3>
+<ol>
+<li><strong>Hướng kết nối (Connection-oriented)</strong>: Phải thiết lập kết nối trước khi truyền dữ liệu</li>
+<li><strong>Đáng tin cậy (Reliable)</strong>: Đảm bảo dữ liệu đến đúng thứ tự, không mất mát</li>
+<li><strong>Kiểm soát luồng (Flow Control)</strong>: Điều chỉnh tốc độ truyền phù hợp</li>
+<li><strong>Kiểm soát tắc nghẽn (Congestion Control)</strong>: Tránh quá tải mạng</li>
+</ol>
+<h3 id="quy-trình-bắt-tay-3-bước-three-way-handshake">Quy trình bắt tay 3 bước (Three-way Handshake)</h3>
+<pre tabindex="0"><code>Client                            Server
    │                                 │
    │──────── SYN ──────────────────►│
    │                                 │
@@ -28,7 +453,14 @@ Trước khi đi vào chi tiết, hãy nhìn lại vị trí của TCP/UDP trong
    │                                 │
    │        Kết nối được thiết lập   │
    │◄════════════════════════════════│
-</code></pre><p><strong>Giải thích:</strong></p><ol><li><strong>SYN</strong>: Client gửi yêu cầu kết nối</li><li><strong>SYN + ACK</strong>: Server chấp nhận và phản hồi</li><li><strong>ACK</strong>: Client xác nhận, kết nối được thiết lập</li></ol><h3 id=quy-trình-đóng-kết-nối-four-way-handshake>Quy trình đóng kết nối (Four-way Handshake)<a hidden class=anchor aria-hidden=true href=#quy-trình-đóng-kết-nối-four-way-handshake>#</a></h3><pre tabindex=0><code>Client                            Server
+</code></pre><p><strong>Giải thích:</strong></p>
+<ol>
+<li><strong>SYN</strong>: Client gửi yêu cầu kết nối</li>
+<li><strong>SYN + ACK</strong>: Server chấp nhận và phản hồi</li>
+<li><strong>ACK</strong>: Client xác nhận, kết nối được thiết lập</li>
+</ol>
+<h3 id="quy-trình-đóng-kết-nối-four-way-handshake">Quy trình đóng kết nối (Four-way Handshake)</h3>
+<pre tabindex="0"><code>Client                            Server
    │                                 │
    │──────── FIN ──────────────────►│
    │                                 │
@@ -39,7 +471,8 @@ Trước khi đi vào chi tiết, hãy nhìn lại vị trí của TCP/UDP trong
    │──────── ACK ──────────────────►│
    │                                 │
    │           Kết nối đóng          │
-</code></pre><h3 id=cấu-trúc-tcp-segment>Cấu trúc TCP Segment<a hidden class=anchor aria-hidden=true href=#cấu-trúc-tcp-segment>#</a></h3><pre tabindex=0><code>┌────────────────────────────────────────────────┐
+</code></pre><h3 id="cấu-trúc-tcp-segment">Cấu trúc TCP Segment</h3>
+<pre tabindex="0"><code>┌────────────────────────────────────────────────┐
 │          Source Port (16 bit)                  │
 ├────────────────────────────────────────────────┤
 │          Destination Port (16 bit)             │
@@ -56,54 +489,64 @@ Trước khi đi vào chi tiết, hãy nhìn lại vị trí của TCP/UDP trong
 ├────────────────────────────────────────────────┤
 │          Data (payload)                        │
 └────────────────────────────────────────────────┘
-</code></pre><h3 id=ví-dụ-tcp-trong-java>Ví dụ TCP trong Java<a hidden class=anchor aria-hidden=true href=#ví-dụ-tcp-trong-java>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=c1>// TCP Server</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.net.*</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.io.*</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>TCPServer</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ServerSocket</span><span class=w> </span><span class=n>serverSocket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ServerSocket</span><span class=p>(</span><span class=n>8080</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Server đang chờ kết nối...&#34;</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Socket</span><span class=w> </span><span class=n>clientSocket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>serverSocket</span><span class=p>.</span><span class=na>accept</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Client đã kết nối!&#34;</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>BufferedReader</span><span class=w> </span><span class=n>in</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>BufferedReader</span><span class=p>(</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>new</span><span class=w> </span><span class=n>InputStreamReader</span><span class=p>(</span><span class=n>clientSocket</span><span class=p>.</span><span class=na>getInputStream</span><span class=p>()));</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>PrintWriter</span><span class=w> </span><span class=n>out</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>PrintWriter</span><span class=p>(</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>clientSocket</span><span class=p>.</span><span class=na>getOutputStream</span><span class=p>(),</span><span class=w> </span><span class=kc>true</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>message</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>in</span><span class=p>.</span><span class=na>readLine</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Nhận được: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>message</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Xin chào từ server!&#34;</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>clientSocket</span><span class=p>.</span><span class=na>close</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>serverSocket</span><span class=p>.</span><span class=na>close</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
-</span></span></span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=c1>// TCP Client</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.net.*</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.io.*</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>TCPClient</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Socket</span><span class=w> </span><span class=n>socket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Socket</span><span class=p>(</span><span class=s>&#34;localhost&#34;</span><span class=p>,</span><span class=w> </span><span class=n>8080</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>PrintWriter</span><span class=w> </span><span class=n>out</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>PrintWriter</span><span class=p>(</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>socket</span><span class=p>.</span><span class=na>getOutputStream</span><span class=p>(),</span><span class=w> </span><span class=kc>true</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>BufferedReader</span><span class=w> </span><span class=n>in</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>BufferedReader</span><span class=p>(</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>new</span><span class=w> </span><span class=n>InputStreamReader</span><span class=p>(</span><span class=n>socket</span><span class=p>.</span><span class=na>getInputStream</span><span class=p>()));</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Xin chào từ client!&#34;</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>response</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>in</span><span class=p>.</span><span class=na>readLine</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Server trả lời: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>response</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>socket</span><span class=p>.</span><span class=na>close</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
-</span></span></span></code></pre></div><h2 id=udp-user-datagram-protocol>UDP (User Datagram Protocol)<a hidden class=anchor aria-hidden=true href=#udp-user-datagram-protocol>#</a></h2><h3 id=đặc-điểm-chính-1>Đặc điểm chính<a hidden class=anchor aria-hidden=true href=#đặc-điểm-chính-1>#</a></h3><ol><li><strong>Không hướng kết nối (Connectionless)</strong>: Không cần thiết lập kết nối</li><li><strong>Không đáng tin cậy (Unreliable)</strong>: Không đảm bảo dữ liệu đến đích</li><li><strong>Nhanh và nhẹ</strong>: Ít overhead hơn TCP</li><li><strong>Hỗ trợ Broadcast/Multicast</strong>: Gửi đến nhiều đích cùng lúc</li></ol><h3 id=cấu-trúc-udp-datagram>Cấu trúc UDP Datagram<a hidden class=anchor aria-hidden=true href=#cấu-trúc-udp-datagram>#</a></h3><pre tabindex=0><code>┌────────────────────────────────────────────────┐
+</code></pre><h3 id="ví-dụ-tcp-trong-java">Ví dụ TCP trong Java</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// TCP Server</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">java.net.*</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">java.io.*</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">TCPServer</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">ServerSocket</span><span class="w"> </span><span class="n">serverSocket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ServerSocket</span><span class="p">(</span><span class="n">8080</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Server đang chờ kết nối...&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Socket</span><span class="w"> </span><span class="n">clientSocket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">serverSocket</span><span class="p">.</span><span class="na">accept</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Client đã kết nối!&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">BufferedReader</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BufferedReader</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">new</span><span class="w"> </span><span class="n">InputStreamReader</span><span class="p">(</span><span class="n">clientSocket</span><span class="p">.</span><span class="na">getInputStream</span><span class="p">()));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">PrintWriter</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PrintWriter</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">clientSocket</span><span class="p">.</span><span class="na">getOutputStream</span><span class="p">(),</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="na">readLine</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Nhận được: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">message</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Xin chào từ server!&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">clientSocket</span><span class="p">.</span><span class="na">close</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">serverSocket</span><span class="p">.</span><span class="na">close</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// TCP Client</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">java.net.*</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">java.io.*</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">TCPClient</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Socket</span><span class="w"> </span><span class="n">socket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Socket</span><span class="p">(</span><span class="s">&#34;localhost&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">8080</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">PrintWriter</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PrintWriter</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">socket</span><span class="p">.</span><span class="na">getOutputStream</span><span class="p">(),</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">BufferedReader</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BufferedReader</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">new</span><span class="w"> </span><span class="n">InputStreamReader</span><span class="p">(</span><span class="n">socket</span><span class="p">.</span><span class="na">getInputStream</span><span class="p">()));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Xin chào từ client!&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="na">readLine</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Server trả lời: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">response</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">socket</span><span class="p">.</span><span class="na">close</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="udp-user-datagram-protocol">UDP (User Datagram Protocol)</h2>
+<h3 id="đặc-điểm-chính-1">Đặc điểm chính</h3>
+<ol>
+<li><strong>Không hướng kết nối (Connectionless)</strong>: Không cần thiết lập kết nối</li>
+<li><strong>Không đáng tin cậy (Unreliable)</strong>: Không đảm bảo dữ liệu đến đích</li>
+<li><strong>Nhanh và nhẹ</strong>: Ít overhead hơn TCP</li>
+<li><strong>Hỗ trợ Broadcast/Multicast</strong>: Gửi đến nhiều đích cùng lúc</li>
+</ol>
+<h3 id="cấu-trúc-udp-datagram">Cấu trúc UDP Datagram</h3>
+<pre tabindex="0"><code>┌────────────────────────────────────────────────┐
 │          Source Port (16 bit)                  │
 ├────────────────────────────────────────────────┤
 │          Destination Port (16 bit)             │
@@ -114,70 +557,182 @@ Trước khi đi vào chi tiết, hãy nhìn lại vị trí của TCP/UDP trong
 ├────────────────────────────────────────────────┤
 │          Data (payload)                        │
 └────────────────────────────────────────────────┘
-</code></pre><p><strong>Lưu ý:</strong> Header UDP chỉ có 8 bytes, nhỏ hơn nhiều so với TCP (20+ bytes).</p><h3 id=ví-dụ-udp-trong-java>Ví dụ UDP trong Java<a hidden class=anchor aria-hidden=true href=#ví-dụ-udp-trong-java>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=c1>// UDP Server</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.net.*</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>UDPServer</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>DatagramSocket</span><span class=w> </span><span class=n>socket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>DatagramSocket</span><span class=p>(</span><span class=n>9090</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>buffer</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=kt>byte</span><span class=o>[</span><span class=n>1024</span><span class=o>]</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;UDP Server đang chờ...&#34;</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// Nhận datagram</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>DatagramPacket</span><span class=w> </span><span class=n>request</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>DatagramPacket</span><span class=p>(</span><span class=n>buffer</span><span class=p>,</span><span class=w> </span><span class=n>buffer</span><span class=p>.</span><span class=na>length</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>socket</span><span class=p>.</span><span class=na>receive</span><span class=p>(</span><span class=n>request</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>message</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>String</span><span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=na>getData</span><span class=p>(),</span><span class=w> </span><span class=n>0</span><span class=p>,</span><span class=w> </span><span class=n>request</span><span class=p>.</span><span class=na>getLength</span><span class=p>());</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Nhận được: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>message</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// Gửi phản hồi</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>response</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;Đã nhận: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>message</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>responseData</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>response</span><span class=p>.</span><span class=na>getBytes</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>DatagramPacket</span><span class=w> </span><span class=n>responsePacket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>DatagramPacket</span><span class=p>(</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>responseData</span><span class=p>,</span><span class=w> </span><span class=n>responseData</span><span class=p>.</span><span class=na>length</span><span class=p>,</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>request</span><span class=p>.</span><span class=na>getAddress</span><span class=p>(),</span><span class=w> </span><span class=n>request</span><span class=p>.</span><span class=na>getPort</span><span class=p>());</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>socket</span><span class=p>.</span><span class=na>send</span><span class=p>(</span><span class=n>responsePacket</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>socket</span><span class=p>.</span><span class=na>close</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
-</span></span></span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=c1>// UDP Client</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.net.*</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>UDPClient</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>DatagramSocket</span><span class=w> </span><span class=n>socket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>DatagramSocket</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>InetAddress</span><span class=w> </span><span class=n>serverAddress</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>InetAddress</span><span class=p>.</span><span class=na>getByName</span><span class=p>(</span><span class=s>&#34;localhost&#34;</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// Gửi datagram</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>message</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;Xin chào UDP!&#34;</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>sendData</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>message</span><span class=p>.</span><span class=na>getBytes</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>DatagramPacket</span><span class=w> </span><span class=n>sendPacket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>DatagramPacket</span><span class=p>(</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>sendData</span><span class=p>,</span><span class=w> </span><span class=n>sendData</span><span class=p>.</span><span class=na>length</span><span class=p>,</span><span class=w> </span><span class=n>serverAddress</span><span class=p>,</span><span class=w> </span><span class=n>9090</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>socket</span><span class=p>.</span><span class=na>send</span><span class=p>(</span><span class=n>sendPacket</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// Nhận phản hồi</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>buffer</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=kt>byte</span><span class=o>[</span><span class=n>1024</span><span class=o>]</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>DatagramPacket</span><span class=w> </span><span class=n>receivePacket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>DatagramPacket</span><span class=p>(</span><span class=n>buffer</span><span class=p>,</span><span class=w> </span><span class=n>buffer</span><span class=p>.</span><span class=na>length</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>socket</span><span class=p>.</span><span class=na>receive</span><span class=p>(</span><span class=n>receivePacket</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>response</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>String</span><span class=p>(</span><span class=n>receivePacket</span><span class=p>.</span><span class=na>getData</span><span class=p>(),</span><span class=w> </span><span class=n>0</span><span class=p>,</span><span class=w> </span><span class=n>receivePacket</span><span class=p>.</span><span class=na>getLength</span><span class=p>());</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Server trả lời: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>response</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>socket</span><span class=p>.</span><span class=na>close</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
-</span></span></span></code></pre></div><h2 id=so-sánh-tcp-vs-udp>So sánh TCP vs UDP<a hidden class=anchor aria-hidden=true href=#so-sánh-tcp-vs-udp>#</a></h2><table><thead><tr><th>Tiêu chí</th><th>TCP</th><th>UDP</th></tr></thead><tbody><tr><td><strong>Kết nối</strong></td><td>Hướng kết nối</td><td>Không kết nối</td></tr><tr><td><strong>Độ tin cậy</strong></td><td>Đảm bảo giao hàng</td><td>Không đảm bảo</td></tr><tr><td><strong>Thứ tự</strong></td><td>Đúng thứ tự</td><td>Không đảm bảo</td></tr><tr><td><strong>Tốc độ</strong></td><td>Chậm hơn</td><td>Nhanh hơn</td></tr><tr><td><strong>Header</strong></td><td>20-60 bytes</td><td>8 bytes</td></tr><tr><td><strong>Flow Control</strong></td><td>Có</td><td>Không</td></tr><tr><td><strong>Use case</strong></td><td>Web, Email, File transfer</td><td>Streaming, Gaming, DNS</td></tr></tbody></table><h2 id=khi-nào-dùng-tcp-khi-nào-dùng-udp>Khi nào dùng TCP? Khi nào dùng UDP?<a hidden class=anchor aria-hidden=true href=#khi-nào-dùng-tcp-khi-nào-dùng-udp>#</a></h2><h3 id=sử-dụng-tcp-khi>Sử dụng TCP khi:<a hidden class=anchor aria-hidden=true href=#sử-dụng-tcp-khi>#</a></h3><ul><li>Cần đảm bảo dữ liệu đến đầy đủ, đúng thứ tự</li><li>Ứng dụng web (HTTP/HTTPS)</li><li>Transfer file (FTP)</li><li>Email (SMTP, IMAP)</li><li>Database connections</li></ul><h3 id=sử-dụng-udp-khi>Sử dụng UDP khi:<a hidden class=anchor aria-hidden=true href=#sử-dụng-udp-khi>#</a></h3><ul><li>Cần tốc độ cao, chấp nhận mất mát nhỏ</li><li>Live streaming video/audio</li><li>Online gaming</li><li>VoIP (Voice over IP)</li><li>DNS queries</li><li>IoT sensors</li></ul><h2 id=ví-dụ-thực-tế>Ví dụ thực tế<a hidden class=anchor aria-hidden=true href=#ví-dụ-thực-tế>#</a></h2><h3 id=trường-hợp-1-chat-application>Trường hợp 1: Chat Application<a hidden class=anchor aria-hidden=true href=#trường-hợp-1-chat-application>#</a></h3><pre tabindex=0><code>→ Dùng TCP
+</code></pre><p><strong>Lưu ý:</strong> Header UDP chỉ có 8 bytes, nhỏ hơn nhiều so với TCP (20+ bytes).</p>
+<h3 id="ví-dụ-udp-trong-java">Ví dụ UDP trong Java</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// UDP Server</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">java.net.*</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">UDPServer</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">DatagramSocket</span><span class="w"> </span><span class="n">socket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DatagramSocket</span><span class="p">(</span><span class="n">9090</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">byte</span><span class="o">[</span><span class="n">1024</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;UDP Server đang chờ...&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Nhận datagram</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">DatagramPacket</span><span class="w"> </span><span class="n">request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DatagramPacket</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">.</span><span class="na">length</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">socket</span><span class="p">.</span><span class="na">receive</span><span class="p">(</span><span class="n">request</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">getData</span><span class="p">(),</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getLength</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Nhận được: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">message</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Gửi phản hồi</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;Đã nhận: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">message</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">responseData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">response</span><span class="p">.</span><span class="na">getBytes</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">DatagramPacket</span><span class="w"> </span><span class="n">responsePacket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DatagramPacket</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">responseData</span><span class="p">,</span><span class="w"> </span><span class="n">responseData</span><span class="p">.</span><span class="na">length</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">request</span><span class="p">.</span><span class="na">getAddress</span><span class="p">(),</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getPort</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">socket</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">responsePacket</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">socket</span><span class="p">.</span><span class="na">close</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// UDP Client</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">java.net.*</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">UDPClient</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">DatagramSocket</span><span class="w"> </span><span class="n">socket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DatagramSocket</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">InetAddress</span><span class="w"> </span><span class="n">serverAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">InetAddress</span><span class="p">.</span><span class="na">getByName</span><span class="p">(</span><span class="s">&#34;localhost&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Gửi datagram</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;Xin chào UDP!&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">sendData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">message</span><span class="p">.</span><span class="na">getBytes</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">DatagramPacket</span><span class="w"> </span><span class="n">sendPacket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DatagramPacket</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">sendData</span><span class="p">,</span><span class="w"> </span><span class="n">sendData</span><span class="p">.</span><span class="na">length</span><span class="p">,</span><span class="w"> </span><span class="n">serverAddress</span><span class="p">,</span><span class="w"> </span><span class="n">9090</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">socket</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">sendPacket</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Nhận phản hồi</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">byte</span><span class="o">[</span><span class="n">1024</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">DatagramPacket</span><span class="w"> </span><span class="n">receivePacket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DatagramPacket</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">.</span><span class="na">length</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">socket</span><span class="p">.</span><span class="na">receive</span><span class="p">(</span><span class="n">receivePacket</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="p">(</span><span class="n">receivePacket</span><span class="p">.</span><span class="na">getData</span><span class="p">(),</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">receivePacket</span><span class="p">.</span><span class="na">getLength</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Server trả lời: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">response</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">socket</span><span class="p">.</span><span class="na">close</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="so-sánh-tcp-vs-udp">So sánh TCP vs UDP</h2>
+<table>
+  <thead>
+      <tr>
+          <th>Tiêu chí</th>
+          <th>TCP</th>
+          <th>UDP</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Kết nối</strong></td>
+          <td>Hướng kết nối</td>
+          <td>Không kết nối</td>
+      </tr>
+      <tr>
+          <td><strong>Độ tin cậy</strong></td>
+          <td>Đảm bảo giao hàng</td>
+          <td>Không đảm bảo</td>
+      </tr>
+      <tr>
+          <td><strong>Thứ tự</strong></td>
+          <td>Đúng thứ tự</td>
+          <td>Không đảm bảo</td>
+      </tr>
+      <tr>
+          <td><strong>Tốc độ</strong></td>
+          <td>Chậm hơn</td>
+          <td>Nhanh hơn</td>
+      </tr>
+      <tr>
+          <td><strong>Header</strong></td>
+          <td>20-60 bytes</td>
+          <td>8 bytes</td>
+      </tr>
+      <tr>
+          <td><strong>Flow Control</strong></td>
+          <td>Có</td>
+          <td>Không</td>
+      </tr>
+      <tr>
+          <td><strong>Use case</strong></td>
+          <td>Web, Email, File transfer</td>
+          <td>Streaming, Gaming, DNS</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="khi-nào-dùng-tcp-khi-nào-dùng-udp">Khi nào dùng TCP? Khi nào dùng UDP?</h2>
+<h3 id="sử-dụng-tcp-khi">Sử dụng TCP khi:</h3>
+<ul>
+<li>Cần đảm bảo dữ liệu đến đầy đủ, đúng thứ tự</li>
+<li>Ứng dụng web (HTTP/HTTPS)</li>
+<li>Transfer file (FTP)</li>
+<li>Email (SMTP, IMAP)</li>
+<li>Database connections</li>
+</ul>
+<h3 id="sử-dụng-udp-khi">Sử dụng UDP khi:</h3>
+<ul>
+<li>Cần tốc độ cao, chấp nhận mất mát nhỏ</li>
+<li>Live streaming video/audio</li>
+<li>Online gaming</li>
+<li>VoIP (Voice over IP)</li>
+<li>DNS queries</li>
+<li>IoT sensors</li>
+</ul>
+<h2 id="ví-dụ-thực-tế">Ví dụ thực tế</h2>
+<h3 id="trường-hợp-1-chat-application">Trường hợp 1: Chat Application</h3>
+<pre tabindex="0"><code>→ Dùng TCP
 Lý do: Tin nhắn phải đến đầy đủ và đúng thứ tự
-</code></pre><h3 id=trường-hợp-2-live-video-streaming>Trường hợp 2: Live Video Streaming<a hidden class=anchor aria-hidden=true href=#trường-hợp-2-live-video-streaming>#</a></h3><pre tabindex=0><code>→ Dùng UDP
+</code></pre><h3 id="trường-hợp-2-live-video-streaming">Trường hợp 2: Live Video Streaming</h3>
+<pre tabindex="0"><code>→ Dùng UDP
 Lý do: Chấp nhận mất vài frame, ưu tiên realtime
-</code></pre><h3 id=trường-hợp-3-file-download>Trường hợp 3: File Download<a hidden class=anchor aria-hidden=true href=#trường-hợp-3-file-download>#</a></h3><pre tabindex=0><code>→ Dùng TCP
+</code></pre><h3 id="trường-hợp-3-file-download">Trường hợp 3: File Download</h3>
+<pre tabindex="0"><code>→ Dùng TCP
 Lý do: File phải hoàn chỉnh, không mất bytes
-</code></pre><h3 id=trường-hợp-4-online-game>Trường hợp 4: Online Game<a hidden class=anchor aria-hidden=true href=#trường-hợp-4-online-game>#</a></h3><pre tabindex=0><code>→ Dùng UDP (với custom reliability layer nếu cần)
+</code></pre><h3 id="trường-hợp-4-online-game">Trường hợp 4: Online Game</h3>
+<pre tabindex="0"><code>→ Dùng UDP (với custom reliability layer nếu cần)
 Lý do: Cần độ trễ thấp, vị trí cũ không quan trọng
-</code></pre><h2 id=kết-luận>Kết luận<a hidden class=anchor aria-hidden=true href=#kết-luận>#</a></h2><p><strong>TCP</strong> và <strong>UDP</strong> là hai giao thức nền tảng trong lập trình mạng. TCP đảm bảo độ tin cậy cao, phù hợp với ứng dụng cần dữ liệu chính xác. UDP ưu tiên tốc độ, phù hợp với ứng dụng realtime. Việc chọn đúng giao thức ảnh hưởng trực tiếp đến hiệu năng và trải nghiệm người dùng.</p><hr><p><em>Bài viết thuộc series Lập trình mạng cơ bản - Blog Ngô Phạm Ngọc Tú</em></p></div><footer class=post-footer><ul class=post-tags><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/network/>Network</a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/tcp/>TCP</a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/udp/>UDP</a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/protocol/>Protocol</a></li></ul></footer></article></main><footer class=footer><span>&copy; 2025 <a href=https://hihi99s.github.io/blog-ca-nhan/>Blog cá nhân – Ngô Phạm Ngọc Tú</a></span> ·
-<span>Powered by
-<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
-<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentColor"><path d="M12 6H0l6-6z"/></svg>
-</a><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script></body></html>
+</code></pre><h2 id="kết-luận">Kết luận</h2>
+<p><strong>TCP</strong> và <strong>UDP</strong> là hai giao thức nền tảng trong lập trình mạng. TCP đảm bảo độ tin cậy cao, phù hợp với ứng dụng cần dữ liệu chính xác. UDP ưu tiên tốc độ, phù hợp với ứng dụng realtime. Việc chọn đúng giao thức ảnh hưởng trực tiếp đến hiệu năng và trải nghiệm người dùng.</p>
+<hr>
+<p><em>Bài viết thuộc series Lập trình mạng cơ bản - Blog Ngô Phạm Ngọc Tú</em></p>
+
+        </article>
+    </div>
+
+    <div class="theme-toggle">
+        <button id="btn-theme" aria-label="Chuyển đổi theme">🌙</button>
+    </div>
+
+    <script>
+        const root = document.documentElement;
+        const btn = document.getElementById('btn-theme');
+        const stored = localStorage.getItem('theme');
+        let isDark = !stored || stored !== 'light';
+
+        function applyTheme(isDarkMode) {
+            if (isDarkMode) {
+                root.removeAttribute('data-theme');
+                btn.textContent = '☀️';
+            } else {
+                root.setAttribute('data-theme', 'light');
+                btn.textContent = '🌙';
+            }
+        }
+
+        if (stored) isDark = stored !== 'light';
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches) isDark = true;
+        applyTheme(isDark);
+
+        btn.addEventListener('click', () => {
+            isDark = !isDark;
+            applyTheme(isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+    </script>
+</body>
+
+</html>
+
+</body>
+
+</html>

@@ -1,5 +1,23 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>WebSocket on Blog cá nhân – Ngô Phạm Ngọc Tú</title><link>https://hihi99s.github.io/blog-ca-nhan/tags/websocket/</link><description>Recent content in WebSocket on Blog cá nhân – Ngô Phạm Ngọc Tú</description><generator>Hugo -- 0.153.2</generator><language>vi</language><lastBuildDate>Tue, 16 Dec 2025 10:00:00 +0700</lastBuildDate><atom:link href="https://hihi99s.github.io/blog-ca-nhan/tags/websocket/index.xml" rel="self" type="application/rss+xml"/><item><title>WebSocket trong JavaScript: Giao tiếp Realtime</title><link>https://hihi99s.github.io/blog-ca-nhan/posts/websocket-javascript/</link><pubDate>Tue, 16 Dec 2025 10:00:00 +0700</pubDate><guid>https://hihi99s.github.io/blog-ca-nhan/posts/websocket-javascript/</guid><description>&lt;h1 id="websocket-trong-javascript-giao-tiếp-realtime"&gt;WebSocket trong JavaScript: Giao tiếp Realtime&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>WebSocket on Blog cá nhân – Ngô Phạm Ngọc Tú</title>
+    <link>http://localhost:1313/blog-ca-nhan/tags/websocket/</link>
+    <description>Recent content in WebSocket on Blog cá nhân – Ngô Phạm Ngọc Tú</description>
+    <generator>Hugo -- 0.153.2</generator>
+    <language>vi</language>
+    <lastBuildDate>Tue, 16 Dec 2025 10:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/blog-ca-nhan/tags/websocket/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>WebSocket trong JavaScript: Giao tiếp Realtime</title>
+      <link>http://localhost:1313/blog-ca-nhan/posts/websocket-javascript/</link>
+      <pubDate>Tue, 16 Dec 2025 10:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/blog-ca-nhan/posts/websocket-javascript/</guid>
+      <description>&lt;h1 id=&#34;websocket-trong-javascript-giao-tiếp-realtime&#34;&gt;WebSocket trong JavaScript: Giao tiếp Realtime&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;WebSocket&lt;/strong&gt; là giao thức cho phép giao tiếp hai chiều (full-duplex) giữa client và server thông qua một kết nối TCP duy nhất. Đây là công nghệ quan trọng cho các ứng dụng realtime như chat, game online, live updates.&lt;/p&gt;
-&lt;h2 id="tại-sao-cần-websocket"&gt;Tại sao cần WebSocket?&lt;/h2&gt;
-&lt;h3 id="vấn-đề-với-http-truyền-thống"&gt;Vấn đề với HTTP truyền thống&lt;/h3&gt;
-&lt;p&gt;HTTP là giao thức &lt;strong&gt;request-response&lt;/strong&gt;: client gửi request, server trả response, kết nối đóng.&lt;/p&gt;</description></item></channel></rss>
+&lt;h2 id=&#34;tại-sao-cần-websocket&#34;&gt;Tại sao cần WebSocket?&lt;/h2&gt;
+&lt;h3 id=&#34;vấn-đề-với-http-truyền-thống&#34;&gt;Vấn đề với HTTP truyền thống&lt;/h3&gt;
+&lt;p&gt;HTTP là giao thức &lt;strong&gt;request-response&lt;/strong&gt;: client gửi request, server trả response, kết nối đóng.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

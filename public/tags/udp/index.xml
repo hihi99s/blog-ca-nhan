@@ -1,4 +1,22 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>UDP on Blog cá nhân – Ngô Phạm Ngọc Tú</title><link>https://hihi99s.github.io/blog-ca-nhan/tags/udp/</link><description>Recent content in UDP on Blog cá nhân – Ngô Phạm Ngọc Tú</description><generator>Hugo -- 0.153.2</generator><language>vi</language><lastBuildDate>Wed, 17 Dec 2025 10:00:00 +0700</lastBuildDate><atom:link href="https://hihi99s.github.io/blog-ca-nhan/tags/udp/index.xml" rel="self" type="application/rss+xml"/><item><title>TCP và UDP: Hai giao thức vận chuyển cơ bản</title><link>https://hihi99s.github.io/blog-ca-nhan/posts/tcp-udp-co-ban/</link><pubDate>Wed, 17 Dec 2025 10:00:00 +0700</pubDate><guid>https://hihi99s.github.io/blog-ca-nhan/posts/tcp-udp-co-ban/</guid><description>&lt;h1 id="tcp-và-udp-hai-giao-thức-vận-chuyển-cơ-bản"&gt;TCP và UDP: Hai giao thức vận chuyển cơ bản&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>UDP on Blog cá nhân – Ngô Phạm Ngọc Tú</title>
+    <link>http://localhost:1313/blog-ca-nhan/tags/udp/</link>
+    <description>Recent content in UDP on Blog cá nhân – Ngô Phạm Ngọc Tú</description>
+    <generator>Hugo -- 0.153.2</generator>
+    <language>vi</language>
+    <lastBuildDate>Wed, 17 Dec 2025 10:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/blog-ca-nhan/tags/udp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TCP và UDP: Hai giao thức vận chuyển cơ bản</title>
+      <link>http://localhost:1313/blog-ca-nhan/posts/tcp-udp-co-ban/</link>
+      <pubDate>Wed, 17 Dec 2025 10:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/blog-ca-nhan/posts/tcp-udp-co-ban/</guid>
+      <description>&lt;h1 id=&#34;tcp-và-udp-hai-giao-thức-vận-chuyển-cơ-bản&#34;&gt;TCP và UDP: Hai giao thức vận chuyển cơ bản&lt;/h1&gt;
 &lt;p&gt;Trong lập trình mạng, &lt;strong&gt;TCP&lt;/strong&gt; và &lt;strong&gt;UDP&lt;/strong&gt; là hai giao thức vận chuyển (Transport Layer) quan trọng nhất. Hiểu rõ đặc điểm và use case của từng giao thức giúp bạn thiết kế ứng dụng mạng hiệu quả.&lt;/p&gt;
-&lt;h2 id="mô-hình-osi-và-tcpip"&gt;Mô hình OSI và TCP/IP&lt;/h2&gt;
-&lt;p&gt;Trước khi đi vào chi tiết, hãy nhìn lại vị trí của TCP/UDP trong mô hình mạng:&lt;/p&gt;</description></item></channel></rss>
+&lt;h2 id=&#34;mô-hình-osi-và-tcpip&#34;&gt;Mô hình OSI và TCP/IP&lt;/h2&gt;
+&lt;p&gt;Trước khi đi vào chi tiết, hãy nhìn lại vị trí của TCP/UDP trong mô hình mạng:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

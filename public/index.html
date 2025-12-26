@@ -282,14 +282,17 @@
       line-height: 1.7;
     }
 
-    .theme-toggle {
+    .floating-buttons {
       position: fixed;
       bottom: 32px;
       right: 32px;
       z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    .theme-toggle button {
+    .floating-buttons button {
       background: var(--card-bg);
       backdrop-filter: blur(20px);
       border: 2px solid var(--border);
@@ -304,7 +307,7 @@
       transition: all 0.3s ease;
     }
 
-    .theme-toggle button:hover {
+    .floating-buttons button:hover {
       transform: scale(1.1) rotate(180deg);
       box-shadow: 0 20px 40px var(--card-glow);
       border-color: var(--accent);
@@ -405,13 +408,13 @@
 <body>
   <div class="container">
     <section class="profile-hero">
-      <img class="avatar" src="/blog-ca-nhan/%20images/avatar.png" alt="Ngô Phạm Ngọc Tú" loading="lazy">
+      <img class="avatar" src="/blog-ca-nhan/images/avatar.jpg" alt="Ngô Phạm Ngọc Tú" loading="lazy">
       <h1 class="name">Ngô Phạm Ngọc Tú</h1>
       <p class="subtitle">MSSV 2280603518 • Lớp 22DTHE5 • Sinh viên năm 4 HUTECH</p>
 
       <div class="buttons">
-        <a href="/blog-ca-nhan/%20posts/" class="btn">📝 Các Bài Viết (9+)</a>
-        <a href="/blog-ca-nhan/%20profile/" class="btn">👤 CV Chi Tiết</a>
+        <a href="/blog-ca-nhan/posts/" class="btn">📝 Các Bài Viết (9+)</a>
+        <a href="/blog-ca-nhan/profile/" class="btn">👤 CV Chi Tiết</a>
         <a href="https://github.com/hihi99s" class="btn" target="_blank">💻 GitHub</a>
       </div>
     </section>
@@ -451,7 +454,13 @@
     </div>
   </div>
 
-  <div class="theme-toggle">
+  
+  <audio id="bg-music" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="floating-buttons">
+    <button id="btn-music" aria-label="Bật/Tắt nhạc" title="Bật nhạc nền">🎵</button>
     <button id="btn-theme" aria-label="Chuyển đổi theme">🌙</button>
   </div>
 
@@ -482,6 +491,29 @@
       isDark = !isDark;
       applyTheme(isDark);
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+
+    
+    const musicBtn = document.getElementById('btn-music');
+    const audio = document.getElementById('bg-music');
+    let isPlaying = localStorage.getItem('musicPlaying') === 'true';
+
+    if (isPlaying) {
+      audio.play().catch(() => { });
+      musicBtn.textContent = '🔇';
+    }
+
+    musicBtn.addEventListener('click', () => {
+      if (isPlaying) {
+        audio.pause();
+        musicBtn.textContent = '🎵';
+        localStorage.setItem('musicPlaying', 'false');
+      } else {
+        audio.play();
+        musicBtn.textContent = '🔇';
+        localStorage.setItem('musicPlaying', 'true');
+      }
+      isPlaying = !isPlaying;
     });
   </script>
 </body>

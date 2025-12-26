@@ -1,25 +1,445 @@
-<!doctype html><html lang=vi dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Bất đồng bộ và Xử lý đồng thời trong Lập trình | Blog cá nhân – Ngô Phạm Ngọc Tú</title><meta name=keywords content="JavaScript,Java,Async,Concurrency"><meta name=description content="Bất đồng bộ và Xử lý đồng thời trong Lập trình
-Trong lập trình hiện đại, việc xử lý nhiều tác vụ cùng lúc là điều cần thiết. Bài viết này sẽ giải thích khái niệm bất đồng bộ (Asynchronous) và xử lý đồng thời (Concurrency) trong JavaScript và Java.
-Đồng bộ vs Bất đồng bộ
-Xử lý đồng bộ (Synchronous)
-Các tác vụ thực hiện tuần tự, tác vụ sau phải chờ tác vụ trước hoàn thành:"><meta name=author content="Ngô Phạm Ngọc Tú"><link rel=canonical href=https://hihi99s.github.io/blog-ca-nhan/posts/bat-dong-bo-xu-ly-dong-thoi/><link crossorigin=anonymous href=/blog-ca-nhan/assets/css/stylesheet.fd5566c526ae48aadabd950798a2dc3568536401560eae5caac3765a42a9e7b5.css integrity="sha256-/VVmxSauSKravZUHmKLcNWhTZAFWDq5cqsN2WkKp57U=" rel="preload stylesheet" as=style><link rel=icon href=https://hihi99s.github.io/blog-ca-nhan/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://hihi99s.github.io/blog-ca-nhan/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://hihi99s.github.io/blog-ca-nhan/favicon-32x32.png><link rel=apple-touch-icon href=https://hihi99s.github.io/blog-ca-nhan/apple-touch-icon.png><link rel=mask-icon href=https://hihi99s.github.io/blog-ca-nhan/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=vi href=https://hihi99s.github.io/blog-ca-nhan/posts/bat-dong-bo-xu-ly-dong-thoi/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}@media(prefers-color-scheme:light){.list::-webkit-scrollbar-thumb{border-color:var(--code-bg)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><meta property="og:url" content="https://hihi99s.github.io/blog-ca-nhan/posts/bat-dong-bo-xu-ly-dong-thoi/"><meta property="og:site_name" content="Blog cá nhân – Ngô Phạm Ngọc Tú"><meta property="og:title" content="Bất đồng bộ và Xử lý đồng thời trong Lập trình"><meta property="og:description" content="Bất đồng bộ và Xử lý đồng thời trong Lập trình Trong lập trình hiện đại, việc xử lý nhiều tác vụ cùng lúc là điều cần thiết. Bài viết này sẽ giải thích khái niệm bất đồng bộ (Asynchronous) và xử lý đồng thời (Concurrency) trong JavaScript và Java.
-Đồng bộ vs Bất đồng bộ Xử lý đồng bộ (Synchronous) Các tác vụ thực hiện tuần tự, tác vụ sau phải chờ tác vụ trước hoàn thành:"><meta property="og:locale" content="vi"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-12-14T10:00:00+07:00"><meta property="article:modified_time" content="2025-12-14T10:00:00+07:00"><meta property="article:tag" content="JavaScript"><meta property="article:tag" content="Java"><meta property="article:tag" content="Async"><meta property="article:tag" content="Concurrency"><meta name=twitter:card content="summary"><meta name=twitter:title content="Bất đồng bộ và Xử lý đồng thời trong Lập trình"><meta name=twitter:description content="Bất đồng bộ và Xử lý đồng thời trong Lập trình
-Trong lập trình hiện đại, việc xử lý nhiều tác vụ cùng lúc là điều cần thiết. Bài viết này sẽ giải thích khái niệm bất đồng bộ (Asynchronous) và xử lý đồng thời (Concurrency) trong JavaScript và Java.
-Đồng bộ vs Bất đồng bộ
-Xử lý đồng bộ (Synchronous)
-Các tác vụ thực hiện tuần tự, tác vụ sau phải chờ tác vụ trước hoàn thành:"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://hihi99s.github.io/blog-ca-nhan/posts/"},{"@type":"ListItem","position":2,"name":"Bất đồng bộ và Xử lý đồng thời trong Lập trình","item":"https://hihi99s.github.io/blog-ca-nhan/posts/bat-dong-bo-xu-ly-dong-thoi/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Bất đồng bộ và Xử lý đồng thời trong Lập trình","name":"Bất đồng bộ và Xử lý đồng thời trong Lập trình","description":"Bất đồng bộ và Xử lý đồng thời trong Lập trình Trong lập trình hiện đại, việc xử lý nhiều tác vụ cùng lúc là điều cần thiết. Bài viết này sẽ giải thích khái niệm bất đồng bộ (Asynchronous) và xử lý đồng thời (Concurrency) trong JavaScript và Java.\nĐồng bộ vs Bất đồng bộ Xử lý đồng bộ (Synchronous) Các tác vụ thực hiện tuần tự, tác vụ sau phải chờ tác vụ trước hoàn thành:\n","keywords":["JavaScript","Java","Async","Concurrency"],"articleBody":"Bất đồng bộ và Xử lý đồng thời trong Lập trình Trong lập trình hiện đại, việc xử lý nhiều tác vụ cùng lúc là điều cần thiết. Bài viết này sẽ giải thích khái niệm bất đồng bộ (Asynchronous) và xử lý đồng thời (Concurrency) trong JavaScript và Java.\nĐồng bộ vs Bất đồng bộ Xử lý đồng bộ (Synchronous) Các tác vụ thực hiện tuần tự, tác vụ sau phải chờ tác vụ trước hoàn thành:\nTác vụ 1: ████████████████ (3 giây)\rTác vụ 2: ████████████████ (3 giây)\rTác vụ 3: ████████████████ (3 giây)\r↓\rTổng thời gian: 9 giây Xử lý bất đồng bộ (Asynchronous) Các tác vụ có thể chạy đồng thời, không cần chờ nhau:\nTác vụ 1: ████████████████ (3 giây)\rTác vụ 2: ████████████████ (3 giây)\rTác vụ 3: ████████████████ (3 giây)\r↓\rTổng thời gian: ~3 giây Bất đồng bộ trong JavaScript JavaScript là single-threaded nhưng sử dụng Event Loop để xử lý bất đồng bộ.\nEvent Loop ┌───────────────────────────┐\r│ Call Stack │ ← Thực thi code\r└───────────────────────────┘\r↕\r┌───────────────────────────┐\r│ Event Loop │ ← Kiểm tra Queue\r└───────────────────────────┘\r↕\r┌───────────────────────────┐\r│ Callback Queue │ ← Callback chờ thực thi\r└───────────────────────────┘\r↕\r┌───────────────────────────┐\r│ Web APIs │ ← setTimeout, fetch, etc.\r└───────────────────────────┘ Callback console.log(\"Bắt đầu\"); setTimeout(() =\u003e { console.log(\"Sau 2 giây\"); }, 2000); console.log(\"Tiếp tục\"); // Output: // Bắt đầu // Tiếp tục // Sau 2 giây (sau 2s) Promise function fetchData() { return new Promise((resolve, reject) =\u003e { setTimeout(() =\u003e { const success = true; if (success) { resolve({ data: \"Dữ liệu từ server\" }); } else { reject(new Error(\"Lỗi fetch\")); } }, 1000); }); } // Sử dụng fetchData() .then(result =\u003e console.log(result.data)) .catch(error =\u003e console.error(error)); Async/Await async function main() { try { console.log(\"Bắt đầu fetch...\"); const result = await fetchData(); console.log(\"Kết quả:\", result.data); } catch (error) { console.error(\"Lỗi:\", error); } } main(); Promise.all - Chạy song song async function fetchMultiple() { const start = Date.now(); // Chạy song song const [users, posts, comments] = await Promise.all([ fetch('/api/users').then(r =\u003e r.json()), fetch('/api/posts').then(r =\u003e r.json()), fetch('/api/comments').then(r =\u003e r.json()) ]); console.log(`Hoàn thành trong ${Date.now() - start}ms`); return { users, posts, comments }; } Promise.race - Lấy kết quả nhanh nhất async function fetchWithTimeout(url, timeout) { const timeoutPromise = new Promise((_, reject) =\u003e { setTimeout(() =\u003e reject(new Error('Timeout!')), timeout); }); const fetchPromise = fetch(url); return Promise.race([fetchPromise, timeoutPromise]); } Xử lý đồng thời trong Java Java sử dụng Multi-threading để xử lý đồng thời.\nTạo Thread // Cách 1: Extend Thread class MyThread extends Thread { @Override public void run() { System.out.println(\"Thread đang chạy: \" + Thread.currentThread().getName()); } } // Cách 2: Implement Runnable class MyRunnable implements Runnable { @Override public void run() { System.out.println(\"Runnable đang chạy: \" + Thread.currentThread().getName()); } } // Cách 3: Lambda Thread thread = new Thread(() -\u003e { System.out.println(\"Lambda thread\"); }); // Sử dụng public static void main(String[] args) { new MyThread().start(); new Thread(new MyRunnable()).start(); Thread t = new Thread(() -\u003e System.out.println(\"Hello!\")); t.start(); } Thread Lifecycle NEW ──► RUNNABLE ──► RUNNING ──► TERMINATED\r↑ │\r│ ▼\r└── BLOCKED/WAITING Synchronization Khi nhiều thread truy cập cùng tài nguyên:\nclass Counter { private int count = 0; // KHÔNG AN TOÀN - Race condition public void increment() { count++; // Đọc, tăng, ghi - không atomic } // AN TOÀN - Synchronized public synchronized void safeIncrement() { count++; } public int getCount() { return count; } } // Demo race condition public class RaceConditionDemo { public static void main(String[] args) throws InterruptedException { Counter counter = new Counter(); Thread t1 = new Thread(() -\u003e { for (int i = 0; i \u003c 10000; i++) { counter.increment(); } }); Thread t2 = new Thread(() -\u003e { for (int i = 0; i \u003c 10000; i++) { counter.increment(); } }); t1.start(); t2.start(); t1.join(); t2.join(); // Kết quả có thể \u003c 20000 do race condition System.out.println(\"Count: \" + counter.getCount()); } } ExecutorService - Thread Pool import java.util.concurrent.*; public class ThreadPoolDemo { public static void main(String[] args) { // Tạo thread pool với 4 threads ExecutorService executor = Executors.newFixedThreadPool(4); // Submit các tasks for (int i = 0; i \u003c 10; i++) { final int taskId = i; executor.submit(() -\u003e { System.out.println(\"Task \" + taskId + \" chạy bởi \" + Thread.currentThread().getName()); try { Thread.sleep(1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); } }); } // Đợi hoàn thành và shutdown executor.shutdown(); try { executor.awaitTermination(1, TimeUnit.MINUTES); } catch (InterruptedException e) { e.printStackTrace(); } } } Future - Lấy kết quả từ async task import java.util.concurrent.*; public class FutureDemo { public static void main(String[] args) throws Exception { ExecutorService executor = Executors.newSingleThreadExecutor(); // Submit task trả về kết quả Future\u003cInteger\u003e future = executor.submit(() -\u003e { Thread.sleep(2000); return 42; }); System.out.println(\"Đang tính toán...\"); // Lấy kết quả (blocking) Integer result = future.get(); System.out.println(\"Kết quả: \" + result); executor.shutdown(); } } CompletableFuture - Async nâng cao import java.util.concurrent.*; public class CompletableFutureDemo { public static void main(String[] args) { // Async task CompletableFuture\u003cString\u003e future = CompletableFuture.supplyAsync(() -\u003e { try { Thread.sleep(1000); } catch (InterruptedException e) {} return \"Kết quả\"; }); // Chain operations future.thenApply(s -\u003e s.toUpperCase()) .thenAccept(s -\u003e System.out.println(\"Xử lý: \" + s)); // Chạy nhiều task song song CompletableFuture\u003cString\u003e task1 = CompletableFuture.supplyAsync(() -\u003e \"Task 1\"); CompletableFuture\u003cString\u003e task2 = CompletableFuture.supplyAsync(() -\u003e \"Task 2\"); CompletableFuture\u003cString\u003e task3 = CompletableFuture.supplyAsync(() -\u003e \"Task 3\"); CompletableFuture.allOf(task1, task2, task3).join(); System.out.println(\"Tất cả tasks hoàn thành!\"); } } So sánh JavaScript vs Java Khía cạnh JavaScript Java Model Single-threaded + Event Loop Multi-threaded Async Promise, async/await Future, CompletableFuture Parallel Worker threads (hạn chế) Thread, ThreadPool Sync Không cần synchronized, Lock Use case I/O bound, web CPU bound, server Best Practices JavaScript Sử dụng async/await thay vì callback hell Dùng Promise.all() cho các tác vụ độc lập Xử lý error với try/catch Tránh blocking operations Java Sử dụng ThreadPool thay vì tạo thread mới Luôn synchronize khi truy cập shared resources Dùng CompletableFuture cho async phức tạp Cẩn thận với deadlock Kết luận Bất đồng bộ và xử lý đồng thời là kỹ năng quan trọng trong lập trình hiện đại. JavaScript sử dụng Event Loop và Promises, trong khi Java dùng Multi-threading. Hiểu rõ cách hoạt động của từng mô hình giúp bạn viết code hiệu quả và tránh các lỗi phổ biến như race condition, deadlock.\nBài viết thuộc series Lập trình mạng nâng cao - Blog Ngô Phạm Ngọc Tú\n","wordCount":"1052","inLanguage":"vi","datePublished":"2025-12-14T10:00:00+07:00","dateModified":"2025-12-14T10:00:00+07:00","author":{"@type":"Person","name":"Ngô Phạm Ngọc Tú"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://hihi99s.github.io/blog-ca-nhan/posts/bat-dong-bo-xu-ly-dong-thoi/"},"publisher":{"@type":"Organization","name":"Blog cá nhân – Ngô Phạm Ngọc Tú","logo":{"@type":"ImageObject","url":"https://hihi99s.github.io/blog-ca-nhan/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=nav><div class=logo><a href=https://hihi99s.github.io/blog-ca-nhan/ accesskey=h title="Blog cá nhân – Ngô Phạm Ngọc Tú (Alt + H)">Blog cá nhân – Ngô Phạm Ngọc Tú</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
-<svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-<svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://hihi99s.github.io/blog-ca-nhan/ title=Home><span>Home</span></a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/posts/ title=Blog><span>Blog</span></a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/profile/ title=Profile><span>Profile</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">Bất đồng bộ và Xử lý đồng thời trong Lập trình</h1><div class=post-meta><span title='2025-12-14 10:00:00 +0700 +07'>14 tháng 12, 2025</span>&nbsp;·&nbsp;<span>Ngô Phạm Ngọc Tú</span></div></header><div class=post-content><h1 id=bất-đồng-bộ-và-xử-lý-đồng-thời-trong-lập-trình>Bất đồng bộ và Xử lý đồng thời trong Lập trình<a hidden class=anchor aria-hidden=true href=#bất-đồng-bộ-và-xử-lý-đồng-thời-trong-lập-trình>#</a></h1><p>Trong lập trình hiện đại, việc xử lý nhiều tác vụ cùng lúc là điều cần thiết. Bài viết này sẽ giải thích khái niệm <strong>bất đồng bộ (Asynchronous)</strong> và <strong>xử lý đồng thời (Concurrency)</strong> trong JavaScript và Java.</p><h2 id=đồng-bộ-vs-bất-đồng-bộ>Đồng bộ vs Bất đồng bộ<a hidden class=anchor aria-hidden=true href=#đồng-bộ-vs-bất-đồng-bộ>#</a></h2><h3 id=xử-lý-đồng-bộ-synchronous>Xử lý đồng bộ (Synchronous)<a hidden class=anchor aria-hidden=true href=#xử-lý-đồng-bộ-synchronous>#</a></h3><p>Các tác vụ thực hiện <strong>tuần tự</strong>, tác vụ sau phải chờ tác vụ trước hoàn thành:</p><pre tabindex=0><code>Tác vụ 1: ████████████████ (3 giây)
+<!DOCTYPE html>
+<html lang="vi">
+
+<head><script src="/blog-ca-nhan/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=blog-ca-nhan/livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bất đồng bộ và Xử lý đồng thời trong Lập trình – Blog cá nhân – Ngô Phạm Ngọc Tú</title>
+<meta name="description" content="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Bất đồng bộ và Xử lý đồng thời trong Lập trình – Blog cá nhân – Ngô Phạm Ngọc Tú</title>
+    <meta name="description" content="Bất đồng bộ và Xử lý đồng thời trong Lập trình
+Trong lập trình hiện đại, việc xử lý nhiều tác vụ cùng lúc là điều cần thiết. Bài viết này sẽ giải thích khái …">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --bg-gradient: linear-gradient(135deg, #0a0e1a 0%, #1a2332 50%, #0f172a 100%);
+            --card-bg: rgba(30, 41, 59, 0.6);
+            --card-glow: rgba(125, 211, 252, 0.1);
+            --text: #f8fafc;
+            --text-2nd: #e2e8f0;
+            --muted: #94a3b8;
+            --accent: #7dd3fc;
+            --accent-glow: rgba(125, 211, 252, 0.4);
+            --border: rgba(125, 211, 252, 0.1);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="light"] {
+            --bg: #f8fafc;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-glow: rgba(14, 165, 233, 0.1);
+            --text: #0f172a;
+            --text-2nd: #1e293b;
+            --muted: #64748b;
+            --accent: #0ea5e9;
+            --accent-glow: rgba(14, 165, 233, 0.3);
+            --border: rgba(14, 165, 233, 0.15);
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text);
+            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.8;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .back-nav {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 40px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            color: var(--text);
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-link:hover {
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px var(--card-glow);
+            transform: translateY(-4px);
+            text-decoration: none;
+        }
+
+        .back-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .back-link:hover::before {
+            left: 100%;
+        }
+
+        .article-header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .article-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--text) 0%, var(--accent) 50%, var(--text-2nd) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 1rem;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        .article-tags {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .tag {
+            background: var(--accent-glow);
+            color: var(--accent);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .tag:hover {
+            background: var(--accent);
+            color: #0f172a;
+            transform: translateY(-4px);
+        }
+
+        .article-content {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            padding: 48px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            animation: fadeInUp 1.2s ease-out 0.2s both;
+        }
+
+        .article-content h1,
+        .article-content h2,
+        .article-content h3,
+        .article-content h4 {
+            color: var(--accent);
+            margin: 40px 0 20px;
+            font-weight: 700;
+        }
+
+        .article-content h1 {
+            font-size: 2.2rem;
+        }
+
+        .article-content h2 {
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        .article-content h3 {
+            font-size: 1.5rem;
+        }
+
+        .article-content h4 {
+            font-size: 1.2rem;
+        }
+
+        .article-content p,
+        .article-content ul,
+        .article-content ol {
+            color: var(--text-2nd);
+            margin-bottom: 24px;
+        }
+
+        .article-content blockquote {
+            border-left: 5px solid var(--accent);
+            background: var(--accent-glow);
+            padding: 24px;
+            border-radius: 0 16px 16px 0;
+            margin: 32px 0;
+            font-style: italic;
+        }
+
+        .article-content pre {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.9));
+            border-radius: 20px;
+            padding: 32px;
+            overflow-x: auto;
+            margin: 32px 0;
+            border: 1px solid var(--border);
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .article-content pre code {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text);
+            background: transparent;
+            padding: 0;
+        }
+
+        .article-content code {
+            background: rgba(125, 211, 252, 0.15);
+            color: #f472b6;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .article-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .article-content th,
+        .article-content td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .article-content th {
+            background: rgba(125, 211, 252, 0.1);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            z-index: 1000;
+        }
+
+        .theme-toggle button {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--border);
+            color: var(--text);
+            padding: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 64px;
+            height: 64px;
+            font-size: 1.4rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle button:hover {
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: 0 20px 40px var(--card-glow);
+            border-color: var(--accent);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            .article-content {
+                padding: 32px;
+            }
+
+            .article-title {
+                font-size: 2.5rem;
+            }
+
+            .back-link {
+                padding: 14px 24px;
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root:not([data-theme]) {
+                --bg: #f8fafc;
+                --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+                --card-bg: rgba(255, 255, 255, 0.9);
+                --text: #0f172a;
+                --text-2nd: #1e293b;
+                --muted: #64748b;
+                --accent: #0ea5e9;
+                --border: rgba(14, 165, 233, 0.15);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <nav class="back-nav">
+            <a href="/blog-ca-nhan/posts/" class="back-link">← Quay lại danh sách bài viết</a>
+        </nav>
+
+        <header class="article-header">
+            <h1 class="article-title">Bất đồng bộ và Xử lý đồng thời trong Lập trình</h1>
+            <div class="article-meta">
+                <span>📅 14/12/2025</span>
+                <span>⏱️ 5 phút đọc</span>
+                <span>📁 Lập trình mạng</span>
+            </div>
+            
+            <div class="article-tags">
+                
+                <span class="tag">#JavaScript</span>
+                
+                <span class="tag">#Java</span>
+                
+                <span class="tag">#Async</span>
+                
+                <span class="tag">#Concurrency</span>
+                
+            </div>
+            
+        </header>
+
+        <article class="article-content">
+            <h1 id="bất-đồng-bộ-và-xử-lý-đồng-thời-trong-lập-trình">Bất đồng bộ và Xử lý đồng thời trong Lập trình</h1>
+<p>Trong lập trình hiện đại, việc xử lý nhiều tác vụ cùng lúc là điều cần thiết. Bài viết này sẽ giải thích khái niệm <strong>bất đồng bộ (Asynchronous)</strong> và <strong>xử lý đồng thời (Concurrency)</strong> trong JavaScript và Java.</p>
+<h2 id="đồng-bộ-vs-bất-đồng-bộ">Đồng bộ vs Bất đồng bộ</h2>
+<h3 id="xử-lý-đồng-bộ-synchronous">Xử lý đồng bộ (Synchronous)</h3>
+<p>Các tác vụ thực hiện <strong>tuần tự</strong>, tác vụ sau phải chờ tác vụ trước hoàn thành:</p>
+<pre tabindex="0"><code>Tác vụ 1: ████████████████ (3 giây)
 Tác vụ 2:                  ████████████████ (3 giây)
 Tác vụ 3:                                  ████████████████ (3 giây)
                                            ↓
 Tổng thời gian: 9 giây
-</code></pre><h3 id=xử-lý-bất-đồng-bộ-asynchronous>Xử lý bất đồng bộ (Asynchronous)<a hidden class=anchor aria-hidden=true href=#xử-lý-bất-đồng-bộ-asynchronous>#</a></h3><p>Các tác vụ có thể <strong>chạy đồng thời</strong>, không cần chờ nhau:</p><pre tabindex=0><code>Tác vụ 1: ████████████████ (3 giây)
+</code></pre><h3 id="xử-lý-bất-đồng-bộ-asynchronous">Xử lý bất đồng bộ (Asynchronous)</h3>
+<p>Các tác vụ có thể <strong>chạy đồng thời</strong>, không cần chờ nhau:</p>
+<pre tabindex="0"><code>Tác vụ 1: ████████████████ (3 giây)
 Tác vụ 2: ████████████████ (3 giây)
 Tác vụ 3: ████████████████ (3 giây)
                           ↓
 Tổng thời gian: ~3 giây
-</code></pre><h2 id=bất-đồng-bộ-trong-javascript>Bất đồng bộ trong JavaScript<a hidden class=anchor aria-hidden=true href=#bất-đồng-bộ-trong-javascript>#</a></h2><p>JavaScript là <strong>single-threaded</strong> nhưng sử dụng <strong>Event Loop</strong> để xử lý bất đồng bộ.</p><h3 id=event-loop>Event Loop<a hidden class=anchor aria-hidden=true href=#event-loop>#</a></h3><pre tabindex=0><code>┌───────────────────────────┐
+</code></pre><h2 id="bất-đồng-bộ-trong-javascript">Bất đồng bộ trong JavaScript</h2>
+<p>JavaScript là <strong>single-threaded</strong> nhưng sử dụng <strong>Event Loop</strong> để xử lý bất đồng bộ.</p>
+<h3 id="event-loop">Event Loop</h3>
+<pre tabindex="0"><code>┌───────────────────────────┐
 │      Call Stack           │ ← Thực thi code
 └───────────────────────────┘
             ↕
@@ -34,224 +454,330 @@ Tổng thời gian: ~3 giây
 ┌───────────────────────────┐
 │   Web APIs                │ ← setTimeout, fetch, etc.
 └───────────────────────────┘
-</code></pre><h3 id=callback>Callback<a hidden class=anchor aria-hidden=true href=#callback>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;Bắt đầu&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>setTimeout</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;Sau 2 giây&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>},</span> <span class=mi>2000</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;Tiếp tục&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=c1>// Output:
-</span></span></span><span class=line><span class=cl><span class=c1>// Bắt đầu
-</span></span></span><span class=line><span class=cl><span class=c1>// Tiếp tục
-</span></span></span><span class=line><span class=cl><span class=c1>// Sau 2 giây (sau 2s)
-</span></span></span></code></pre></div><h3 id=promise>Promise<a hidden class=anchor aria-hidden=true href=#promise>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kd>function</span> <span class=nx>fetchData</span><span class=p>()</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=k>new</span> <span class=nb>Promise</span><span class=p>((</span><span class=nx>resolve</span><span class=p>,</span> <span class=nx>reject</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=nx>setTimeout</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>success</span> <span class=o>=</span> <span class=kc>true</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=nx>success</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>                <span class=nx>resolve</span><span class=p>({</span> <span class=nx>data</span><span class=o>:</span> <span class=s2>&#34;Dữ liệu từ server&#34;</span> <span class=p>});</span>
-</span></span><span class=line><span class=cl>            <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>                <span class=nx>reject</span><span class=p>(</span><span class=k>new</span> <span class=nb>Error</span><span class=p>(</span><span class=s2>&#34;Lỗi fetch&#34;</span><span class=p>));</span>
-</span></span><span class=line><span class=cl>            <span class=p>}</span>
-</span></span><span class=line><span class=cl>        <span class=p>},</span> <span class=mi>1000</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=p>});</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=c1>// Sử dụng
-</span></span></span><span class=line><span class=cl><span class=nx>fetchData</span><span class=p>()</span>
-</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>then</span><span class=p>(</span><span class=nx>result</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>result</span><span class=p>.</span><span class=nx>data</span><span class=p>))</span>
-</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=k>catch</span><span class=p>(</span><span class=nx>error</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>error</span><span class=p>(</span><span class=nx>error</span><span class=p>));</span>
-</span></span></code></pre></div><h3 id=asyncawait>Async/Await<a hidden class=anchor aria-hidden=true href=#asyncawait>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>main</span><span class=p>()</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=k>try</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;Bắt đầu fetch...&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>        <span class=kr>const</span> <span class=nx>result</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>fetchData</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>        <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;Kết quả:&#34;</span><span class=p>,</span> <span class=nx>result</span><span class=p>.</span><span class=nx>data</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=k>catch</span> <span class=p>(</span><span class=nx>error</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=nx>console</span><span class=p>.</span><span class=nx>error</span><span class=p>(</span><span class=s2>&#34;Lỗi:&#34;</span><span class=p>,</span> <span class=nx>error</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>main</span><span class=p>();</span>
-</span></span></code></pre></div><h3 id=promiseall---chạy-song-song>Promise.all - Chạy song song<a hidden class=anchor aria-hidden=true href=#promiseall---chạy-song-song>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>fetchMultiple</span><span class=p>()</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>start</span> <span class=o>=</span> <span class=nb>Date</span><span class=p>.</span><span class=nx>now</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=c1>// Chạy song song
-</span></span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=p>[</span><span class=nx>users</span><span class=p>,</span> <span class=nx>posts</span><span class=p>,</span> <span class=nx>comments</span><span class=p>]</span> <span class=o>=</span> <span class=kr>await</span> <span class=nb>Promise</span><span class=p>.</span><span class=nx>all</span><span class=p>([</span>
-</span></span><span class=line><span class=cl>        <span class=nx>fetch</span><span class=p>(</span><span class=s1>&#39;/api/users&#39;</span><span class=p>).</span><span class=nx>then</span><span class=p>(</span><span class=nx>r</span> <span class=p>=&gt;</span> <span class=nx>r</span><span class=p>.</span><span class=nx>json</span><span class=p>()),</span>
-</span></span><span class=line><span class=cl>        <span class=nx>fetch</span><span class=p>(</span><span class=s1>&#39;/api/posts&#39;</span><span class=p>).</span><span class=nx>then</span><span class=p>(</span><span class=nx>r</span> <span class=p>=&gt;</span> <span class=nx>r</span><span class=p>.</span><span class=nx>json</span><span class=p>()),</span>
-</span></span><span class=line><span class=cl>        <span class=nx>fetch</span><span class=p>(</span><span class=s1>&#39;/api/comments&#39;</span><span class=p>).</span><span class=nx>then</span><span class=p>(</span><span class=nx>r</span> <span class=p>=&gt;</span> <span class=nx>r</span><span class=p>.</span><span class=nx>json</span><span class=p>())</span>
-</span></span><span class=line><span class=cl>    <span class=p>]);</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=sb>`Hoàn thành trong </span><span class=si>${</span><span class=nb>Date</span><span class=p>.</span><span class=nx>now</span><span class=p>()</span> <span class=o>-</span> <span class=nx>start</span><span class=si>}</span><span class=sb>ms`</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=p>{</span> <span class=nx>users</span><span class=p>,</span> <span class=nx>posts</span><span class=p>,</span> <span class=nx>comments</span> <span class=p>};</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></div><h3 id=promiserace---lấy-kết-quả-nhanh-nhất>Promise.race - Lấy kết quả nhanh nhất<a hidden class=anchor aria-hidden=true href=#promiserace---lấy-kết-quả-nhanh-nhất>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>fetchWithTimeout</span><span class=p>(</span><span class=nx>url</span><span class=p>,</span> <span class=nx>timeout</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>timeoutPromise</span> <span class=o>=</span> <span class=k>new</span> <span class=nb>Promise</span><span class=p>((</span><span class=nx>_</span><span class=p>,</span> <span class=nx>reject</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=nx>setTimeout</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=nx>reject</span><span class=p>(</span><span class=k>new</span> <span class=nb>Error</span><span class=p>(</span><span class=s1>&#39;Timeout!&#39;</span><span class=p>)),</span> <span class=nx>timeout</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=p>});</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>fetchPromise</span> <span class=o>=</span> <span class=nx>fetch</span><span class=p>(</span><span class=nx>url</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nb>Promise</span><span class=p>.</span><span class=nx>race</span><span class=p>([</span><span class=nx>fetchPromise</span><span class=p>,</span> <span class=nx>timeoutPromise</span><span class=p>]);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></div><h2 id=xử-lý-đồng-thời-trong-java>Xử lý đồng thời trong Java<a hidden class=anchor aria-hidden=true href=#xử-lý-đồng-thời-trong-java>#</a></h2><p>Java sử dụng <strong>Multi-threading</strong> để xử lý đồng thời.</p><h3 id=tạo-thread>Tạo Thread<a hidden class=anchor aria-hidden=true href=#tạo-thread>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=c1>// Cách 1: Extend Thread</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kd>class</span> <span class=nc>MyThread</span><span class=w> </span><span class=kd>extends</span><span class=w> </span><span class=n>Thread</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nd>@Override</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>run</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Thread đang chạy: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>Thread</span><span class=p>.</span><span class=na>currentThread</span><span class=p>().</span><span class=na>getName</span><span class=p>());</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=c1>// Cách 2: Implement Runnable</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kd>class</span> <span class=nc>MyRunnable</span><span class=w> </span><span class=kd>implements</span><span class=w> </span><span class=n>Runnable</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nd>@Override</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>run</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Runnable đang chạy: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>Thread</span><span class=p>.</span><span class=na>currentThread</span><span class=p>().</span><span class=na>getName</span><span class=p>());</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=c1>// Cách 3: Lambda</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=n>Thread</span><span class=w> </span><span class=n>thread</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Thread</span><span class=p>(()</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Lambda thread&#34;</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=p>});</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=c1>// Sử dụng</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>new</span><span class=w> </span><span class=n>MyThread</span><span class=p>().</span><span class=na>start</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>new</span><span class=w> </span><span class=n>Thread</span><span class=p>(</span><span class=k>new</span><span class=w> </span><span class=n>MyRunnable</span><span class=p>()).</span><span class=na>start</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>Thread</span><span class=w> </span><span class=n>t</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Thread</span><span class=p>(()</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Hello!&#34;</span><span class=p>));</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>t</span><span class=p>.</span><span class=na>start</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
-</span></span></span></code></pre></div><h3 id=thread-lifecycle>Thread Lifecycle<a hidden class=anchor aria-hidden=true href=#thread-lifecycle>#</a></h3><pre tabindex=0><code>NEW ──► RUNNABLE ──► RUNNING ──► TERMINATED
+</code></pre><h3 id="callback">Callback</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Bắt đầu&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">setTimeout</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Sau 2 giây&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Tiếp tục&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Output:
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Bắt đầu
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Tiếp tục
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Sau 2 giây (sau 2s)
+</span></span></span></code></pre></div><h3 id="promise">Promise</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">fetchData</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">setTimeout</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kr">const</span> <span class="nx">success</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">success</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">resolve</span><span class="p">({</span> <span class="nx">data</span><span class="o">:</span> <span class="s2">&#34;Dữ liệu từ server&#34;</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&#34;Lỗi fetch&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span> <span class="mi">1000</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Sử dụng
+</span></span></span><span class="line"><span class="cl"><span class="nx">fetchData</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">result</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">));</span>
+</span></span></code></pre></div><h3 id="asyncawait">Async/Await</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Bắt đầu fetch...&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetchData</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Kết quả:&#34;</span><span class="p">,</span> <span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&#34;Lỗi:&#34;</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">main</span><span class="p">();</span>
+</span></span></code></pre></div><h3 id="promiseall---chạy-song-song">Promise.all - Chạy song song</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">fetchMultiple</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">start</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// Chạy song song
+</span></span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">[</span><span class="nx">users</span><span class="p">,</span> <span class="nx">posts</span><span class="p">,</span> <span class="nx">comments</span><span class="p">]</span> <span class="o">=</span> <span class="kr">await</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/api/users&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">r</span> <span class="p">=&gt;</span> <span class="nx">r</span><span class="p">.</span><span class="nx">json</span><span class="p">()),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/api/posts&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">r</span> <span class="p">=&gt;</span> <span class="nx">r</span><span class="p">.</span><span class="nx">json</span><span class="p">()),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/api/comments&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">r</span> <span class="p">=&gt;</span> <span class="nx">r</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Hoàn thành trong </span><span class="si">${</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">start</span><span class="si">}</span><span class="sb">ms`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">users</span><span class="p">,</span> <span class="nx">posts</span><span class="p">,</span> <span class="nx">comments</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="promiserace---lấy-kết-quả-nhanh-nhất">Promise.race - Lấy kết quả nhanh nhất</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">fetchWithTimeout</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">timeout</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">timeoutPromise</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">_</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">setTimeout</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Timeout!&#39;</span><span class="p">)),</span> <span class="nx">timeout</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">fetchPromise</span> <span class="o">=</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">race</span><span class="p">([</span><span class="nx">fetchPromise</span><span class="p">,</span> <span class="nx">timeoutPromise</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="xử-lý-đồng-thời-trong-java">Xử lý đồng thời trong Java</h2>
+<p>Java sử dụng <strong>Multi-threading</strong> để xử lý đồng thời.</p>
+<h3 id="tạo-thread">Tạo Thread</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Cách 1: Extend Thread</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">MyThread</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Thread</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">run</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Thread đang chạy: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">getName</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Cách 2: Implement Runnable</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">MyRunnable</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Runnable</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">run</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Runnable đang chạy: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">getName</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Cách 3: Lambda</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Thread</span><span class="w"> </span><span class="n">thread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Thread</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Lambda thread&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Sử dụng</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">MyThread</span><span class="p">().</span><span class="na">start</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">Thread</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">MyRunnable</span><span class="p">()).</span><span class="na">start</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Thread</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Thread</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Hello!&#34;</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">t</span><span class="p">.</span><span class="na">start</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="thread-lifecycle">Thread Lifecycle</h3>
+<pre tabindex="0"><code>NEW ──► RUNNABLE ──► RUNNING ──► TERMINATED
               ↑         │
               │         ▼
               └── BLOCKED/WAITING
-</code></pre><h3 id=synchronization>Synchronization<a hidden class=anchor aria-hidden=true href=#synchronization>#</a></h3><p>Khi nhiều thread truy cập cùng tài nguyên:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>class</span> <span class=nc>Counter</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>count</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>0</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// KHÔNG AN TOÀN - Race condition</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>increment</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>count</span><span class=o>++</span><span class=p>;</span><span class=w>  </span><span class=c1>// Đọc, tăng, ghi - không atomic</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// AN TOÀN - Synchronized</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>synchronized</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>safeIncrement</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>count</span><span class=o>++</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=nf>getCount</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>count</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=c1>// Demo race condition</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>RaceConditionDemo</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>InterruptedException</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Counter</span><span class=w> </span><span class=n>counter</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Counter</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Thread</span><span class=w> </span><span class=n>t1</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Thread</span><span class=p>(()</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>for</span><span class=w> </span><span class=p>(</span><span class=kt>int</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>0</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>&lt;</span><span class=w> </span><span class=n>10000</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=o>++</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>counter</span><span class=p>.</span><span class=na>increment</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>});</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Thread</span><span class=w> </span><span class=n>t2</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Thread</span><span class=p>(()</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>for</span><span class=w> </span><span class=p>(</span><span class=kt>int</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>0</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>&lt;</span><span class=w> </span><span class=n>10000</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=o>++</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>counter</span><span class=p>.</span><span class=na>increment</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>});</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>t1</span><span class=p>.</span><span class=na>start</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>t2</span><span class=p>.</span><span class=na>start</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>t1</span><span class=p>.</span><span class=na>join</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>t2</span><span class=p>.</span><span class=na>join</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// Kết quả có thể &lt; 20000 do race condition</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Count: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>counter</span><span class=p>.</span><span class=na>getCount</span><span class=p>());</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
-</span></span></span></code></pre></div><h3 id=executorservice---thread-pool>ExecutorService - Thread Pool<a hidden class=anchor aria-hidden=true href=#executorservice---thread-pool>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.util.concurrent.*</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>ThreadPoolDemo</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// Tạo thread pool với 4 threads</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ExecutorService</span><span class=w> </span><span class=n>executor</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Executors</span><span class=p>.</span><span class=na>newFixedThreadPool</span><span class=p>(</span><span class=n>4</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// Submit các tasks</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>for</span><span class=w> </span><span class=p>(</span><span class=kt>int</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>0</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>&lt;</span><span class=w> </span><span class=n>10</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=o>++</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kd>final</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>taskId</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>i</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>executor</span><span class=p>.</span><span class=na>submit</span><span class=p>(()</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Task &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>taskId</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=s>&#34; chạy bởi &#34;</span><span class=w> </span><span class=o>+</span><span class=w> 
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>Thread</span><span class=p>.</span><span class=na>currentThread</span><span class=p>().</span><span class=na>getName</span><span class=p>());</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>Thread</span><span class=p>.</span><span class=na>sleep</span><span class=p>(</span><span class=n>1000</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>InterruptedException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>Thread</span><span class=p>.</span><span class=na>currentThread</span><span class=p>().</span><span class=na>interrupt</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>});</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// Đợi hoàn thành và shutdown</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>executor</span><span class=p>.</span><span class=na>shutdown</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>executor</span><span class=p>.</span><span class=na>awaitTermination</span><span class=p>(</span><span class=n>1</span><span class=p>,</span><span class=w> </span><span class=n>TimeUnit</span><span class=p>.</span><span class=na>MINUTES</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>InterruptedException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>e</span><span class=p>.</span><span class=na>printStackTrace</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
-</span></span></span></code></pre></div><h3 id=future---lấy-kết-quả-từ-async-task>Future - Lấy kết quả từ async task<a hidden class=anchor aria-hidden=true href=#future---lấy-kết-quả-từ-async-task>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.util.concurrent.*</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>FutureDemo</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ExecutorService</span><span class=w> </span><span class=n>executor</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Executors</span><span class=p>.</span><span class=na>newSingleThreadExecutor</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// Submit task trả về kết quả</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Future</span><span class=o>&lt;</span><span class=n>Integer</span><span class=o>&gt;</span><span class=w> </span><span class=n>future</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>executor</span><span class=p>.</span><span class=na>submit</span><span class=p>(()</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Thread</span><span class=p>.</span><span class=na>sleep</span><span class=p>(</span><span class=n>2000</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=n>42</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>});</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Đang tính toán...&#34;</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// Lấy kết quả (blocking)</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Integer</span><span class=w> </span><span class=n>result</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>future</span><span class=p>.</span><span class=na>get</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Kết quả: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>result</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>executor</span><span class=p>.</span><span class=na>shutdown</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
-</span></span></span></code></pre></div><h3 id=completablefuture---async-nâng-cao>CompletableFuture - Async nâng cao<a hidden class=anchor aria-hidden=true href=#completablefuture---async-nâng-cao>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.util.concurrent.*</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>CompletableFutureDemo</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// Async task</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>CompletableFuture</span><span class=o>&lt;</span><span class=n>String</span><span class=o>&gt;</span><span class=w> </span><span class=n>future</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>CompletableFuture</span><span class=p>.</span><span class=na>supplyAsync</span><span class=p>(()</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>Thread</span><span class=p>.</span><span class=na>sleep</span><span class=p>(</span><span class=n>1000</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>InterruptedException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=s>&#34;Kết quả&#34;</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>});</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// Chain operations</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>future</span><span class=p>.</span><span class=na>thenApply</span><span class=p>(</span><span class=n>s</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=n>s</span><span class=p>.</span><span class=na>toUpperCase</span><span class=p>())</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>              </span><span class=p>.</span><span class=na>thenAccept</span><span class=p>(</span><span class=n>s</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Xử lý: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>s</span><span class=p>));</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// Chạy nhiều task song song</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>CompletableFuture</span><span class=o>&lt;</span><span class=n>String</span><span class=o>&gt;</span><span class=w> </span><span class=n>task1</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>CompletableFuture</span><span class=p>.</span><span class=na>supplyAsync</span><span class=p>(()</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=s>&#34;Task 1&#34;</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>CompletableFuture</span><span class=o>&lt;</span><span class=n>String</span><span class=o>&gt;</span><span class=w> </span><span class=n>task2</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>CompletableFuture</span><span class=p>.</span><span class=na>supplyAsync</span><span class=p>(()</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=s>&#34;Task 2&#34;</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>CompletableFuture</span><span class=o>&lt;</span><span class=n>String</span><span class=o>&gt;</span><span class=w> </span><span class=n>task3</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>CompletableFuture</span><span class=p>.</span><span class=na>supplyAsync</span><span class=p>(()</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=s>&#34;Task 3&#34;</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>CompletableFuture</span><span class=p>.</span><span class=na>allOf</span><span class=p>(</span><span class=n>task1</span><span class=p>,</span><span class=w> </span><span class=n>task2</span><span class=p>,</span><span class=w> </span><span class=n>task3</span><span class=p>).</span><span class=na>join</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Tất cả tasks hoàn thành!&#34;</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
-</span></span></span></code></pre></div><h2 id=so-sánh-javascript-vs-java>So sánh JavaScript vs Java<a hidden class=anchor aria-hidden=true href=#so-sánh-javascript-vs-java>#</a></h2><table><thead><tr><th>Khía cạnh</th><th>JavaScript</th><th>Java</th></tr></thead><tbody><tr><td><strong>Model</strong></td><td>Single-threaded + Event Loop</td><td>Multi-threaded</td></tr><tr><td><strong>Async</strong></td><td>Promise, async/await</td><td>Future, CompletableFuture</td></tr><tr><td><strong>Parallel</strong></td><td>Worker threads (hạn chế)</td><td>Thread, ThreadPool</td></tr><tr><td><strong>Sync</strong></td><td>Không cần</td><td>synchronized, Lock</td></tr><tr><td><strong>Use case</strong></td><td>I/O bound, web</td><td>CPU bound, server</td></tr></tbody></table><h2 id=best-practices>Best Practices<a hidden class=anchor aria-hidden=true href=#best-practices>#</a></h2><h3 id=javascript>JavaScript<a hidden class=anchor aria-hidden=true href=#javascript>#</a></h3><ol><li>Sử dụng <code>async/await</code> thay vì callback hell</li><li>Dùng <code>Promise.all()</code> cho các tác vụ độc lập</li><li>Xử lý error với try/catch</li><li>Tránh blocking operations</li></ol><h3 id=java>Java<a hidden class=anchor aria-hidden=true href=#java>#</a></h3><ol><li>Sử dụng ThreadPool thay vì tạo thread mới</li><li>Luôn synchronize khi truy cập shared resources</li><li>Dùng <code>CompletableFuture</code> cho async phức tạp</li><li>Cẩn thận với deadlock</li></ol><h2 id=kết-luận>Kết luận<a hidden class=anchor aria-hidden=true href=#kết-luận>#</a></h2><p><strong>Bất đồng bộ</strong> và <strong>xử lý đồng thời</strong> là kỹ năng quan trọng trong lập trình hiện đại. JavaScript sử dụng Event Loop và Promises, trong khi Java dùng Multi-threading. Hiểu rõ cách hoạt động của từng mô hình giúp bạn viết code hiệu quả và tránh các lỗi phổ biến như race condition, deadlock.</p><hr><p><em>Bài viết thuộc series Lập trình mạng nâng cao - Blog Ngô Phạm Ngọc Tú</em></p></div><footer class=post-footer><ul class=post-tags><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/javascript/>JavaScript</a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/java/>Java</a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/async/>Async</a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/concurrency/>Concurrency</a></li></ul></footer></article></main><footer class=footer><span>&copy; 2025 <a href=https://hihi99s.github.io/blog-ca-nhan/>Blog cá nhân – Ngô Phạm Ngọc Tú</a></span> ·
-<span>Powered by
-<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
-<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentColor"><path d="M12 6H0l6-6z"/></svg>
-</a><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script></body></html>
+</code></pre><h3 id="synchronization">Synchronization</h3>
+<p>Khi nhiều thread truy cập cùng tài nguyên:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">Counter</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// KHÔNG AN TOÀN - Race condition</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">increment</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">count</span><span class="o">++</span><span class="p">;</span><span class="w">  </span><span class="c1">// Đọc, tăng, ghi - không atomic</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// AN TOÀN - Synchronized</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">synchronized</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">safeIncrement</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">count</span><span class="o">++</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getCount</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">count</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Demo race condition</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">RaceConditionDemo</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">InterruptedException</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Counter</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Counter</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Thread</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Thread</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">10000</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">counter</span><span class="p">.</span><span class="na">increment</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Thread</span><span class="w"> </span><span class="n">t2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Thread</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">10000</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">counter</span><span class="p">.</span><span class="na">increment</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">t1</span><span class="p">.</span><span class="na">start</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">t2</span><span class="p">.</span><span class="na">start</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">t1</span><span class="p">.</span><span class="na">join</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">t2</span><span class="p">.</span><span class="na">join</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Kết quả có thể &lt; 20000 do race condition</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Count: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">counter</span><span class="p">.</span><span class="na">getCount</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="executorservice---thread-pool">ExecutorService - Thread Pool</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.*</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ThreadPoolDemo</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Tạo thread pool với 4 threads</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">ExecutorService</span><span class="w"> </span><span class="n">executor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Executors</span><span class="p">.</span><span class="na">newFixedThreadPool</span><span class="p">(</span><span class="n">4</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Submit các tasks</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">10</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">taskId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">executor</span><span class="p">.</span><span class="na">submit</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Task &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">taskId</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; chạy bởi &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">getName</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="n">1000</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">InterruptedException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">interrupt</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Đợi hoàn thành và shutdown</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="na">shutdown</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">executor</span><span class="p">.</span><span class="na">awaitTermination</span><span class="p">(</span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">TimeUnit</span><span class="p">.</span><span class="na">MINUTES</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">InterruptedException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="future---lấy-kết-quả-từ-async-task">Future - Lấy kết quả từ async task</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.*</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">FutureDemo</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">ExecutorService</span><span class="w"> </span><span class="n">executor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Executors</span><span class="p">.</span><span class="na">newSingleThreadExecutor</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Submit task trả về kết quả</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Future</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">future</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">executor</span><span class="p">.</span><span class="na">submit</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="n">2000</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">42</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Đang tính toán...&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Lấy kết quả (blocking)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Integer</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">future</span><span class="p">.</span><span class="na">get</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Kết quả: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">result</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="na">shutdown</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="completablefuture---async-nâng-cao">CompletableFuture - Async nâng cao</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.*</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CompletableFutureDemo</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Async task</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">future</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CompletableFuture</span><span class="p">.</span><span class="na">supplyAsync</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="n">1000</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">InterruptedException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="s">&#34;Kết quả&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Chain operations</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">future</span><span class="p">.</span><span class="na">thenApply</span><span class="p">(</span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="na">toUpperCase</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">              </span><span class="p">.</span><span class="na">thenAccept</span><span class="p">(</span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Xử lý: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">s</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Chạy nhiều task song song</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">task1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CompletableFuture</span><span class="p">.</span><span class="na">supplyAsync</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&#34;Task 1&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">task2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CompletableFuture</span><span class="p">.</span><span class="na">supplyAsync</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&#34;Task 2&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">task3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CompletableFuture</span><span class="p">.</span><span class="na">supplyAsync</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&#34;Task 3&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">CompletableFuture</span><span class="p">.</span><span class="na">allOf</span><span class="p">(</span><span class="n">task1</span><span class="p">,</span><span class="w"> </span><span class="n">task2</span><span class="p">,</span><span class="w"> </span><span class="n">task3</span><span class="p">).</span><span class="na">join</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Tất cả tasks hoàn thành!&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="so-sánh-javascript-vs-java">So sánh JavaScript vs Java</h2>
+<table>
+  <thead>
+      <tr>
+          <th>Khía cạnh</th>
+          <th>JavaScript</th>
+          <th>Java</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Model</strong></td>
+          <td>Single-threaded + Event Loop</td>
+          <td>Multi-threaded</td>
+      </tr>
+      <tr>
+          <td><strong>Async</strong></td>
+          <td>Promise, async/await</td>
+          <td>Future, CompletableFuture</td>
+      </tr>
+      <tr>
+          <td><strong>Parallel</strong></td>
+          <td>Worker threads (hạn chế)</td>
+          <td>Thread, ThreadPool</td>
+      </tr>
+      <tr>
+          <td><strong>Sync</strong></td>
+          <td>Không cần</td>
+          <td>synchronized, Lock</td>
+      </tr>
+      <tr>
+          <td><strong>Use case</strong></td>
+          <td>I/O bound, web</td>
+          <td>CPU bound, server</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="javascript">JavaScript</h3>
+<ol>
+<li>Sử dụng <code>async/await</code> thay vì callback hell</li>
+<li>Dùng <code>Promise.all()</code> cho các tác vụ độc lập</li>
+<li>Xử lý error với try/catch</li>
+<li>Tránh blocking operations</li>
+</ol>
+<h3 id="java">Java</h3>
+<ol>
+<li>Sử dụng ThreadPool thay vì tạo thread mới</li>
+<li>Luôn synchronize khi truy cập shared resources</li>
+<li>Dùng <code>CompletableFuture</code> cho async phức tạp</li>
+<li>Cẩn thận với deadlock</li>
+</ol>
+<h2 id="kết-luận">Kết luận</h2>
+<p><strong>Bất đồng bộ</strong> và <strong>xử lý đồng thời</strong> là kỹ năng quan trọng trong lập trình hiện đại. JavaScript sử dụng Event Loop và Promises, trong khi Java dùng Multi-threading. Hiểu rõ cách hoạt động của từng mô hình giúp bạn viết code hiệu quả và tránh các lỗi phổ biến như race condition, deadlock.</p>
+<hr>
+<p><em>Bài viết thuộc series Lập trình mạng nâng cao - Blog Ngô Phạm Ngọc Tú</em></p>
+
+        </article>
+    </div>
+
+    <div class="theme-toggle">
+        <button id="btn-theme" aria-label="Chuyển đổi theme">🌙</button>
+    </div>
+
+    <script>
+        const root = document.documentElement;
+        const btn = document.getElementById('btn-theme');
+        const stored = localStorage.getItem('theme');
+        let isDark = !stored || stored !== 'light';
+
+        function applyTheme(isDarkMode) {
+            if (isDarkMode) {
+                root.removeAttribute('data-theme');
+                btn.textContent = '☀️';
+            } else {
+                root.setAttribute('data-theme', 'light');
+                btn.textContent = '🌙';
+            }
+        }
+
+        if (stored) isDark = stored !== 'light';
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches) isDark = true;
+        applyTheme(isDark);
+
+        btn.addEventListener('click', () => {
+            isDark = !isDark;
+            applyTheme(isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+    </script>
+</body>
+
+</html>
+
+</body>
+
+</html>
