@@ -1,0 +1,1167 @@
+<!doctype html><html lang=vi dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Socket Programming trong Java: Hướng dẫn chi tiết | Blog cá nhân – Ngô Phạm Ngọc Tú</title><meta name=keywords content="Java,Socket,Network,TCP"><meta name=description content='Socket Programming trong Java: Hướng dẫn chi tiết
+Socket là endpoint của kết nối mạng hai chiều giữa hai chương trình chạy trên mạng. Trong Java, package java.net cung cấp các class để làm việc với socket một cách dễ dàng.
+Khái niệm cơ bản
+Socket là gì?
+Socket là sự kết hợp của:
+
+IP Address: Xác định máy tính trên mạng
+Port Number: Xác định ứng dụng trên máy tính (0-65535)
+
+Socket = IP Address + Port Number
+Ví dụ: 192.168.1.100:8080
+Mô hình Client-Server
+┌──────────────┐                    ┌──────────────┐
+│    Client    │                    │    Server    │
+├──────────────┤                    ├──────────────┤
+│ Socket       │◄──── Kết nối ─────►│ ServerSocket │
+│              │                    │     ↓        │
+│              │◄═══ Giao tiếp ════►│   Socket     │
+└──────────────┘                    └──────────────┘
+TCP Socket trong Java
+Server Side
+import java.net.*;
+import java.io.*;
+
+public class TCPServer {
+    public static void main(String[] args) {
+        int port = 8080;
+        
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+            System.out.println("Server đang lắng nghe tại port " + port);
+            
+            while (true) {
+                // Chờ client kết nối
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Client đã kết nối: " + 
+                    clientSocket.getInetAddress().getHostAddress());
+                
+                // Xử lý client trong thread riêng
+                new ClientHandler(clientSocket).start();
+            }
+            
+        } catch (IOException e) {
+            System.err.println("Lỗi server: " + e.getMessage());
+        }
+    }
+}
+
+class ClientHandler extends Thread {
+    private Socket clientSocket;
+    
+    public ClientHandler(Socket socket) {
+        this.clientSocket = socket;
+    }
+    
+    @Override
+    public void run() {
+        try (
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(clientSocket.getInputStream()));
+            PrintWriter out = new PrintWriter(
+                clientSocket.getOutputStream(), true)
+        ) {
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                System.out.println("Nhận được: " + inputLine);
+                
+                // Echo back với xử lý
+                String response = "Server nhận: " + inputLine.toUpperCase();
+                out.println(response);
+                
+                if ("bye".equalsIgnoreCase(inputLine)) {
+                    break;
+                }
+            }
+            
+        } catch (IOException e) {
+            System.err.println("Lỗi xử lý client: " + e.getMessage());
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+Client Side
+import java.net.*;
+import java.io.*;
+import java.util.Scanner;
+
+public class TCPClient {
+    public static void main(String[] args) {
+        String serverAddress = "localhost";
+        int port = 8080;
+        
+        try (
+            Socket socket = new Socket(serverAddress, port);
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(socket.getInputStream()));
+            Scanner scanner = new Scanner(System.in)
+        ) {
+            System.out.println("Đã kết nối tới server!");
+            System.out.println("Nhập tin nhắn (gõ &#39;bye&#39; để thoát):");
+            
+            String userInput;
+            while (true) {
+                System.out.print("Bạn: ");
+                userInput = scanner.nextLine();
+                
+                // Gửi tới server
+                out.println(userInput);
+                
+                // Nhận phản hồi
+                String response = in.readLine();
+                System.out.println("Server: " + response);
+                
+                if ("bye".equalsIgnoreCase(userInput)) {
+                    break;
+                }
+            }
+            
+        } catch (UnknownHostException e) {
+            System.err.println("Không tìm thấy server: " + serverAddress);
+        } catch (IOException e) {
+            System.err.println("Lỗi I/O: " + e.getMessage());
+        }
+    }
+}
+UDP Socket trong Java
+UDP Server
+import java.net.*;
+
+public class UDPServer {
+    public static void main(String[] args) {
+        int port = 9090;
+        byte[] buffer = new byte[1024];
+        
+        try (DatagramSocket socket = new DatagramSocket(port)) {
+            System.out.println("UDP Server đang chờ tại port " + port);
+            
+            while (true) {
+                // Nhận datagram
+                DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+                socket.receive(request);
+                
+                String message = new String(request.getData(), 0, request.getLength());
+                System.out.println("Nhận từ " + request.getAddress() + ": " + message);
+                
+                // Gửi phản hồi
+                String response = "Echo: " + message;
+                byte[] responseData = response.getBytes();
+                DatagramPacket responsePacket = new DatagramPacket(
+                    responseData,
+                    responseData.length,
+                    request.getAddress(),
+                    request.getPort()
+                );
+                socket.send(responsePacket);
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Lỗi: " + e.getMessage());
+        }
+    }
+}
+UDP Client
+import java.net.*;
+import java.util.Scanner;
+
+public class UDPClient {
+    public static void main(String[] args) {
+        String serverAddress = "localhost";
+        int port = 9090;
+        
+        try (
+            DatagramSocket socket = new DatagramSocket();
+            Scanner scanner = new Scanner(System.in)
+        ) {
+            InetAddress serverAddr = InetAddress.getByName(serverAddress);
+            byte[] buffer = new byte[1024];
+            
+            System.out.println("UDP Client sẵn sàng. Nhập tin nhắn:");
+            
+            while (true) {
+                System.out.print("Bạn: ");
+                String message = scanner.nextLine();
+                
+                if ("exit".equalsIgnoreCase(message)) break;
+                
+                // Gửi datagram
+                byte[] sendData = message.getBytes();
+                DatagramPacket sendPacket = new DatagramPacket(
+                    sendData, sendData.length, serverAddr, port);
+                socket.send(sendPacket);
+                
+                // Nhận phản hồi
+                DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
+                socket.receive(receivePacket);
+                
+                String response = new String(
+                    receivePacket.getData(), 0, receivePacket.getLength());
+                System.out.println("Server: " + response);
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Lỗi: " + e.getMessage());
+        }
+    }
+}
+Ứng dụng thực tế: Chat Server Multi-Client
+import java.net.*;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
+
+public class ChatServer {
+    private static Set<ClientHandler> clientHandlers = 
+        ConcurrentHashMap.newKeySet();
+    
+    public static void main(String[] args) throws IOException {
+        int port = 8888;
+        ServerSocket serverSocket = new ServerSocket(port);
+        System.out.println("Chat Server chạy tại port " + port);
+        
+        while (true) {
+            Socket socket = serverSocket.accept();
+            ClientHandler handler = new ClientHandler(socket);
+            clientHandlers.add(handler);
+            handler.start();
+        }
+    }
+    
+    // Gửi tin nhắn tới tất cả clients
+    public static void broadcast(String message, ClientHandler sender) {
+        for (ClientHandler client : clientHandlers) {
+            if (client != sender) {
+                client.sendMessage(message);
+            }
+        }
+    }
+    
+    public static void removeClient(ClientHandler client) {
+        clientHandlers.remove(client);
+    }
+}
+
+class ClientHandler extends Thread {
+    private Socket socket;
+    private PrintWriter out;
+    private BufferedReader in;
+    private String username;
+    
+    public ClientHandler(Socket socket) {
+        this.socket = socket;
+    }
+    
+    @Override
+    public void run() {
+        try {
+            in = new BufferedReader(
+                new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+            
+            // Yêu cầu username
+            out.println("Nhập tên của bạn:");
+            username = in.readLine();
+            
+            ChatServer.broadcast(username + " đã tham gia chat!", this);
+            System.out.println(username + " đã kết nối");
+            
+            String message;
+            while ((message = in.readLine()) != null) {
+                if (message.equalsIgnoreCase("/quit")) {
+                    break;
+                }
+                ChatServer.broadcast(username + ": " + message, this);
+            }
+            
+        } catch (IOException e) {
+            System.err.println("Lỗi với client " + username);
+        } finally {
+            cleanup();
+        }
+    }
+    
+    public void sendMessage(String message) {
+        out.println(message);
+    }
+    
+    private void cleanup() {
+        try {
+            ChatServer.broadcast(username + " đã rời chat!", this);
+            ChatServer.removeClient(this);
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+Chat Client
+import java.net.*;
+import java.io.*;
+import java.util.Scanner;
+
+public class ChatClient {
+    public static void main(String[] args) {
+        String server = "localhost";
+        int port = 8888;
+        
+        try (Socket socket = new Socket(server, port)) {
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(socket.getInputStream()));
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            Scanner scanner = new Scanner(System.in);
+            
+            // Thread đọc tin nhắn từ server
+            Thread readThread = new Thread(() -> {
+                try {
+                    String message;
+                    while ((message = in.readLine()) != null) {
+                        System.out.println(message);
+                    }
+                } catch (IOException e) {
+                    System.out.println("Mất kết nối!");
+                }
+            });
+            readThread.start();
+            
+            // Gửi tin nhắn
+            while (true) {
+                String input = scanner.nextLine();
+                out.println(input);
+                if (input.equalsIgnoreCase("/quit")) {
+                    break;
+                }
+            }
+            
+        } catch (IOException e) {
+            System.err.println("Không thể kết nối: " + e.getMessage());
+        }
+    }
+}
+Các class quan trọng trong java.net
+
+  
+      
+          Class
+          Mô tả
+      
+  
+  
+      
+          Socket
+          TCP client socket
+      
+      
+          ServerSocket
+          TCP server socket
+      
+      
+          DatagramSocket
+          UDP socket
+      
+      
+          DatagramPacket
+          UDP packet
+      
+      
+          InetAddress
+          Địa chỉ IP
+      
+      
+          URL
+          Uniform Resource Locator
+      
+      
+          URLConnection
+          Kết nối tới URL
+      
+  
+
+Best Practices
+1. Luôn đóng Socket trong finally hoặc try-with-resources
+try (Socket socket = new Socket(host, port)) {
+    // Xử lý
+} // Tự động đóng
+2. Set timeout để tránh block vô hạn
+socket.setSoTimeout(5000); // 5 giây timeout
+3. Xử lý multi-client bằng Thread Pool
+ExecutorService executor = Executors.newFixedThreadPool(10);
+while (true) {
+    Socket client = serverSocket.accept();
+    executor.execute(new ClientHandler(client));
+}
+4. Xử lý exception đúng cách
+try {
+    // Socket operations
+} catch (UnknownHostException e) {
+    // Không tìm thấy host
+} catch (SocketTimeoutException e) {
+    // Timeout
+} catch (IOException e) {
+    // Lỗi I/O khác
+}
+Kết luận
+Socket Programming trong Java là kỹ năng quan trọng cho lập trình mạng. Với các class như Socket, ServerSocket, DatagramSocket, bạn có thể xây dựng các ứng dụng mạng từ đơn giản đến phức tạp. Nắm vững kiến thức này là nền tảng để phát triển các ứng dụng client-server chuyên nghiệp.'><meta name=author content="Ngô Phạm Ngọc Tú"><link rel=canonical href=https://hihi99s.github.io/blog-ca-nhan/posts/socket-java/><link crossorigin=anonymous href=/blog-ca-nhan/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css integrity="sha256-NDzEgLn/yPBMy+XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as=style><link rel=icon href=https://hihi99s.github.io/blog-ca-nhan/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://hihi99s.github.io/blog-ca-nhan/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://hihi99s.github.io/blog-ca-nhan/favicon-32x32.png><link rel=apple-touch-icon href=https://hihi99s.github.io/blog-ca-nhan/apple-touch-icon.png><link rel=mask-icon href=https://hihi99s.github.io/blog-ca-nhan/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=vi href=https://hihi99s.github.io/blog-ca-nhan/posts/socket-java/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}@media(prefers-color-scheme:light){.list::-webkit-scrollbar-thumb{border-color:var(--code-bg)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><meta property="og:url" content="https://hihi99s.github.io/blog-ca-nhan/posts/socket-java/"><meta property="og:site_name" content="Blog cá nhân – Ngô Phạm Ngọc Tú"><meta property="og:title" content="Socket Programming trong Java: Hướng dẫn chi tiết"><meta property="og:description" content='Socket Programming trong Java: Hướng dẫn chi tiết Socket là endpoint của kết nối mạng hai chiều giữa hai chương trình chạy trên mạng. Trong Java, package java.net cung cấp các class để làm việc với socket một cách dễ dàng.
+Khái niệm cơ bản Socket là gì? Socket là sự kết hợp của:
+IP Address: Xác định máy tính trên mạng Port Number: Xác định ứng dụng trên máy tính (0-65535) Socket = IP Address + Port Number Ví dụ: 192.168.1.100:8080 Mô hình Client-Server ┌──────────────┐ ┌──────────────┐ │ Client │ │ Server │ ├──────────────┤ ├──────────────┤ │ Socket │◄──── Kết nối ─────►│ ServerSocket │ │ │ │ ↓ │ │ │◄═══ Giao tiếp ════►│ Socket │ └──────────────┘ └──────────────┘ TCP Socket trong Java Server Side import java.net.*; import java.io.*; public class TCPServer { public static void main(String[] args) { int port = 8080; try (ServerSocket serverSocket = new ServerSocket(port)) { System.out.println("Server đang lắng nghe tại port " + port); while (true) { // Chờ client kết nối Socket clientSocket = serverSocket.accept(); System.out.println("Client đã kết nối: " + clientSocket.getInetAddress().getHostAddress()); // Xử lý client trong thread riêng new ClientHandler(clientSocket).start(); } } catch (IOException e) { System.err.println("Lỗi server: " + e.getMessage()); } } } class ClientHandler extends Thread { private Socket clientSocket; public ClientHandler(Socket socket) { this.clientSocket = socket; } @Override public void run() { try ( BufferedReader in = new BufferedReader( new InputStreamReader(clientSocket.getInputStream())); PrintWriter out = new PrintWriter( clientSocket.getOutputStream(), true) ) { String inputLine; while ((inputLine = in.readLine()) != null) { System.out.println("Nhận được: " + inputLine); // Echo back với xử lý String response = "Server nhận: " + inputLine.toUpperCase(); out.println(response); if ("bye".equalsIgnoreCase(inputLine)) { break; } } } catch (IOException e) { System.err.println("Lỗi xử lý client: " + e.getMessage()); } finally { try { clientSocket.close(); } catch (IOException e) { e.printStackTrace(); } } } } Client Side import java.net.*; import java.io.*; import java.util.Scanner; public class TCPClient { public static void main(String[] args) { String serverAddress = "localhost"; int port = 8080; try ( Socket socket = new Socket(serverAddress, port); PrintWriter out = new PrintWriter(socket.getOutputStream(), true); BufferedReader in = new BufferedReader( new InputStreamReader(socket.getInputStream())); Scanner scanner = new Scanner(System.in) ) { System.out.println("Đã kết nối tới server!"); System.out.println("Nhập tin nhắn (gõ &#39;bye&#39; để thoát):"); String userInput; while (true) { System.out.print("Bạn: "); userInput = scanner.nextLine(); // Gửi tới server out.println(userInput); // Nhận phản hồi String response = in.readLine(); System.out.println("Server: " + response); if ("bye".equalsIgnoreCase(userInput)) { break; } } } catch (UnknownHostException e) { System.err.println("Không tìm thấy server: " + serverAddress); } catch (IOException e) { System.err.println("Lỗi I/O: " + e.getMessage()); } } } UDP Socket trong Java UDP Server import java.net.*; public class UDPServer { public static void main(String[] args) { int port = 9090; byte[] buffer = new byte[1024]; try (DatagramSocket socket = new DatagramSocket(port)) { System.out.println("UDP Server đang chờ tại port " + port); while (true) { // Nhận datagram DatagramPacket request = new DatagramPacket(buffer, buffer.length); socket.receive(request); String message = new String(request.getData(), 0, request.getLength()); System.out.println("Nhận từ " + request.getAddress() + ": " + message); // Gửi phản hồi String response = "Echo: " + message; byte[] responseData = response.getBytes(); DatagramPacket responsePacket = new DatagramPacket( responseData, responseData.length, request.getAddress(), request.getPort() ); socket.send(responsePacket); } } catch (Exception e) { System.err.println("Lỗi: " + e.getMessage()); } } } UDP Client import java.net.*; import java.util.Scanner; public class UDPClient { public static void main(String[] args) { String serverAddress = "localhost"; int port = 9090; try ( DatagramSocket socket = new DatagramSocket(); Scanner scanner = new Scanner(System.in) ) { InetAddress serverAddr = InetAddress.getByName(serverAddress); byte[] buffer = new byte[1024]; System.out.println("UDP Client sẵn sàng. Nhập tin nhắn:"); while (true) { System.out.print("Bạn: "); String message = scanner.nextLine(); if ("exit".equalsIgnoreCase(message)) break; // Gửi datagram byte[] sendData = message.getBytes(); DatagramPacket sendPacket = new DatagramPacket( sendData, sendData.length, serverAddr, port); socket.send(sendPacket); // Nhận phản hồi DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length); socket.receive(receivePacket); String response = new String( receivePacket.getData(), 0, receivePacket.getLength()); System.out.println("Server: " + response); } } catch (Exception e) { System.err.println("Lỗi: " + e.getMessage()); } } } Ứng dụng thực tế: Chat Server Multi-Client import java.net.*; import java.io.*; import java.util.*; import java.util.concurrent.*; public class ChatServer { private static Set<ClientHandler> clientHandlers = ConcurrentHashMap.newKeySet(); public static void main(String[] args) throws IOException { int port = 8888; ServerSocket serverSocket = new ServerSocket(port); System.out.println("Chat Server chạy tại port " + port); while (true) { Socket socket = serverSocket.accept(); ClientHandler handler = new ClientHandler(socket); clientHandlers.add(handler); handler.start(); } } // Gửi tin nhắn tới tất cả clients public static void broadcast(String message, ClientHandler sender) { for (ClientHandler client : clientHandlers) { if (client != sender) { client.sendMessage(message); } } } public static void removeClient(ClientHandler client) { clientHandlers.remove(client); } } class ClientHandler extends Thread { private Socket socket; private PrintWriter out; private BufferedReader in; private String username; public ClientHandler(Socket socket) { this.socket = socket; } @Override public void run() { try { in = new BufferedReader( new InputStreamReader(socket.getInputStream())); out = new PrintWriter(socket.getOutputStream(), true); // Yêu cầu username out.println("Nhập tên của bạn:"); username = in.readLine(); ChatServer.broadcast(username + " đã tham gia chat!", this); System.out.println(username + " đã kết nối"); String message; while ((message = in.readLine()) != null) { if (message.equalsIgnoreCase("/quit")) { break; } ChatServer.broadcast(username + ": " + message, this); } } catch (IOException e) { System.err.println("Lỗi với client " + username); } finally { cleanup(); } } public void sendMessage(String message) { out.println(message); } private void cleanup() { try { ChatServer.broadcast(username + " đã rời chat!", this); ChatServer.removeClient(this); socket.close(); } catch (IOException e) { e.printStackTrace(); } } } Chat Client import java.net.*; import java.io.*; import java.util.Scanner; public class ChatClient { public static void main(String[] args) { String server = "localhost"; int port = 8888; try (Socket socket = new Socket(server, port)) { BufferedReader in = new BufferedReader( new InputStreamReader(socket.getInputStream())); PrintWriter out = new PrintWriter(socket.getOutputStream(), true); Scanner scanner = new Scanner(System.in); // Thread đọc tin nhắn từ server Thread readThread = new Thread(() -> { try { String message; while ((message = in.readLine()) != null) { System.out.println(message); } } catch (IOException e) { System.out.println("Mất kết nối!"); } }); readThread.start(); // Gửi tin nhắn while (true) { String input = scanner.nextLine(); out.println(input); if (input.equalsIgnoreCase("/quit")) { break; } } } catch (IOException e) { System.err.println("Không thể kết nối: " + e.getMessage()); } } } Các class quan trọng trong java.net Class Mô tả Socket TCP client socket ServerSocket TCP server socket DatagramSocket UDP socket DatagramPacket UDP packet InetAddress Địa chỉ IP URL Uniform Resource Locator URLConnection Kết nối tới URL Best Practices 1. Luôn đóng Socket trong finally hoặc try-with-resources try (Socket socket = new Socket(host, port)) { // Xử lý } // Tự động đóng 2. Set timeout để tránh block vô hạn socket.setSoTimeout(5000); // 5 giây timeout 3. Xử lý multi-client bằng Thread Pool ExecutorService executor = Executors.newFixedThreadPool(10); while (true) { Socket client = serverSocket.accept(); executor.execute(new ClientHandler(client)); } 4. Xử lý exception đúng cách try { // Socket operations } catch (UnknownHostException e) { // Không tìm thấy host } catch (SocketTimeoutException e) { // Timeout } catch (IOException e) { // Lỗi I/O khác } Kết luận Socket Programming trong Java là kỹ năng quan trọng cho lập trình mạng. Với các class như Socket, ServerSocket, DatagramSocket, bạn có thể xây dựng các ứng dụng mạng từ đơn giản đến phức tạp. Nắm vững kiến thức này là nền tảng để phát triển các ứng dụng client-server chuyên nghiệp.'><meta property="og:locale" content="vi"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-12-15T10:00:00+07:00"><meta property="article:modified_time" content="2025-12-15T10:00:00+07:00"><meta property="article:tag" content="Java"><meta property="article:tag" content="Socket"><meta property="article:tag" content="Network"><meta property="article:tag" content="TCP"><meta name=twitter:card content="summary"><meta name=twitter:title content="Socket Programming trong Java: Hướng dẫn chi tiết"><meta name=twitter:description content='Socket Programming trong Java: Hướng dẫn chi tiết
+Socket là endpoint của kết nối mạng hai chiều giữa hai chương trình chạy trên mạng. Trong Java, package java.net cung cấp các class để làm việc với socket một cách dễ dàng.
+Khái niệm cơ bản
+Socket là gì?
+Socket là sự kết hợp của:
+
+IP Address: Xác định máy tính trên mạng
+Port Number: Xác định ứng dụng trên máy tính (0-65535)
+
+Socket = IP Address + Port Number
+Ví dụ: 192.168.1.100:8080
+Mô hình Client-Server
+┌──────────────┐                    ┌──────────────┐
+│    Client    │                    │    Server    │
+├──────────────┤                    ├──────────────┤
+│ Socket       │◄──── Kết nối ─────►│ ServerSocket │
+│              │                    │     ↓        │
+│              │◄═══ Giao tiếp ════►│   Socket     │
+└──────────────┘                    └──────────────┘
+TCP Socket trong Java
+Server Side
+import java.net.*;
+import java.io.*;
+
+public class TCPServer {
+    public static void main(String[] args) {
+        int port = 8080;
+        
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+            System.out.println("Server đang lắng nghe tại port " + port);
+            
+            while (true) {
+                // Chờ client kết nối
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Client đã kết nối: " + 
+                    clientSocket.getInetAddress().getHostAddress());
+                
+                // Xử lý client trong thread riêng
+                new ClientHandler(clientSocket).start();
+            }
+            
+        } catch (IOException e) {
+            System.err.println("Lỗi server: " + e.getMessage());
+        }
+    }
+}
+
+class ClientHandler extends Thread {
+    private Socket clientSocket;
+    
+    public ClientHandler(Socket socket) {
+        this.clientSocket = socket;
+    }
+    
+    @Override
+    public void run() {
+        try (
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(clientSocket.getInputStream()));
+            PrintWriter out = new PrintWriter(
+                clientSocket.getOutputStream(), true)
+        ) {
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                System.out.println("Nhận được: " + inputLine);
+                
+                // Echo back với xử lý
+                String response = "Server nhận: " + inputLine.toUpperCase();
+                out.println(response);
+                
+                if ("bye".equalsIgnoreCase(inputLine)) {
+                    break;
+                }
+            }
+            
+        } catch (IOException e) {
+            System.err.println("Lỗi xử lý client: " + e.getMessage());
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+Client Side
+import java.net.*;
+import java.io.*;
+import java.util.Scanner;
+
+public class TCPClient {
+    public static void main(String[] args) {
+        String serverAddress = "localhost";
+        int port = 8080;
+        
+        try (
+            Socket socket = new Socket(serverAddress, port);
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(socket.getInputStream()));
+            Scanner scanner = new Scanner(System.in)
+        ) {
+            System.out.println("Đã kết nối tới server!");
+            System.out.println("Nhập tin nhắn (gõ &#39;bye&#39; để thoát):");
+            
+            String userInput;
+            while (true) {
+                System.out.print("Bạn: ");
+                userInput = scanner.nextLine();
+                
+                // Gửi tới server
+                out.println(userInput);
+                
+                // Nhận phản hồi
+                String response = in.readLine();
+                System.out.println("Server: " + response);
+                
+                if ("bye".equalsIgnoreCase(userInput)) {
+                    break;
+                }
+            }
+            
+        } catch (UnknownHostException e) {
+            System.err.println("Không tìm thấy server: " + serverAddress);
+        } catch (IOException e) {
+            System.err.println("Lỗi I/O: " + e.getMessage());
+        }
+    }
+}
+UDP Socket trong Java
+UDP Server
+import java.net.*;
+
+public class UDPServer {
+    public static void main(String[] args) {
+        int port = 9090;
+        byte[] buffer = new byte[1024];
+        
+        try (DatagramSocket socket = new DatagramSocket(port)) {
+            System.out.println("UDP Server đang chờ tại port " + port);
+            
+            while (true) {
+                // Nhận datagram
+                DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+                socket.receive(request);
+                
+                String message = new String(request.getData(), 0, request.getLength());
+                System.out.println("Nhận từ " + request.getAddress() + ": " + message);
+                
+                // Gửi phản hồi
+                String response = "Echo: " + message;
+                byte[] responseData = response.getBytes();
+                DatagramPacket responsePacket = new DatagramPacket(
+                    responseData,
+                    responseData.length,
+                    request.getAddress(),
+                    request.getPort()
+                );
+                socket.send(responsePacket);
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Lỗi: " + e.getMessage());
+        }
+    }
+}
+UDP Client
+import java.net.*;
+import java.util.Scanner;
+
+public class UDPClient {
+    public static void main(String[] args) {
+        String serverAddress = "localhost";
+        int port = 9090;
+        
+        try (
+            DatagramSocket socket = new DatagramSocket();
+            Scanner scanner = new Scanner(System.in)
+        ) {
+            InetAddress serverAddr = InetAddress.getByName(serverAddress);
+            byte[] buffer = new byte[1024];
+            
+            System.out.println("UDP Client sẵn sàng. Nhập tin nhắn:");
+            
+            while (true) {
+                System.out.print("Bạn: ");
+                String message = scanner.nextLine();
+                
+                if ("exit".equalsIgnoreCase(message)) break;
+                
+                // Gửi datagram
+                byte[] sendData = message.getBytes();
+                DatagramPacket sendPacket = new DatagramPacket(
+                    sendData, sendData.length, serverAddr, port);
+                socket.send(sendPacket);
+                
+                // Nhận phản hồi
+                DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
+                socket.receive(receivePacket);
+                
+                String response = new String(
+                    receivePacket.getData(), 0, receivePacket.getLength());
+                System.out.println("Server: " + response);
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Lỗi: " + e.getMessage());
+        }
+    }
+}
+Ứng dụng thực tế: Chat Server Multi-Client
+import java.net.*;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
+
+public class ChatServer {
+    private static Set<ClientHandler> clientHandlers = 
+        ConcurrentHashMap.newKeySet();
+    
+    public static void main(String[] args) throws IOException {
+        int port = 8888;
+        ServerSocket serverSocket = new ServerSocket(port);
+        System.out.println("Chat Server chạy tại port " + port);
+        
+        while (true) {
+            Socket socket = serverSocket.accept();
+            ClientHandler handler = new ClientHandler(socket);
+            clientHandlers.add(handler);
+            handler.start();
+        }
+    }
+    
+    // Gửi tin nhắn tới tất cả clients
+    public static void broadcast(String message, ClientHandler sender) {
+        for (ClientHandler client : clientHandlers) {
+            if (client != sender) {
+                client.sendMessage(message);
+            }
+        }
+    }
+    
+    public static void removeClient(ClientHandler client) {
+        clientHandlers.remove(client);
+    }
+}
+
+class ClientHandler extends Thread {
+    private Socket socket;
+    private PrintWriter out;
+    private BufferedReader in;
+    private String username;
+    
+    public ClientHandler(Socket socket) {
+        this.socket = socket;
+    }
+    
+    @Override
+    public void run() {
+        try {
+            in = new BufferedReader(
+                new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+            
+            // Yêu cầu username
+            out.println("Nhập tên của bạn:");
+            username = in.readLine();
+            
+            ChatServer.broadcast(username + " đã tham gia chat!", this);
+            System.out.println(username + " đã kết nối");
+            
+            String message;
+            while ((message = in.readLine()) != null) {
+                if (message.equalsIgnoreCase("/quit")) {
+                    break;
+                }
+                ChatServer.broadcast(username + ": " + message, this);
+            }
+            
+        } catch (IOException e) {
+            System.err.println("Lỗi với client " + username);
+        } finally {
+            cleanup();
+        }
+    }
+    
+    public void sendMessage(String message) {
+        out.println(message);
+    }
+    
+    private void cleanup() {
+        try {
+            ChatServer.broadcast(username + " đã rời chat!", this);
+            ChatServer.removeClient(this);
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+Chat Client
+import java.net.*;
+import java.io.*;
+import java.util.Scanner;
+
+public class ChatClient {
+    public static void main(String[] args) {
+        String server = "localhost";
+        int port = 8888;
+        
+        try (Socket socket = new Socket(server, port)) {
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(socket.getInputStream()));
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            Scanner scanner = new Scanner(System.in);
+            
+            // Thread đọc tin nhắn từ server
+            Thread readThread = new Thread(() -> {
+                try {
+                    String message;
+                    while ((message = in.readLine()) != null) {
+                        System.out.println(message);
+                    }
+                } catch (IOException e) {
+                    System.out.println("Mất kết nối!");
+                }
+            });
+            readThread.start();
+            
+            // Gửi tin nhắn
+            while (true) {
+                String input = scanner.nextLine();
+                out.println(input);
+                if (input.equalsIgnoreCase("/quit")) {
+                    break;
+                }
+            }
+            
+        } catch (IOException e) {
+            System.err.println("Không thể kết nối: " + e.getMessage());
+        }
+    }
+}
+Các class quan trọng trong java.net
+
+  
+      
+          Class
+          Mô tả
+      
+  
+  
+      
+          Socket
+          TCP client socket
+      
+      
+          ServerSocket
+          TCP server socket
+      
+      
+          DatagramSocket
+          UDP socket
+      
+      
+          DatagramPacket
+          UDP packet
+      
+      
+          InetAddress
+          Địa chỉ IP
+      
+      
+          URL
+          Uniform Resource Locator
+      
+      
+          URLConnection
+          Kết nối tới URL
+      
+  
+
+Best Practices
+1. Luôn đóng Socket trong finally hoặc try-with-resources
+try (Socket socket = new Socket(host, port)) {
+    // Xử lý
+} // Tự động đóng
+2. Set timeout để tránh block vô hạn
+socket.setSoTimeout(5000); // 5 giây timeout
+3. Xử lý multi-client bằng Thread Pool
+ExecutorService executor = Executors.newFixedThreadPool(10);
+while (true) {
+    Socket client = serverSocket.accept();
+    executor.execute(new ClientHandler(client));
+}
+4. Xử lý exception đúng cách
+try {
+    // Socket operations
+} catch (UnknownHostException e) {
+    // Không tìm thấy host
+} catch (SocketTimeoutException e) {
+    // Timeout
+} catch (IOException e) {
+    // Lỗi I/O khác
+}
+Kết luận
+Socket Programming trong Java là kỹ năng quan trọng cho lập trình mạng. Với các class như Socket, ServerSocket, DatagramSocket, bạn có thể xây dựng các ứng dụng mạng từ đơn giản đến phức tạp. Nắm vững kiến thức này là nền tảng để phát triển các ứng dụng client-server chuyên nghiệp.'><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://hihi99s.github.io/blog-ca-nhan/posts/"},{"@type":"ListItem","position":2,"name":"Socket Programming trong Java: Hướng dẫn chi tiết","item":"https://hihi99s.github.io/blog-ca-nhan/posts/socket-java/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Socket Programming trong Java: Hướng dẫn chi tiết","name":"Socket Programming trong Java: Hướng dẫn chi tiết","description":"Socket Programming trong Java: Hướng dẫn chi tiết Socket là endpoint của kết nối mạng hai chiều giữa hai chương trình chạy trên mạng. Trong Java, package java.net cung cấp các class để làm việc với socket một cách dễ dàng.\nKhái niệm cơ bản Socket là gì? Socket là sự kết hợp của:\nIP Address: Xác định máy tính trên mạng Port Number: Xác định ứng dụng trên máy tính (0-65535) Socket = IP Address + Port Number Ví dụ: 192.168.1.100:8080 Mô hình Client-Server ┌──────────────┐ ┌──────────────┐ │ Client │ │ Server │ ├──────────────┤ ├──────────────┤ │ Socket │◄──── Kết nối ─────►│ ServerSocket │ │ │ │ ↓ │ │ │◄═══ Giao tiếp ════►│ Socket │ └──────────────┘ └──────────────┘ TCP Socket trong Java Server Side import java.net.*; import java.io.*; public class TCPServer { public static void main(String[] args) { int port = 8080; try (ServerSocket serverSocket = new ServerSocket(port)) { System.out.println(\u0026#34;Server đang lắng nghe tại port \u0026#34; + port); while (true) { // Chờ client kết nối Socket clientSocket = serverSocket.accept(); System.out.println(\u0026#34;Client đã kết nối: \u0026#34; + clientSocket.getInetAddress().getHostAddress()); // Xử lý client trong thread riêng new ClientHandler(clientSocket).start(); } } catch (IOException e) { System.err.println(\u0026#34;Lỗi server: \u0026#34; + e.getMessage()); } } } class ClientHandler extends Thread { private Socket clientSocket; public ClientHandler(Socket socket) { this.clientSocket = socket; } @Override public void run() { try ( BufferedReader in = new BufferedReader( new InputStreamReader(clientSocket.getInputStream())); PrintWriter out = new PrintWriter( clientSocket.getOutputStream(), true) ) { String inputLine; while ((inputLine = in.readLine()) != null) { System.out.println(\u0026#34;Nhận được: \u0026#34; + inputLine); // Echo back với xử lý String response = \u0026#34;Server nhận: \u0026#34; + inputLine.toUpperCase(); out.println(response); if (\u0026#34;bye\u0026#34;.equalsIgnoreCase(inputLine)) { break; } } } catch (IOException e) { System.err.println(\u0026#34;Lỗi xử lý client: \u0026#34; + e.getMessage()); } finally { try { clientSocket.close(); } catch (IOException e) { e.printStackTrace(); } } } } Client Side import java.net.*; import java.io.*; import java.util.Scanner; public class TCPClient { public static void main(String[] args) { String serverAddress = \u0026#34;localhost\u0026#34;; int port = 8080; try ( Socket socket = new Socket(serverAddress, port); PrintWriter out = new PrintWriter(socket.getOutputStream(), true); BufferedReader in = new BufferedReader( new InputStreamReader(socket.getInputStream())); Scanner scanner = new Scanner(System.in) ) { System.out.println(\u0026#34;Đã kết nối tới server!\u0026#34;); System.out.println(\u0026#34;Nhập tin nhắn (gõ \u0026#39;bye\u0026#39; để thoát):\u0026#34;); String userInput; while (true) { System.out.print(\u0026#34;Bạn: \u0026#34;); userInput = scanner.nextLine(); // Gửi tới server out.println(userInput); // Nhận phản hồi String response = in.readLine(); System.out.println(\u0026#34;Server: \u0026#34; + response); if (\u0026#34;bye\u0026#34;.equalsIgnoreCase(userInput)) { break; } } } catch (UnknownHostException e) { System.err.println(\u0026#34;Không tìm thấy server: \u0026#34; + serverAddress); } catch (IOException e) { System.err.println(\u0026#34;Lỗi I/O: \u0026#34; + e.getMessage()); } } } UDP Socket trong Java UDP Server import java.net.*; public class UDPServer { public static void main(String[] args) { int port = 9090; byte[] buffer = new byte[1024]; try (DatagramSocket socket = new DatagramSocket(port)) { System.out.println(\u0026#34;UDP Server đang chờ tại port \u0026#34; + port); while (true) { // Nhận datagram DatagramPacket request = new DatagramPacket(buffer, buffer.length); socket.receive(request); String message = new String(request.getData(), 0, request.getLength()); System.out.println(\u0026#34;Nhận từ \u0026#34; + request.getAddress() + \u0026#34;: \u0026#34; + message); // Gửi phản hồi String response = \u0026#34;Echo: \u0026#34; + message; byte[] responseData = response.getBytes(); DatagramPacket responsePacket = new DatagramPacket( responseData, responseData.length, request.getAddress(), request.getPort() ); socket.send(responsePacket); } } catch (Exception e) { System.err.println(\u0026#34;Lỗi: \u0026#34; + e.getMessage()); } } } UDP Client import java.net.*; import java.util.Scanner; public class UDPClient { public static void main(String[] args) { String serverAddress = \u0026#34;localhost\u0026#34;; int port = 9090; try ( DatagramSocket socket = new DatagramSocket(); Scanner scanner = new Scanner(System.in) ) { InetAddress serverAddr = InetAddress.getByName(serverAddress); byte[] buffer = new byte[1024]; System.out.println(\u0026#34;UDP Client sẵn sàng. Nhập tin nhắn:\u0026#34;); while (true) { System.out.print(\u0026#34;Bạn: \u0026#34;); String message = scanner.nextLine(); if (\u0026#34;exit\u0026#34;.equalsIgnoreCase(message)) break; // Gửi datagram byte[] sendData = message.getBytes(); DatagramPacket sendPacket = new DatagramPacket( sendData, sendData.length, serverAddr, port); socket.send(sendPacket); // Nhận phản hồi DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length); socket.receive(receivePacket); String response = new String( receivePacket.getData(), 0, receivePacket.getLength()); System.out.println(\u0026#34;Server: \u0026#34; + response); } } catch (Exception e) { System.err.println(\u0026#34;Lỗi: \u0026#34; + e.getMessage()); } } } Ứng dụng thực tế: Chat Server Multi-Client import java.net.*; import java.io.*; import java.util.*; import java.util.concurrent.*; public class ChatServer { private static Set\u0026lt;ClientHandler\u0026gt; clientHandlers = ConcurrentHashMap.newKeySet(); public static void main(String[] args) throws IOException { int port = 8888; ServerSocket serverSocket = new ServerSocket(port); System.out.println(\u0026#34;Chat Server chạy tại port \u0026#34; + port); while (true) { Socket socket = serverSocket.accept(); ClientHandler handler = new ClientHandler(socket); clientHandlers.add(handler); handler.start(); } } // Gửi tin nhắn tới tất cả clients public static void broadcast(String message, ClientHandler sender) { for (ClientHandler client : clientHandlers) { if (client != sender) { client.sendMessage(message); } } } public static void removeClient(ClientHandler client) { clientHandlers.remove(client); } } class ClientHandler extends Thread { private Socket socket; private PrintWriter out; private BufferedReader in; private String username; public ClientHandler(Socket socket) { this.socket = socket; } @Override public void run() { try { in = new BufferedReader( new InputStreamReader(socket.getInputStream())); out = new PrintWriter(socket.getOutputStream(), true); // Yêu cầu username out.println(\u0026#34;Nhập tên của bạn:\u0026#34;); username = in.readLine(); ChatServer.broadcast(username + \u0026#34; đã tham gia chat!\u0026#34;, this); System.out.println(username + \u0026#34; đã kết nối\u0026#34;); String message; while ((message = in.readLine()) != null) { if (message.equalsIgnoreCase(\u0026#34;/quit\u0026#34;)) { break; } ChatServer.broadcast(username + \u0026#34;: \u0026#34; + message, this); } } catch (IOException e) { System.err.println(\u0026#34;Lỗi với client \u0026#34; + username); } finally { cleanup(); } } public void sendMessage(String message) { out.println(message); } private void cleanup() { try { ChatServer.broadcast(username + \u0026#34; đã rời chat!\u0026#34;, this); ChatServer.removeClient(this); socket.close(); } catch (IOException e) { e.printStackTrace(); } } } Chat Client import java.net.*; import java.io.*; import java.util.Scanner; public class ChatClient { public static void main(String[] args) { String server = \u0026#34;localhost\u0026#34;; int port = 8888; try (Socket socket = new Socket(server, port)) { BufferedReader in = new BufferedReader( new InputStreamReader(socket.getInputStream())); PrintWriter out = new PrintWriter(socket.getOutputStream(), true); Scanner scanner = new Scanner(System.in); // Thread đọc tin nhắn từ server Thread readThread = new Thread(() -\u0026gt; { try { String message; while ((message = in.readLine()) != null) { System.out.println(message); } } catch (IOException e) { System.out.println(\u0026#34;Mất kết nối!\u0026#34;); } }); readThread.start(); // Gửi tin nhắn while (true) { String input = scanner.nextLine(); out.println(input); if (input.equalsIgnoreCase(\u0026#34;/quit\u0026#34;)) { break; } } } catch (IOException e) { System.err.println(\u0026#34;Không thể kết nối: \u0026#34; + e.getMessage()); } } } Các class quan trọng trong java.net Class Mô tả Socket TCP client socket ServerSocket TCP server socket DatagramSocket UDP socket DatagramPacket UDP packet InetAddress Địa chỉ IP URL Uniform Resource Locator URLConnection Kết nối tới URL Best Practices 1. Luôn đóng Socket trong finally hoặc try-with-resources try (Socket socket = new Socket(host, port)) { // Xử lý } // Tự động đóng 2. Set timeout để tránh block vô hạn socket.setSoTimeout(5000); // 5 giây timeout 3. Xử lý multi-client bằng Thread Pool ExecutorService executor = Executors.newFixedThreadPool(10); while (true) { Socket client = serverSocket.accept(); executor.execute(new ClientHandler(client)); } 4. Xử lý exception đúng cách try { // Socket operations } catch (UnknownHostException e) { // Không tìm thấy host } catch (SocketTimeoutException e) { // Timeout } catch (IOException e) { // Lỗi I/O khác } Kết luận Socket Programming trong Java là kỹ năng quan trọng cho lập trình mạng. Với các class như Socket, ServerSocket, DatagramSocket, bạn có thể xây dựng các ứng dụng mạng từ đơn giản đến phức tạp. Nắm vững kiến thức này là nền tảng để phát triển các ứng dụng client-server chuyên nghiệp.\n","keywords":["Java","Socket","Network","TCP"],"articleBody":"Socket Programming trong Java: Hướng dẫn chi tiết Socket là endpoint của kết nối mạng hai chiều giữa hai chương trình chạy trên mạng. Trong Java, package java.net cung cấp các class để làm việc với socket một cách dễ dàng.\nKhái niệm cơ bản Socket là gì? Socket là sự kết hợp của:\nIP Address: Xác định máy tính trên mạng Port Number: Xác định ứng dụng trên máy tính (0-65535) Socket = IP Address + Port Number Ví dụ: 192.168.1.100:8080 Mô hình Client-Server ┌──────────────┐ ┌──────────────┐ │ Client │ │ Server │ ├──────────────┤ ├──────────────┤ │ Socket │◄──── Kết nối ─────►│ ServerSocket │ │ │ │ ↓ │ │ │◄═══ Giao tiếp ════►│ Socket │ └──────────────┘ └──────────────┘ TCP Socket trong Java Server Side import java.net.*; import java.io.*; public class TCPServer { public static void main(String[] args) { int port = 8080; try (ServerSocket serverSocket = new ServerSocket(port)) { System.out.println(\"Server đang lắng nghe tại port \" + port); while (true) { // Chờ client kết nối Socket clientSocket = serverSocket.accept(); System.out.println(\"Client đã kết nối: \" + clientSocket.getInetAddress().getHostAddress()); // Xử lý client trong thread riêng new ClientHandler(clientSocket).start(); } } catch (IOException e) { System.err.println(\"Lỗi server: \" + e.getMessage()); } } } class ClientHandler extends Thread { private Socket clientSocket; public ClientHandler(Socket socket) { this.clientSocket = socket; } @Override public void run() { try ( BufferedReader in = new BufferedReader( new InputStreamReader(clientSocket.getInputStream())); PrintWriter out = new PrintWriter( clientSocket.getOutputStream(), true) ) { String inputLine; while ((inputLine = in.readLine()) != null) { System.out.println(\"Nhận được: \" + inputLine); // Echo back với xử lý String response = \"Server nhận: \" + inputLine.toUpperCase(); out.println(response); if (\"bye\".equalsIgnoreCase(inputLine)) { break; } } } catch (IOException e) { System.err.println(\"Lỗi xử lý client: \" + e.getMessage()); } finally { try { clientSocket.close(); } catch (IOException e) { e.printStackTrace(); } } } } Client Side import java.net.*; import java.io.*; import java.util.Scanner; public class TCPClient { public static void main(String[] args) { String serverAddress = \"localhost\"; int port = 8080; try ( Socket socket = new Socket(serverAddress, port); PrintWriter out = new PrintWriter(socket.getOutputStream(), true); BufferedReader in = new BufferedReader( new InputStreamReader(socket.getInputStream())); Scanner scanner = new Scanner(System.in) ) { System.out.println(\"Đã kết nối tới server!\"); System.out.println(\"Nhập tin nhắn (gõ 'bye' để thoát):\"); String userInput; while (true) { System.out.print(\"Bạn: \"); userInput = scanner.nextLine(); // Gửi tới server out.println(userInput); // Nhận phản hồi String response = in.readLine(); System.out.println(\"Server: \" + response); if (\"bye\".equalsIgnoreCase(userInput)) { break; } } } catch (UnknownHostException e) { System.err.println(\"Không tìm thấy server: \" + serverAddress); } catch (IOException e) { System.err.println(\"Lỗi I/O: \" + e.getMessage()); } } } UDP Socket trong Java UDP Server import java.net.*; public class UDPServer { public static void main(String[] args) { int port = 9090; byte[] buffer = new byte[1024]; try (DatagramSocket socket = new DatagramSocket(port)) { System.out.println(\"UDP Server đang chờ tại port \" + port); while (true) { // Nhận datagram DatagramPacket request = new DatagramPacket(buffer, buffer.length); socket.receive(request); String message = new String(request.getData(), 0, request.getLength()); System.out.println(\"Nhận từ \" + request.getAddress() + \": \" + message); // Gửi phản hồi String response = \"Echo: \" + message; byte[] responseData = response.getBytes(); DatagramPacket responsePacket = new DatagramPacket( responseData, responseData.length, request.getAddress(), request.getPort() ); socket.send(responsePacket); } } catch (Exception e) { System.err.println(\"Lỗi: \" + e.getMessage()); } } } UDP Client import java.net.*; import java.util.Scanner; public class UDPClient { public static void main(String[] args) { String serverAddress = \"localhost\"; int port = 9090; try ( DatagramSocket socket = new DatagramSocket(); Scanner scanner = new Scanner(System.in) ) { InetAddress serverAddr = InetAddress.getByName(serverAddress); byte[] buffer = new byte[1024]; System.out.println(\"UDP Client sẵn sàng. Nhập tin nhắn:\"); while (true) { System.out.print(\"Bạn: \"); String message = scanner.nextLine(); if (\"exit\".equalsIgnoreCase(message)) break; // Gửi datagram byte[] sendData = message.getBytes(); DatagramPacket sendPacket = new DatagramPacket( sendData, sendData.length, serverAddr, port); socket.send(sendPacket); // Nhận phản hồi DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length); socket.receive(receivePacket); String response = new String( receivePacket.getData(), 0, receivePacket.getLength()); System.out.println(\"Server: \" + response); } } catch (Exception e) { System.err.println(\"Lỗi: \" + e.getMessage()); } } } Ứng dụng thực tế: Chat Server Multi-Client import java.net.*; import java.io.*; import java.util.*; import java.util.concurrent.*; public class ChatServer { private static Set\u003cClientHandler\u003e clientHandlers = ConcurrentHashMap.newKeySet(); public static void main(String[] args) throws IOException { int port = 8888; ServerSocket serverSocket = new ServerSocket(port); System.out.println(\"Chat Server chạy tại port \" + port); while (true) { Socket socket = serverSocket.accept(); ClientHandler handler = new ClientHandler(socket); clientHandlers.add(handler); handler.start(); } } // Gửi tin nhắn tới tất cả clients public static void broadcast(String message, ClientHandler sender) { for (ClientHandler client : clientHandlers) { if (client != sender) { client.sendMessage(message); } } } public static void removeClient(ClientHandler client) { clientHandlers.remove(client); } } class ClientHandler extends Thread { private Socket socket; private PrintWriter out; private BufferedReader in; private String username; public ClientHandler(Socket socket) { this.socket = socket; } @Override public void run() { try { in = new BufferedReader( new InputStreamReader(socket.getInputStream())); out = new PrintWriter(socket.getOutputStream(), true); // Yêu cầu username out.println(\"Nhập tên của bạn:\"); username = in.readLine(); ChatServer.broadcast(username + \" đã tham gia chat!\", this); System.out.println(username + \" đã kết nối\"); String message; while ((message = in.readLine()) != null) { if (message.equalsIgnoreCase(\"/quit\")) { break; } ChatServer.broadcast(username + \": \" + message, this); } } catch (IOException e) { System.err.println(\"Lỗi với client \" + username); } finally { cleanup(); } } public void sendMessage(String message) { out.println(message); } private void cleanup() { try { ChatServer.broadcast(username + \" đã rời chat!\", this); ChatServer.removeClient(this); socket.close(); } catch (IOException e) { e.printStackTrace(); } } } Chat Client import java.net.*; import java.io.*; import java.util.Scanner; public class ChatClient { public static void main(String[] args) { String server = \"localhost\"; int port = 8888; try (Socket socket = new Socket(server, port)) { BufferedReader in = new BufferedReader( new InputStreamReader(socket.getInputStream())); PrintWriter out = new PrintWriter(socket.getOutputStream(), true); Scanner scanner = new Scanner(System.in); // Thread đọc tin nhắn từ server Thread readThread = new Thread(() -\u003e { try { String message; while ((message = in.readLine()) != null) { System.out.println(message); } } catch (IOException e) { System.out.println(\"Mất kết nối!\"); } }); readThread.start(); // Gửi tin nhắn while (true) { String input = scanner.nextLine(); out.println(input); if (input.equalsIgnoreCase(\"/quit\")) { break; } } } catch (IOException e) { System.err.println(\"Không thể kết nối: \" + e.getMessage()); } } } Các class quan trọng trong java.net Class Mô tả Socket TCP client socket ServerSocket TCP server socket DatagramSocket UDP socket DatagramPacket UDP packet InetAddress Địa chỉ IP URL Uniform Resource Locator URLConnection Kết nối tới URL Best Practices 1. Luôn đóng Socket trong finally hoặc try-with-resources try (Socket socket = new Socket(host, port)) { // Xử lý } // Tự động đóng 2. Set timeout để tránh block vô hạn socket.setSoTimeout(5000); // 5 giây timeout 3. Xử lý multi-client bằng Thread Pool ExecutorService executor = Executors.newFixedThreadPool(10); while (true) { Socket client = serverSocket.accept(); executor.execute(new ClientHandler(client)); } 4. Xử lý exception đúng cách try { // Socket operations } catch (UnknownHostException e) { // Không tìm thấy host } catch (SocketTimeoutException e) { // Timeout } catch (IOException e) { // Lỗi I/O khác } Kết luận Socket Programming trong Java là kỹ năng quan trọng cho lập trình mạng. Với các class như Socket, ServerSocket, DatagramSocket, bạn có thể xây dựng các ứng dụng mạng từ đơn giản đến phức tạp. Nắm vững kiến thức này là nền tảng để phát triển các ứng dụng client-server chuyên nghiệp.\nBài viết thuộc series Lập trình mạng Java - Blog Ngô Phạm Ngọc Tú\n","wordCount":"1225","inLanguage":"vi","datePublished":"2025-12-15T10:00:00+07:00","dateModified":"2025-12-15T10:00:00+07:00","author":{"@type":"Person","name":"Ngô Phạm Ngọc Tú"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://hihi99s.github.io/blog-ca-nhan/posts/socket-java/"},"publisher":{"@type":"Organization","name":"Blog cá nhân – Ngô Phạm Ngọc Tú","logo":{"@type":"ImageObject","url":"https://hihi99s.github.io/blog-ca-nhan/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=nav><div class=logo><a href=https://hihi99s.github.io/blog-ca-nhan/ accesskey=h title="Blog cá nhân – Ngô Phạm Ngọc Tú (Alt + H)">Blog cá nhân – Ngô Phạm Ngọc Tú</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://hihi99s.github.io/blog-ca-nhan/ title=Home><span>Home</span></a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/posts/ title=Blog><span>Blog</span></a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/profile/ title=Profile><span>Profile</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">Socket Programming trong Java: Hướng dẫn chi tiết</h1><div class=post-meta><span title='2025-12-15 10:00:00 +0700 +0700'>15 tháng 12, 2025</span>&nbsp;·&nbsp;<span>Ngô Phạm Ngọc Tú</span></div></header><div class=post-content><h1 id=socket-programming-trong-java-hướng-dẫn-chi-tiết>Socket Programming trong Java: Hướng dẫn chi tiết<a hidden class=anchor aria-hidden=true href=#socket-programming-trong-java-hướng-dẫn-chi-tiết>#</a></h1><p><strong>Socket</strong> là endpoint của kết nối mạng hai chiều giữa hai chương trình chạy trên mạng. Trong Java, package <code>java.net</code> cung cấp các class để làm việc với socket một cách dễ dàng.</p><h2 id=khái-niệm-cơ-bản>Khái niệm cơ bản<a hidden class=anchor aria-hidden=true href=#khái-niệm-cơ-bản>#</a></h2><h3 id=socket-là-gì>Socket là gì?<a hidden class=anchor aria-hidden=true href=#socket-là-gì>#</a></h3><p>Socket là sự kết hợp của:</p><ul><li><strong>IP Address</strong>: Xác định máy tính trên mạng</li><li><strong>Port Number</strong>: Xác định ứng dụng trên máy tính (0-65535)</li></ul><pre tabindex=0><code>Socket = IP Address + Port Number
+Ví dụ: 192.168.1.100:8080
+</code></pre><h3 id=mô-hình-client-server>Mô hình Client-Server<a hidden class=anchor aria-hidden=true href=#mô-hình-client-server>#</a></h3><pre tabindex=0><code>┌──────────────┐                    ┌──────────────┐
+│    Client    │                    │    Server    │
+├──────────────┤                    ├──────────────┤
+│ Socket       │◄──── Kết nối ─────►│ ServerSocket │
+│              │                    │     ↓        │
+│              │◄═══ Giao tiếp ════►│   Socket     │
+└──────────────┘                    └──────────────┘
+</code></pre><h2 id=tcp-socket-trong-java>TCP Socket trong Java<a hidden class=anchor aria-hidden=true href=#tcp-socket-trong-java>#</a></h2><h3 id=server-side>Server Side<a hidden class=anchor aria-hidden=true href=#server-side>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.net.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.io.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>TCPServer</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>int</span><span class=w> </span><span class=n>port</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>8080</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>(</span><span class=n>ServerSocket</span><span class=w> </span><span class=n>serverSocket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ServerSocket</span><span class=p>(</span><span class=n>port</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Server đang lắng nghe tại port &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>port</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>while</span><span class=w> </span><span class=p>(</span><span class=kc>true</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>// Chờ client kết nối</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>Socket</span><span class=w> </span><span class=n>clientSocket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>serverSocket</span><span class=p>.</span><span class=na>accept</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Client đã kết nối: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> 
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>clientSocket</span><span class=p>.</span><span class=na>getInetAddress</span><span class=p>().</span><span class=na>getHostAddress</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>// Xử lý client trong thread riêng</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>new</span><span class=w> </span><span class=n>ClientHandler</span><span class=p>(</span><span class=n>clientSocket</span><span class=p>).</span><span class=na>start</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>IOException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>err</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Lỗi server: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>e</span><span class=p>.</span><span class=na>getMessage</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>class</span> <span class=nc>ClientHandler</span><span class=w> </span><span class=kd>extends</span><span class=w> </span><span class=n>Thread</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>Socket</span><span class=w> </span><span class=n>clientSocket</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=nf>ClientHandler</span><span class=p>(</span><span class=n>Socket</span><span class=w> </span><span class=n>socket</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>this</span><span class=p>.</span><span class=na>clientSocket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>socket</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nd>@Override</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>run</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>BufferedReader</span><span class=w> </span><span class=n>in</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>BufferedReader</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>new</span><span class=w> </span><span class=n>InputStreamReader</span><span class=p>(</span><span class=n>clientSocket</span><span class=p>.</span><span class=na>getInputStream</span><span class=p>()));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>PrintWriter</span><span class=w> </span><span class=n>out</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>PrintWriter</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>clientSocket</span><span class=p>.</span><span class=na>getOutputStream</span><span class=p>(),</span><span class=w> </span><span class=kc>true</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>String</span><span class=w> </span><span class=n>inputLine</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>while</span><span class=w> </span><span class=p>((</span><span class=n>inputLine</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>in</span><span class=p>.</span><span class=na>readLine</span><span class=p>())</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Nhận được: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>inputLine</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>// Echo back với xử lý</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>String</span><span class=w> </span><span class=n>response</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;Server nhận: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>inputLine</span><span class=p>.</span><span class=na>toUpperCase</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=n>response</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=s>&#34;bye&#34;</span><span class=p>.</span><span class=na>equalsIgnoreCase</span><span class=p>(</span><span class=n>inputLine</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>break</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>IOException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>err</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Lỗi xử lý client: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>e</span><span class=p>.</span><span class=na>getMessage</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>finally</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>clientSocket</span><span class=p>.</span><span class=na>close</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>IOException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>e</span><span class=p>.</span><span class=na>printStackTrace</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><h3 id=client-side>Client Side<a hidden class=anchor aria-hidden=true href=#client-side>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.net.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.io.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.util.Scanner</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>TCPClient</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>serverAddress</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;localhost&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>int</span><span class=w> </span><span class=n>port</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>8080</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Socket</span><span class=w> </span><span class=n>socket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Socket</span><span class=p>(</span><span class=n>serverAddress</span><span class=p>,</span><span class=w> </span><span class=n>port</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>PrintWriter</span><span class=w> </span><span class=n>out</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>PrintWriter</span><span class=p>(</span><span class=n>socket</span><span class=p>.</span><span class=na>getOutputStream</span><span class=p>(),</span><span class=w> </span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>BufferedReader</span><span class=w> </span><span class=n>in</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>BufferedReader</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>new</span><span class=w> </span><span class=n>InputStreamReader</span><span class=p>(</span><span class=n>socket</span><span class=p>.</span><span class=na>getInputStream</span><span class=p>()));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Scanner</span><span class=w> </span><span class=n>scanner</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Scanner</span><span class=p>(</span><span class=n>System</span><span class=p>.</span><span class=na>in</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Đã kết nối tới server!&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Nhập tin nhắn (gõ &#39;bye&#39; để thoát):&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>String</span><span class=w> </span><span class=n>userInput</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>while</span><span class=w> </span><span class=p>(</span><span class=kc>true</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>print</span><span class=p>(</span><span class=s>&#34;Bạn: &#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>userInput</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>scanner</span><span class=p>.</span><span class=na>nextLine</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>// Gửi tới server</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=n>userInput</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>// Nhận phản hồi</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>String</span><span class=w> </span><span class=n>response</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>in</span><span class=p>.</span><span class=na>readLine</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Server: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>response</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=s>&#34;bye&#34;</span><span class=p>.</span><span class=na>equalsIgnoreCase</span><span class=p>(</span><span class=n>userInput</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>break</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>UnknownHostException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>err</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Không tìm thấy server: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>serverAddress</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>IOException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>err</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Lỗi I/O: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>e</span><span class=p>.</span><span class=na>getMessage</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><h2 id=udp-socket-trong-java>UDP Socket trong Java<a hidden class=anchor aria-hidden=true href=#udp-socket-trong-java>#</a></h2><h3 id=udp-server>UDP Server<a hidden class=anchor aria-hidden=true href=#udp-server>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.net.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>UDPServer</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>int</span><span class=w> </span><span class=n>port</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>9090</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>buffer</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=kt>byte</span><span class=o>[</span><span class=n>1024</span><span class=o>]</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>(</span><span class=n>DatagramSocket</span><span class=w> </span><span class=n>socket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>DatagramSocket</span><span class=p>(</span><span class=n>port</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;UDP Server đang chờ tại port &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>port</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>while</span><span class=w> </span><span class=p>(</span><span class=kc>true</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>// Nhận datagram</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>DatagramPacket</span><span class=w> </span><span class=n>request</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>DatagramPacket</span><span class=p>(</span><span class=n>buffer</span><span class=p>,</span><span class=w> </span><span class=n>buffer</span><span class=p>.</span><span class=na>length</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>socket</span><span class=p>.</span><span class=na>receive</span><span class=p>(</span><span class=n>request</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>String</span><span class=w> </span><span class=n>message</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>String</span><span class=p>(</span><span class=n>request</span><span class=p>.</span><span class=na>getData</span><span class=p>(),</span><span class=w> </span><span class=n>0</span><span class=p>,</span><span class=w> </span><span class=n>request</span><span class=p>.</span><span class=na>getLength</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Nhận từ &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>request</span><span class=p>.</span><span class=na>getAddress</span><span class=p>()</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=s>&#34;: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>message</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>// Gửi phản hồi</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>String</span><span class=w> </span><span class=n>response</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;Echo: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>message</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>responseData</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>response</span><span class=p>.</span><span class=na>getBytes</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>DatagramPacket</span><span class=w> </span><span class=n>responsePacket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>DatagramPacket</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>responseData</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>responseData</span><span class=p>.</span><span class=na>length</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>request</span><span class=p>.</span><span class=na>getAddress</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>request</span><span class=p>.</span><span class=na>getPort</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>socket</span><span class=p>.</span><span class=na>send</span><span class=p>(</span><span class=n>responsePacket</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>Exception</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>err</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Lỗi: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>e</span><span class=p>.</span><span class=na>getMessage</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><h3 id=udp-client>UDP Client<a hidden class=anchor aria-hidden=true href=#udp-client>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.net.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.util.Scanner</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>UDPClient</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>serverAddress</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;localhost&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>int</span><span class=w> </span><span class=n>port</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>9090</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>DatagramSocket</span><span class=w> </span><span class=n>socket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>DatagramSocket</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Scanner</span><span class=w> </span><span class=n>scanner</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Scanner</span><span class=p>(</span><span class=n>System</span><span class=p>.</span><span class=na>in</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>InetAddress</span><span class=w> </span><span class=n>serverAddr</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>InetAddress</span><span class=p>.</span><span class=na>getByName</span><span class=p>(</span><span class=n>serverAddress</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>buffer</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=kt>byte</span><span class=o>[</span><span class=n>1024</span><span class=o>]</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;UDP Client sẵn sàng. Nhập tin nhắn:&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>while</span><span class=w> </span><span class=p>(</span><span class=kc>true</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>print</span><span class=p>(</span><span class=s>&#34;Bạn: &#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>String</span><span class=w> </span><span class=n>message</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>scanner</span><span class=p>.</span><span class=na>nextLine</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=s>&#34;exit&#34;</span><span class=p>.</span><span class=na>equalsIgnoreCase</span><span class=p>(</span><span class=n>message</span><span class=p>))</span><span class=w> </span><span class=k>break</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>// Gửi datagram</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>sendData</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>message</span><span class=p>.</span><span class=na>getBytes</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>DatagramPacket</span><span class=w> </span><span class=n>sendPacket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>DatagramPacket</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>sendData</span><span class=p>,</span><span class=w> </span><span class=n>sendData</span><span class=p>.</span><span class=na>length</span><span class=p>,</span><span class=w> </span><span class=n>serverAddr</span><span class=p>,</span><span class=w> </span><span class=n>port</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>socket</span><span class=p>.</span><span class=na>send</span><span class=p>(</span><span class=n>sendPacket</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>// Nhận phản hồi</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>DatagramPacket</span><span class=w> </span><span class=n>receivePacket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>DatagramPacket</span><span class=p>(</span><span class=n>buffer</span><span class=p>,</span><span class=w> </span><span class=n>buffer</span><span class=p>.</span><span class=na>length</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>socket</span><span class=p>.</span><span class=na>receive</span><span class=p>(</span><span class=n>receivePacket</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>String</span><span class=w> </span><span class=n>response</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>String</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>receivePacket</span><span class=p>.</span><span class=na>getData</span><span class=p>(),</span><span class=w> </span><span class=n>0</span><span class=p>,</span><span class=w> </span><span class=n>receivePacket</span><span class=p>.</span><span class=na>getLength</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Server: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>response</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>Exception</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>err</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Lỗi: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>e</span><span class=p>.</span><span class=na>getMessage</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><h2 id=ứng-dụng-thực-tế-chat-server-multi-client>Ứng dụng thực tế: Chat Server Multi-Client<a hidden class=anchor aria-hidden=true href=#ứng-dụng-thực-tế-chat-server-multi-client>#</a></h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.net.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.io.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.util.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.util.concurrent.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>ChatServer</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Set</span><span class=o>&lt;</span><span class=n>ClientHandler</span><span class=o>&gt;</span><span class=w> </span><span class=n>clientHandlers</span><span class=w> </span><span class=o>=</span><span class=w> 
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ConcurrentHashMap</span><span class=p>.</span><span class=na>newKeySet</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>int</span><span class=w> </span><span class=n>port</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>8888</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ServerSocket</span><span class=w> </span><span class=n>serverSocket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ServerSocket</span><span class=p>(</span><span class=n>port</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Chat Server chạy tại port &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>port</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>while</span><span class=w> </span><span class=p>(</span><span class=kc>true</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Socket</span><span class=w> </span><span class=n>socket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>serverSocket</span><span class=p>.</span><span class=na>accept</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>ClientHandler</span><span class=w> </span><span class=n>handler</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ClientHandler</span><span class=p>(</span><span class=n>socket</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>clientHandlers</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=n>handler</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>handler</span><span class=p>.</span><span class=na>start</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// Gửi tin nhắn tới tất cả clients</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>broadcast</span><span class=p>(</span><span class=n>String</span><span class=w> </span><span class=n>message</span><span class=p>,</span><span class=w> </span><span class=n>ClientHandler</span><span class=w> </span><span class=n>sender</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>for</span><span class=w> </span><span class=p>(</span><span class=n>ClientHandler</span><span class=w> </span><span class=n>client</span><span class=w> </span><span class=p>:</span><span class=w> </span><span class=n>clientHandlers</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>client</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=n>sender</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>client</span><span class=p>.</span><span class=na>sendMessage</span><span class=p>(</span><span class=n>message</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>removeClient</span><span class=p>(</span><span class=n>ClientHandler</span><span class=w> </span><span class=n>client</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>clientHandlers</span><span class=p>.</span><span class=na>remove</span><span class=p>(</span><span class=n>client</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>class</span> <span class=nc>ClientHandler</span><span class=w> </span><span class=kd>extends</span><span class=w> </span><span class=n>Thread</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>Socket</span><span class=w> </span><span class=n>socket</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>PrintWriter</span><span class=w> </span><span class=n>out</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>BufferedReader</span><span class=w> </span><span class=n>in</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>username</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=nf>ClientHandler</span><span class=p>(</span><span class=n>Socket</span><span class=w> </span><span class=n>socket</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>this</span><span class=p>.</span><span class=na>socket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>socket</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nd>@Override</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>run</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>in</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>BufferedReader</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>new</span><span class=w> </span><span class=n>InputStreamReader</span><span class=p>(</span><span class=n>socket</span><span class=p>.</span><span class=na>getInputStream</span><span class=p>()));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>out</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>PrintWriter</span><span class=p>(</span><span class=n>socket</span><span class=p>.</span><span class=na>getOutputStream</span><span class=p>(),</span><span class=w> </span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// Yêu cầu username</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Nhập tên của bạn:&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>username</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>in</span><span class=p>.</span><span class=na>readLine</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>ChatServer</span><span class=p>.</span><span class=na>broadcast</span><span class=p>(</span><span class=n>username</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=s>&#34; đã tham gia chat!&#34;</span><span class=p>,</span><span class=w> </span><span class=k>this</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=n>username</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=s>&#34; đã kết nối&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>String</span><span class=w> </span><span class=n>message</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>while</span><span class=w> </span><span class=p>((</span><span class=n>message</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>in</span><span class=p>.</span><span class=na>readLine</span><span class=p>())</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>message</span><span class=p>.</span><span class=na>equalsIgnoreCase</span><span class=p>(</span><span class=s>&#34;/quit&#34;</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>break</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>ChatServer</span><span class=p>.</span><span class=na>broadcast</span><span class=p>(</span><span class=n>username</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=s>&#34;: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>message</span><span class=p>,</span><span class=w> </span><span class=k>this</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>IOException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>err</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Lỗi với client &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>username</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>finally</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>cleanup</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>sendMessage</span><span class=p>(</span><span class=n>String</span><span class=w> </span><span class=n>message</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=n>message</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>cleanup</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>ChatServer</span><span class=p>.</span><span class=na>broadcast</span><span class=p>(</span><span class=n>username</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=s>&#34; đã rời chat!&#34;</span><span class=p>,</span><span class=w> </span><span class=k>this</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>ChatServer</span><span class=p>.</span><span class=na>removeClient</span><span class=p>(</span><span class=k>this</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>socket</span><span class=p>.</span><span class=na>close</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>IOException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>e</span><span class=p>.</span><span class=na>printStackTrace</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><h3 id=chat-client>Chat Client<a hidden class=anchor aria-hidden=true href=#chat-client>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.net.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.io.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>java.util.Scanner</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>ChatClient</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>server</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;localhost&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>int</span><span class=w> </span><span class=n>port</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>8888</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>(</span><span class=n>Socket</span><span class=w> </span><span class=n>socket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Socket</span><span class=p>(</span><span class=n>server</span><span class=p>,</span><span class=w> </span><span class=n>port</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>BufferedReader</span><span class=w> </span><span class=n>in</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>BufferedReader</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>new</span><span class=w> </span><span class=n>InputStreamReader</span><span class=p>(</span><span class=n>socket</span><span class=p>.</span><span class=na>getInputStream</span><span class=p>()));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>PrintWriter</span><span class=w> </span><span class=n>out</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>PrintWriter</span><span class=p>(</span><span class=n>socket</span><span class=p>.</span><span class=na>getOutputStream</span><span class=p>(),</span><span class=w> </span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Scanner</span><span class=w> </span><span class=n>scanner</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Scanner</span><span class=p>(</span><span class=n>System</span><span class=p>.</span><span class=na>in</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// Thread đọc tin nhắn từ server</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Thread</span><span class=w> </span><span class=n>readThread</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Thread</span><span class=p>(()</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>String</span><span class=w> </span><span class=n>message</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>while</span><span class=w> </span><span class=p>((</span><span class=n>message</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>in</span><span class=p>.</span><span class=na>readLine</span><span class=p>())</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=n>message</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>IOException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Mất kết nối!&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>});</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>readThread</span><span class=p>.</span><span class=na>start</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// Gửi tin nhắn</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>while</span><span class=w> </span><span class=p>(</span><span class=kc>true</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>String</span><span class=w> </span><span class=n>input</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>scanner</span><span class=p>.</span><span class=na>nextLine</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=n>input</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>input</span><span class=p>.</span><span class=na>equalsIgnoreCase</span><span class=p>(</span><span class=s>&#34;/quit&#34;</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>break</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>IOException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>err</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Không thể kết nối: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>e</span><span class=p>.</span><span class=na>getMessage</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><h2 id=các-class-quan-trọng-trong-javanet>Các class quan trọng trong java.net<a hidden class=anchor aria-hidden=true href=#các-class-quan-trọng-trong-javanet>#</a></h2><table><thead><tr><th>Class</th><th>Mô tả</th></tr></thead><tbody><tr><td><code>Socket</code></td><td>TCP client socket</td></tr><tr><td><code>ServerSocket</code></td><td>TCP server socket</td></tr><tr><td><code>DatagramSocket</code></td><td>UDP socket</td></tr><tr><td><code>DatagramPacket</code></td><td>UDP packet</td></tr><tr><td><code>InetAddress</code></td><td>Địa chỉ IP</td></tr><tr><td><code>URL</code></td><td>Uniform Resource Locator</td></tr><tr><td><code>URLConnection</code></td><td>Kết nối tới URL</td></tr></tbody></table><h2 id=best-practices>Best Practices<a hidden class=anchor aria-hidden=true href=#best-practices>#</a></h2><h3 id=1-luôn-đóng-socket-trong-finally-hoặc-try-with-resources>1. Luôn đóng Socket trong finally hoặc try-with-resources<a hidden class=anchor aria-hidden=true href=#1-luôn-đóng-socket-trong-finally-hoặc-try-with-resources>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=k>try</span><span class=w> </span><span class=p>(</span><span class=n>Socket</span><span class=w> </span><span class=n>socket</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Socket</span><span class=p>(</span><span class=n>host</span><span class=p>,</span><span class=w> </span><span class=n>port</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// Xử lý</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w> </span><span class=c1>// Tự động đóng</span><span class=w>
+</span></span></span></code></pre></div><h3 id=2-set-timeout-để-tránh-block-vô-hạn>2. Set timeout để tránh block vô hạn<a hidden class=anchor aria-hidden=true href=#2-set-timeout-để-tránh-block-vô-hạn>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>socket</span><span class=p>.</span><span class=na>setSoTimeout</span><span class=p>(</span><span class=n>5000</span><span class=p>);</span><span class=w> </span><span class=c1>// 5 giây timeout</span><span class=w>
+</span></span></span></code></pre></div><h3 id=3-xử-lý-multi-client-bằng-thread-pool>3. Xử lý multi-client bằng Thread Pool<a hidden class=anchor aria-hidden=true href=#3-xử-lý-multi-client-bằng-thread-pool>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>ExecutorService</span><span class=w> </span><span class=n>executor</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Executors</span><span class=p>.</span><span class=na>newFixedThreadPool</span><span class=p>(</span><span class=n>10</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>while</span><span class=w> </span><span class=p>(</span><span class=kc>true</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>Socket</span><span class=w> </span><span class=n>client</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>serverSocket</span><span class=p>.</span><span class=na>accept</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>executor</span><span class=p>.</span><span class=na>execute</span><span class=p>(</span><span class=k>new</span><span class=w> </span><span class=n>ClientHandler</span><span class=p>(</span><span class=n>client</span><span class=p>));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><h3 id=4-xử-lý-exception-đúng-cách>4. Xử lý exception đúng cách<a hidden class=anchor aria-hidden=true href=#4-xử-lý-exception-đúng-cách>#</a></h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// Socket operations</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>UnknownHostException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// Không tìm thấy host</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>SocketTimeoutException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// Timeout</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>IOException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// Lỗi I/O khác</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></div><h2 id=kết-luận>Kết luận<a hidden class=anchor aria-hidden=true href=#kết-luận>#</a></h2><p><strong>Socket Programming</strong> trong Java là kỹ năng quan trọng cho lập trình mạng. Với các class như <code>Socket</code>, <code>ServerSocket</code>, <code>DatagramSocket</code>, bạn có thể xây dựng các ứng dụng mạng từ đơn giản đến phức tạp. Nắm vững kiến thức này là nền tảng để phát triển các ứng dụng client-server chuyên nghiệp.</p><hr><p><em>Bài viết thuộc series Lập trình mạng Java - Blog Ngô Phạm Ngọc Tú</em></p></div><footer class=post-footer><ul class=post-tags><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/java/>Java</a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/socket/>Socket</a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/network/>Network</a></li><li><a href=https://hihi99s.github.io/blog-ca-nhan/tags/tcp/>TCP</a></li></ul></footer></article></main><footer class=footer><span>&copy; 2025 <a href=https://hihi99s.github.io/blog-ca-nhan/>Blog cá nhân – Ngô Phạm Ngọc Tú</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentColor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script></body></html>

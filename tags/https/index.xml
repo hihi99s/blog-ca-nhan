@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>HTTPS on Blog cá nhân – Ngô Phạm Ngọc Tú</title><link>https://hihi99s.github.io/blog-ca-nhan/tags/https/</link><description>Recent content in HTTPS on Blog cá nhân – Ngô Phạm Ngọc Tú</description><generator>Hugo -- 0.153.3</generator><language>vi</language><lastBuildDate>Fri, 12 Dec 2025 10:00:00 +0700</lastBuildDate><atom:link href="https://hihi99s.github.io/blog-ca-nhan/tags/https/index.xml" rel="self" type="application/rss+xml"/><item><title>Bảo mật cơ bản trong Giao tiếp Mạng</title><link>https://hihi99s.github.io/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/</link><pubDate>Fri, 12 Dec 2025 10:00:00 +0700</pubDate><guid>https://hihi99s.github.io/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/</guid><description>&lt;h1 id="bảo-mật-cơ-bản-trong-giao-tiếp-mạng"&gt;Bảo mật cơ bản trong Giao tiếp Mạng&lt;/h1&gt;
+&lt;p&gt;Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. Bài viết này sẽ giới thiệu các khái niệm và kỹ thuật bảo mật cơ bản khi phát triển ứng dụng web và mạng.&lt;/p&gt;
+&lt;h2 id="tại-sao-cần-bảo-mật-mạng"&gt;Tại sao cần Bảo mật Mạng?&lt;/h2&gt;
+&lt;h3 id="các-mối-đe-dọa-phổ-biến"&gt;Các mối đe dọa phổ biến&lt;/h3&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;┌───────────────┐
+│ ATTACKER │
+└───────┬───────┘
+│
+▼
+┌───────────────────────────────────────────────────┐
+│ INTERNET │
+│ ┌─────────────┐ ┌─────────────┐ │
+│ │ Eavesdrop │ ┌────────┐ │ Man-in-the │ │
+│ │ (Nghe lén) │◄──│ Data │──►│ Middle │ │
+│ └─────────────┘ └────────┘ └─────────────┘ │
+│ │
+│ ┌─────────────┐ ┌─────────────┐ │
+│ │ Replay │ │ Data │ │
+│ │ Attack │ │ Tampering │ │
+│ └─────────────┘ └─────────────┘ │
+└───────────────────────────────────────────────────┘
+&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Eavesdropping (Nghe lén)&lt;/strong&gt;: Đọc dữ liệu truyền tải&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Man-in-the-Middle&lt;/strong&gt;: Chặn và sửa đổi dữ liệu&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Replay Attack&lt;/strong&gt;: Gửi lại request cũ&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Data Tampering&lt;/strong&gt;: Thay đổi dữ liệu&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="http-vs-https"&gt;HTTP vs HTTPS&lt;/h2&gt;
+&lt;h3 id="http---không-an-toàn"&gt;HTTP - Không an toàn&lt;/h3&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Client ──────── Plain Text ────────► Server
+&amp;#34;password=123456&amp;#34;
+↑
+Attacker có thể đọc!
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="https---an-toàn"&gt;HTTPS - An toàn&lt;/h3&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Client ──────── Encrypted ────────► Server
+&amp;#34;x#$%^&amp;amp;*@!...&amp;#34;
+↑
+Attacker không hiểu!
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="ssltls-là-gì"&gt;SSL/TLS là gì?&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;SSL (Secure Sockets Layer)&lt;/strong&gt; và &lt;strong&gt;TLS (Transport Layer Security)&lt;/strong&gt; là các giao thức mã hóa bảo vệ dữ liệu truyền tải.&lt;/p&gt;</description></item></channel></rss>

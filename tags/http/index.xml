@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>HTTP on Blog cá nhân – Ngô Phạm Ngọc Tú</title><link>https://hihi99s.github.io/blog-ca-nhan/tags/http/</link><description>Recent content in HTTP on Blog cá nhân – Ngô Phạm Ngọc Tú</description><generator>Hugo -- 0.153.3</generator><language>vi</language><lastBuildDate>Fri, 19 Dec 2025 10:00:00 +0700</lastBuildDate><atom:link href="https://hihi99s.github.io/blog-ca-nhan/tags/http/index.xml" rel="self" type="application/rss+xml"/><item><title>Fetch API và Giao tiếp HTTP trong JavaScript</title><link>https://hihi99s.github.io/blog-ca-nhan/posts/fetch-api-http/</link><pubDate>Fri, 19 Dec 2025 10:00:00 +0700</pubDate><guid>https://hihi99s.github.io/blog-ca-nhan/posts/fetch-api-http/</guid><description>&lt;h1 id="fetch-api-và-giao-tiếp-http-trong-javascript"&gt;Fetch API và Giao tiếp HTTP trong JavaScript&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;Fetch API&lt;/strong&gt; là giao diện hiện đại trong JavaScript để thực hiện các HTTP request. Nó thay thế XMLHttpRequest (XHR) cũ với cú pháp đơn giản hơn và dựa trên Promise.&lt;/p&gt;
+&lt;h2 id="http-là-gì"&gt;HTTP là gì?&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;HTTP (HyperText Transfer Protocol)&lt;/strong&gt; là giao thức truyền thông giữa client và server trên web. Mỗi HTTP request bao gồm:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Method&lt;/strong&gt; (GET, POST, PUT, DELETE, &amp;hellip;)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;URL&lt;/strong&gt; (địa chỉ tài nguyên)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Headers&lt;/strong&gt; (thông tin bổ sung)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Body&lt;/strong&gt; (dữ liệu gửi đi - với POST, PUT)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="cú-pháp-cơ-bản-của-fetch"&gt;Cú pháp cơ bản của Fetch&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;fetch&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;url&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;options&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;then&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;response&lt;/span&gt; &lt;span class="p"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="nx"&gt;response&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;json&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;then&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;data&lt;/span&gt; &lt;span class="p"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="nx"&gt;console&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;log&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;catch&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;error&lt;/span&gt; &lt;span class="p"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="nx"&gt;console&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;error&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;error&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Hoặc với Async/Await:&lt;/p&gt;</description></item><item><title>REST API và Kiến trúc Client-Server</title><link>https://hihi99s.github.io/blog-ca-nhan/posts/rest-api-client-server/</link><pubDate>Sat, 13 Dec 2025 10:00:00 +0700</pubDate><guid>https://hihi99s.github.io/blog-ca-nhan/posts/rest-api-client-server/</guid><description>&lt;h1 id="rest-api-và-kiến-trúc-client-server"&gt;REST API và Kiến trúc Client-Server&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;REST (Representational State Transfer)&lt;/strong&gt; là kiến trúc phổ biến nhất để xây dựng API cho ứng dụng web. Bài viết này sẽ giải thích REST API và mô hình Client-Server một cách chi tiết.&lt;/p&gt;
+&lt;h2 id="kiến-trúc-client-server"&gt;Kiến trúc Client-Server&lt;/h2&gt;
+&lt;h3 id="mô-hình-cơ-bản"&gt;Mô hình cơ bản&lt;/h3&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;┌──────────────┐ HTTP Request ┌──────────────┐
+│ │ ─────────────────────────────►│ │
+│ CLIENT │ │ SERVER │
+│ │◄───────────────────────────── │ │
+└──────────────┘ HTTP Response └──────────────┘
+(Browser, (API,
+Mobile App, Database,
+Desktop App) Business Logic)
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="đặc-điểm"&gt;Đặc điểm&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Client&lt;/strong&gt;: Gửi request, hiển thị dữ liệu cho user&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Server&lt;/strong&gt;: Xử lý logic, lưu trữ dữ liệu, trả response&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Stateless&lt;/strong&gt;: Server không lưu trạng thái client giữa các request&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Separation of Concerns&lt;/strong&gt;: Tách biệt UI và logic&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="rest-là-gì"&gt;REST là gì?&lt;/h2&gt;
+&lt;p&gt;REST là một &lt;strong&gt;kiến trúc&lt;/strong&gt; (không phải giao thức) với các nguyên tắc thiết kế API:&lt;/p&gt;</description></item></channel></rss>
