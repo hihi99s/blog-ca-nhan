@@ -640,10 +640,21 @@ Trong lập trình JavaScript hiện đại, việc xử lý các tác vụ bấ
         const savedTime = parseFloat(localStorage.getItem('musicTime')) || 0;
 
         
-        audio.currentTime = savedTime;
-        if (isPlaying) {
-            audio.play().catch(() => { });
-            musicBtn.textContent = '🔇';
+        audio.addEventListener('loadedmetadata', () => {
+            audio.currentTime = savedTime;
+            if (isPlaying) {
+                audio.play().catch(() => { });
+                musicBtn.textContent = '🔇';
+            }
+        });
+
+        
+        if (audio.readyState >= 1) {
+            audio.currentTime = savedTime;
+            if (isPlaying) {
+                audio.play().catch(() => { });
+                musicBtn.textContent = '🔇';
+            }
         }
 
         

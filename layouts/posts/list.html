@@ -458,11 +458,22 @@
         let isPlaying = localStorage.getItem('musicPlaying') === 'true';
         const savedTime = parseFloat(localStorage.getItem('musicTime')) || 0;
 
-        // Restore position and play if was playing
-        audio.currentTime = savedTime;
-        if (isPlaying) {
-            audio.play().catch(() => { });
-            musicBtn.textContent = '🔇';
+        // Wait for audio to load, then restore position
+        audio.addEventListener('loadedmetadata', () => {
+            audio.currentTime = savedTime;
+            if (isPlaying) {
+                audio.play().catch(() => { });
+                musicBtn.textContent = '🔇';
+            }
+        });
+
+        // If already loaded (cached), restore immediately
+        if (audio.readyState >= 1) {
+            audio.currentTime = savedTime;
+            if (isPlaying) {
+                audio.play().catch(() => { });
+                musicBtn.textContent = '🔇';
+            }
         }
 
         // Save position periodically
