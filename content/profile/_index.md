@@ -6,7 +6,7 @@ draft = false
 
 # Ngô Phạm Ngọc Tú
 
-**Sinh viên năm 3 — Đại học Công nghệ TP.HCM (HUTECH)**
+**Sinh viên năm 4 — Đại học Công nghệ TP.HCM (HUTECH)**
 
 ---
 
@@ -88,7 +88,7 @@ draft = false
 
 ## Liên hệ
 
-- **Email:** 2280603518@student.hutech.edu.vn
+- **Email:** phamngoctu710@gmail.com
 - **GitHub:** [github.com/hihi99s](https://github.com/hihi99s)
 
 ---
