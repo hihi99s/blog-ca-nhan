@@ -128,7 +128,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Blog – Blog cá nhân – Ngô Phạm Ngọc Tú</title>
-    <meta name="description" content="Blog chia sẻ kiến thức lập trình mạng, Java và JavaScript">
+    <meta name="description" content="Blog chia sẻ kiến thức lập trình mạng, Java và JavaScript - Ngô Phạm Ngọc Tú">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
     <style>
@@ -172,6 +172,7 @@
             font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             line-height: 1.7;
             min-height: 100vh;
+            position: relative;
             overflow-x: hidden;
         }
 
@@ -200,76 +201,101 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 60px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .back-nav {
-            margin-bottom: 32px;
-            animation: fadeInUp 0.6s ease-out;
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 40px;
         }
 
         .back-link {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            color: var(--muted);
-            font-weight: 500;
-            padding: 12px 20px;
+            gap: 12px;
+            padding: 16px 32px;
             background: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border);
             backdrop-filter: blur(20px);
-            transition: all 0.3s ease;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            color: var(--text);
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
         .back-link:hover {
-            color: var(--accent);
             border-color: var(--accent);
+            box-shadow: 0 20px 40px var(--card-glow);
+            transform: translateY(-4px);
             text-decoration: none;
-            transform: translateX(-4px);
+        }
+
+        .back-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .back-link:hover::before {
+            left: 100%;
         }
 
         .page-header {
             text-align: center;
-            margin-bottom: 48px;
-            animation: fadeInUp 0.8s ease-out;
+            margin-bottom: 60px;
+            animation: fadeInUp 1s ease-out;
         }
 
         .page-title {
-            font-size: clamp(2rem, 4vw, 3rem);
+            font-size: clamp(2.5rem, 5vw, 4rem);
             font-weight: 800;
             background: linear-gradient(135deg, var(--text) 0%, var(--accent) 50%, var(--text-2nd) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin: 0 0 12px;
+            margin: 0 0 16px;
+            letter-spacing: -0.02em;
         }
 
         .page-subtitle {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             color: var(--muted);
             margin: 0;
+            opacity: 0.9;
         }
 
         .posts-list {
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 32px;
+            width: 100%;
+            max-width: 900px;
         }
 
         .post-card {
             background: var(--card-bg);
             backdrop-filter: blur(24px);
-            padding: 28px;
-            border-radius: 20px;
+            padding: 40px;
+            border-radius: 24px;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            animation: fadeInUp 0.8s ease-out both;
             position: relative;
             overflow: hidden;
+            animation: fadeInUp 1s ease-out both;
         }
 
         .post-card::before {
@@ -278,61 +304,25 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
+            height: 4px;
             background: linear-gradient(90deg, var(--accent), transparent);
         }
 
-        .post-card:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .post-card:nth-child(2) {
-            animation-delay: 0.15s;
-        }
-
-        .post-card:nth-child(3) {
-            animation-delay: 0.2s;
-        }
-
-        .post-card:nth-child(4) {
-            animation-delay: 0.25s;
-        }
-
-        .post-card:nth-child(5) {
-            animation-delay: 0.3s;
-        }
-
-        .post-card:nth-child(6) {
-            animation-delay: 0.35s;
-        }
-
-        .post-card:nth-child(7) {
-            animation-delay: 0.4s;
-        }
-
-        .post-card:nth-child(8) {
-            animation-delay: 0.45s;
-        }
-
-        .post-card:nth-child(9) {
-            animation-delay: 0.5s;
-        }
-
         .post-card:hover {
-            transform: translateY(-8px) scale(1.01);
+            transform: translateY(-12px) scale(1.02) rotateX(2deg);
             box-shadow: 0 40px 80px var(--card-glow);
             border-color: var(--accent);
         }
 
         .post-card h2 {
-            margin: 0 0 12px;
-            font-size: 1.4rem;
+            margin: 0 0 16px;
+            font-size: 1.6rem;
             font-weight: 700;
         }
 
         .post-card h2 a {
             color: var(--text);
-            transition: color 0.3s;
+            transition: all 0.3s;
         }
 
         .post-card h2 a:hover {
@@ -341,35 +331,43 @@
         }
 
         .post-meta {
-            font-size: 0.9rem;
-            color: var(--muted);
-            margin-bottom: 12px;
             display: flex;
-            align-items: center;
-            gap: 12px;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 1rem;
+            color: var(--muted);
+            margin-bottom: 20px;
         }
 
         .post-summary {
             color: var(--text-2nd);
-            margin: 0 0 16px;
-            line-height: 1.7;
-            opacity: 0.9;
+            margin: 0 0 24px;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            opacity: 0.95;
         }
 
         .post-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 12px;
         }
 
         .tag {
-            background: rgba(125, 211, 252, 0.12);
+            background: var(--accent-glow);
             color: var(--accent);
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            border: 1px solid rgba(125, 211, 252, 0.2);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .tag:hover {
+            background: var(--accent);
+            color: #0f172a;
+            transform: translateY(-4px);
         }
 
         .theme-toggle {
@@ -387,22 +385,23 @@
             padding: 16px;
             border-radius: 50%;
             cursor: pointer;
-            width: 60px;
-            height: 60px;
-            font-size: 1.3rem;
+            width: 64px;
+            height: 64px;
+            font-size: 1.4rem;
             box-shadow: var(--shadow);
             transition: all 0.3s ease;
         }
 
         .theme-toggle button:hover {
             transform: scale(1.1) rotate(180deg);
+            box-shadow: 0 20px 40px var(--card-glow);
             border-color: var(--accent);
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(40px);
             }
 
             to {
@@ -411,17 +410,62 @@
             }
         }
 
+         
+        .post-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .post-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .post-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .post-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .post-card:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .post-card:nth-child(6) {
+            animation-delay: 0.6s;
+        }
+
+        .post-card:nth-child(7) {
+            animation-delay: 0.7s;
+        }
+
+        .post-card:nth-child(8) {
+            animation-delay: 0.8s;
+        }
+
+        .post-card:nth-child(9) {
+            animation-delay: 0.9s;
+        }
+
+        .post-card:nth-child(10) {
+            animation-delay: 1.0s;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 40px 20px;
             }
 
             .post-card {
-                padding: 20px;
+                padding: 32px;
             }
 
-            .post-card h2 {
-                font-size: 1.2rem;
+            .page-title {
+                font-size: 2.8rem;
+            }
+
+            .back-link {
+                padding: 14px 24px;
             }
         }
 
@@ -464,8 +508,9 @@
         </nav>
 
         <header class="page-header">
-            <h1 class="page-title">📝 Blog</h1>
-            <p class="page-subtitle">Chia sẻ kiến thức về lập trình mạng, Java và JavaScript</p>
+            <h1 class="page-title">📝 Blog Cá Nhân</h1>
+            <p class="page-subtitle">Chia sẻ kiến thức lập trình mạng máy tính, Java & JavaScript với ví dụ thực hành
+            </p>
         </header>
 
         <div class="posts-list">
@@ -474,19 +519,19 @@
                 <h2><a href="http://localhost:1313/blog-ca-nhan/posts/async-await-javascript/">Async/Await trong JavaScript: Hướng dẫn chi tiết</a></h2>
                 <div class="post-meta">
                     <span>📅 20/12/2025</span>
-                    <span>📁 JavaScript</span>
                     <span>⏱️ 4 phút đọc</span>
+                    <span>📁 JavaScript</span>
                 </div>
                 <p class="post-summary"><h1 id="asyncawait-trong-javascript-hướng-dẫn-chi-tiết">Async/Await trong JavaScript: Hướng dẫn chi tiết</h1>
-<p>Trong lập trình JavaScript hiện đại, việc xử lý các tác vụ bất đồng bộ là điều không thể tránh khỏi. <strong>Async/Await</strong> là cú pháp được …</p></p>
+<p>Trong lập trình JavaScript hiện đại, việc xử lý các tác vụ bất đồng bộ là điều không thể tránh khỏi. <strong>Async/Await</strong> là cú pháp được giới thiệu trong …</p></p>
                 
                 <div class="post-tags">
                     
-                    <span class="tag">JavaScript</span>
+                    <span class="tag">#JavaScript</span>
                     
-                    <span class="tag">Async</span>
+                    <span class="tag">#Async</span>
                     
-                    <span class="tag">Web</span>
+                    <span class="tag">#Web</span>
                     
                 </div>
                 
@@ -496,21 +541,21 @@
                 <h2><a href="http://localhost:1313/blog-ca-nhan/posts/fetch-api-http/">Fetch API và Giao tiếp HTTP trong JavaScript</a></h2>
                 <div class="post-meta">
                     <span>📅 19/12/2025</span>
-                    <span>📁 JavaScript</span>
                     <span>⏱️ 5 phút đọc</span>
+                    <span>📁 JavaScript</span>
                 </div>
                 <p class="post-summary"><h1 id="fetch-api-và-giao-tiếp-http-trong-javascript">Fetch API và Giao tiếp HTTP trong JavaScript</h1>
-<p><strong>Fetch API</strong> là giao diện hiện đại trong JavaScript để thực hiện các HTTP request. Nó thay thế XMLHttpRequest (XHR) cũ với cú pháp đơn …</p></p>
+<p><strong>Fetch API</strong> là giao diện hiện đại trong JavaScript để thực hiện các HTTP request. Nó thay thế XMLHttpRequest (XHR) cũ với cú pháp đơn giản hơn và dựa trên …</p></p>
                 
                 <div class="post-tags">
                     
-                    <span class="tag">JavaScript</span>
+                    <span class="tag">#JavaScript</span>
                     
-                    <span class="tag">HTTP</span>
+                    <span class="tag">#HTTP</span>
                     
-                    <span class="tag">API</span>
+                    <span class="tag">#API</span>
                     
-                    <span class="tag">Web</span>
+                    <span class="tag">#Web</span>
                     
                 </div>
                 
@@ -520,21 +565,21 @@
                 <h2><a href="http://localhost:1313/blog-ca-nhan/posts/dom-event-web/">DOM và Event trong Lập trình Web</a></h2>
                 <div class="post-meta">
                     <span>📅 18/12/2025</span>
-                    <span>📁 JavaScript</span>
                     <span>⏱️ 5 phút đọc</span>
+                    <span>📁 JavaScript</span>
                 </div>
                 <p class="post-summary"><h1 id="dom-và-event-trong-lập-trình-web">DOM và Event trong Lập trình Web</h1>
-<p><strong>DOM (Document Object Model)</strong> là giao diện lập trình cho phép JavaScript tương tác với cấu trúc HTML của trang web. Hiểu về DOM và Event là nền tảng …</p></p>
+<p><strong>DOM (Document Object Model)</strong> là giao diện lập trình cho phép JavaScript tương tác với cấu trúc HTML của trang web. Hiểu về DOM và Event là nền tảng quan trọng cho mọi …</p></p>
                 
                 <div class="post-tags">
                     
-                    <span class="tag">JavaScript</span>
+                    <span class="tag">#JavaScript</span>
                     
-                    <span class="tag">DOM</span>
+                    <span class="tag">#DOM</span>
                     
-                    <span class="tag">Web</span>
+                    <span class="tag">#Web</span>
                     
-                    <span class="tag">Event</span>
+                    <span class="tag">#Event</span>
                     
                 </div>
                 
@@ -544,21 +589,21 @@
                 <h2><a href="http://localhost:1313/blog-ca-nhan/posts/tcp-udp-co-ban/">TCP và UDP: Hai giao thức vận chuyển cơ bản</a></h2>
                 <div class="post-meta">
                     <span>📅 17/12/2025</span>
-                    <span>📁 Lập trình mạng</span>
                     <span>⏱️ 5 phút đọc</span>
+                    <span>📁 Lập trình mạng</span>
                 </div>
                 <p class="post-summary"><h1 id="tcp-và-udp-hai-giao-thức-vận-chuyển-cơ-bản">TCP và UDP: Hai giao thức vận chuyển cơ bản</h1>
-<p>Trong lập trình mạng, <strong>TCP</strong> và <strong>UDP</strong> là hai giao thức vận chuyển (Transport Layer) quan trọng nhất. Hiểu rõ đặc điểm và use case của từng …</p></p>
+<p>Trong lập trình mạng, <strong>TCP</strong> và <strong>UDP</strong> là hai giao thức vận chuyển (Transport Layer) quan trọng nhất. Hiểu rõ đặc điểm và use case của từng giao thức giúp bạn …</p></p>
                 
                 <div class="post-tags">
                     
-                    <span class="tag">Network</span>
+                    <span class="tag">#Network</span>
                     
-                    <span class="tag">TCP</span>
+                    <span class="tag">#TCP</span>
                     
-                    <span class="tag">UDP</span>
+                    <span class="tag">#UDP</span>
                     
-                    <span class="tag">Protocol</span>
+                    <span class="tag">#Protocol</span>
                     
                 </div>
                 
@@ -568,21 +613,21 @@
                 <h2><a href="http://localhost:1313/blog-ca-nhan/posts/websocket-javascript/">WebSocket trong JavaScript: Giao tiếp Realtime</a></h2>
                 <div class="post-meta">
                     <span>📅 16/12/2025</span>
-                    <span>📁 JavaScript</span>
                     <span>⏱️ 5 phút đọc</span>
+                    <span>📁 JavaScript</span>
                 </div>
                 <p class="post-summary"><h1 id="websocket-trong-javascript-giao-tiếp-realtime">WebSocket trong JavaScript: Giao tiếp Realtime</h1>
-<p><strong>WebSocket</strong> là giao thức cho phép giao tiếp hai chiều (full-duplex) giữa client và server thông qua một kết nối TCP duy nhất. Đây là …</p></p>
+<p><strong>WebSocket</strong> là giao thức cho phép giao tiếp hai chiều (full-duplex) giữa client và server thông qua một kết nối TCP duy nhất. Đây là công nghệ quan trọng …</p></p>
                 
                 <div class="post-tags">
                     
-                    <span class="tag">JavaScript</span>
+                    <span class="tag">#JavaScript</span>
                     
-                    <span class="tag">WebSocket</span>
+                    <span class="tag">#WebSocket</span>
                     
-                    <span class="tag">Realtime</span>
+                    <span class="tag">#Realtime</span>
                     
-                    <span class="tag">Web</span>
+                    <span class="tag">#Web</span>
                     
                 </div>
                 
@@ -592,21 +637,21 @@
                 <h2><a href="http://localhost:1313/blog-ca-nhan/posts/socket-java/">Socket Programming trong Java: Hướng dẫn chi tiết</a></h2>
                 <div class="post-meta">
                     <span>📅 15/12/2025</span>
-                    <span>📁 Lập trình mạng</span>
                     <span>⏱️ 6 phút đọc</span>
+                    <span>📁 Lập trình mạng</span>
                 </div>
                 <p class="post-summary"><h1 id="socket-programming-trong-java-hướng-dẫn-chi-tiết">Socket Programming trong Java: Hướng dẫn chi tiết</h1>
-<p><strong>Socket</strong> là endpoint của kết nối mạng hai chiều giữa hai chương trình chạy trên mạng. Trong Java, package <code>java.net</code> cung cấp các …</p></p>
+<p><strong>Socket</strong> là endpoint của kết nối mạng hai chiều giữa hai chương trình chạy trên mạng. Trong Java, package <code>java.net</code> cung cấp các class để làm việc với …</p></p>
                 
                 <div class="post-tags">
                     
-                    <span class="tag">Java</span>
+                    <span class="tag">#Java</span>
                     
-                    <span class="tag">Socket</span>
+                    <span class="tag">#Socket</span>
                     
-                    <span class="tag">Network</span>
+                    <span class="tag">#Network</span>
                     
-                    <span class="tag">TCP</span>
+                    <span class="tag">#TCP</span>
                     
                 </div>
                 
@@ -616,21 +661,21 @@
                 <h2><a href="http://localhost:1313/blog-ca-nhan/posts/bat-dong-bo-xu-ly-dong-thoi/">Bất đồng bộ và Xử lý đồng thời trong Lập trình</a></h2>
                 <div class="post-meta">
                     <span>📅 14/12/2025</span>
-                    <span>📁 Lập trình mạng</span>
                     <span>⏱️ 5 phút đọc</span>
+                    <span>📁 Lập trình mạng</span>
                 </div>
                 <p class="post-summary"><h1 id="bất-đồng-bộ-và-xử-lý-đồng-thời-trong-lập-trình">Bất đồng bộ và Xử lý đồng thời trong Lập trình</h1>
-<p>Trong lập trình hiện đại, việc xử lý nhiều tác vụ cùng lúc là điều cần thiết. Bài viết này sẽ giải thích khái niệm <strong>bất đồng bộ …</strong></p></p>
+<p>Trong lập trình hiện đại, việc xử lý nhiều tác vụ cùng lúc là điều cần thiết. Bài viết này sẽ giải thích khái niệm <strong>bất đồng bộ (Asynchronous)</strong> và <strong>xử lý …</strong></p></p>
                 
                 <div class="post-tags">
                     
-                    <span class="tag">JavaScript</span>
+                    <span class="tag">#JavaScript</span>
                     
-                    <span class="tag">Java</span>
+                    <span class="tag">#Java</span>
                     
-                    <span class="tag">Async</span>
+                    <span class="tag">#Async</span>
                     
-                    <span class="tag">Concurrency</span>
+                    <span class="tag">#Concurrency</span>
                     
                 </div>
                 
@@ -640,21 +685,21 @@
                 <h2><a href="http://localhost:1313/blog-ca-nhan/posts/rest-api-client-server/">REST API và Kiến trúc Client-Server</a></h2>
                 <div class="post-meta">
                     <span>📅 13/12/2025</span>
-                    <span>📁 Lập trình mạng</span>
                     <span>⏱️ 6 phút đọc</span>
+                    <span>📁 Lập trình mạng</span>
                 </div>
                 <p class="post-summary"><h1 id="rest-api-và-kiến-trúc-client-server">REST API và Kiến trúc Client-Server</h1>
-<p><strong>REST (Representational State Transfer)</strong> là kiến trúc phổ biến nhất để xây dựng API cho ứng dụng web. Bài viết này sẽ giải thích REST API và mô …</p></p>
+<p><strong>REST (Representational State Transfer)</strong> là kiến trúc phổ biến nhất để xây dựng API cho ứng dụng web. Bài viết này sẽ giải thích REST API và mô hình Client-Server một …</p></p>
                 
                 <div class="post-tags">
                     
-                    <span class="tag">REST</span>
+                    <span class="tag">#REST</span>
                     
-                    <span class="tag">API</span>
+                    <span class="tag">#API</span>
                     
-                    <span class="tag">HTTP</span>
+                    <span class="tag">#HTTP</span>
                     
-                    <span class="tag">Client-Server</span>
+                    <span class="tag">#Client-Server</span>
                     
                 </div>
                 
@@ -664,21 +709,21 @@
                 <h2><a href="http://localhost:1313/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/">Bảo mật cơ bản trong Giao tiếp Mạng</a></h2>
                 <div class="post-meta">
                     <span>📅 12/12/2025</span>
-                    <span>📁 Lập trình mạng</span>
                     <span>⏱️ 5 phút đọc</span>
+                    <span>📁 Lập trình mạng</span>
                 </div>
                 <p class="post-summary"><h1 id="bảo-mật-cơ-bản-trong-giao-tiếp-mạng">Bảo mật cơ bản trong Giao tiếp Mạng</h1>
-<p>Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. Bài viết này sẽ giới thiệu các khái niệm và kỹ thuật bảo mật cơ bản khi phát triển …</p></p>
+<p>Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. Bài viết này sẽ giới thiệu các khái niệm và kỹ thuật bảo mật cơ bản khi phát triển ứng dụng web và mạng. …</p></p>
                 
                 <div class="post-tags">
                     
-                    <span class="tag">Security</span>
+                    <span class="tag">#Security</span>
                     
-                    <span class="tag">HTTPS</span>
+                    <span class="tag">#HTTPS</span>
                     
-                    <span class="tag">SSL</span>
+                    <span class="tag">#SSL</span>
                     
-                    <span class="tag">Network</span>
+                    <span class="tag">#Network</span>
                     
                 </div>
                 

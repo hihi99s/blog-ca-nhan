@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Blog – {{ .Site.Title }}</title>
-    <meta name="description" content="Blog chia sẻ kiến thức lập trình mạng, Java và JavaScript">
+    <meta name="description" content="Blog chia sẻ kiến thức lập trình mạng, Java và JavaScript - Ngô Phạm Ngọc Tú">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
     <style>
@@ -50,6 +50,7 @@
             font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             line-height: 1.7;
             min-height: 100vh;
+            position: relative;
             overflow-x: hidden;
         }
 
@@ -78,76 +79,101 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 60px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .back-nav {
-            margin-bottom: 32px;
-            animation: fadeInUp 0.6s ease-out;
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 40px;
         }
 
         .back-link {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            color: var(--muted);
-            font-weight: 500;
-            padding: 12px 20px;
+            gap: 12px;
+            padding: 16px 32px;
             background: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border);
             backdrop-filter: blur(20px);
-            transition: all 0.3s ease;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            color: var(--text);
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
         .back-link:hover {
-            color: var(--accent);
             border-color: var(--accent);
+            box-shadow: 0 20px 40px var(--card-glow);
+            transform: translateY(-4px);
             text-decoration: none;
-            transform: translateX(-4px);
+        }
+
+        .back-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .back-link:hover::before {
+            left: 100%;
         }
 
         .page-header {
             text-align: center;
-            margin-bottom: 48px;
-            animation: fadeInUp 0.8s ease-out;
+            margin-bottom: 60px;
+            animation: fadeInUp 1s ease-out;
         }
 
         .page-title {
-            font-size: clamp(2rem, 4vw, 3rem);
+            font-size: clamp(2.5rem, 5vw, 4rem);
             font-weight: 800;
             background: linear-gradient(135deg, var(--text) 0%, var(--accent) 50%, var(--text-2nd) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin: 0 0 12px;
+            margin: 0 0 16px;
+            letter-spacing: -0.02em;
         }
 
         .page-subtitle {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             color: var(--muted);
             margin: 0;
+            opacity: 0.9;
         }
 
         .posts-list {
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 32px;
+            width: 100%;
+            max-width: 900px;
         }
 
         .post-card {
             background: var(--card-bg);
             backdrop-filter: blur(24px);
-            padding: 28px;
-            border-radius: 20px;
+            padding: 40px;
+            border-radius: 24px;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            animation: fadeInUp 0.8s ease-out both;
             position: relative;
             overflow: hidden;
+            animation: fadeInUp 1s ease-out both;
         }
 
         .post-card::before {
@@ -156,61 +182,25 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
+            height: 4px;
             background: linear-gradient(90deg, var(--accent), transparent);
         }
 
-        .post-card:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .post-card:nth-child(2) {
-            animation-delay: 0.15s;
-        }
-
-        .post-card:nth-child(3) {
-            animation-delay: 0.2s;
-        }
-
-        .post-card:nth-child(4) {
-            animation-delay: 0.25s;
-        }
-
-        .post-card:nth-child(5) {
-            animation-delay: 0.3s;
-        }
-
-        .post-card:nth-child(6) {
-            animation-delay: 0.35s;
-        }
-
-        .post-card:nth-child(7) {
-            animation-delay: 0.4s;
-        }
-
-        .post-card:nth-child(8) {
-            animation-delay: 0.45s;
-        }
-
-        .post-card:nth-child(9) {
-            animation-delay: 0.5s;
-        }
-
         .post-card:hover {
-            transform: translateY(-8px) scale(1.01);
+            transform: translateY(-12px) scale(1.02) rotateX(2deg);
             box-shadow: 0 40px 80px var(--card-glow);
             border-color: var(--accent);
         }
 
         .post-card h2 {
-            margin: 0 0 12px;
-            font-size: 1.4rem;
+            margin: 0 0 16px;
+            font-size: 1.6rem;
             font-weight: 700;
         }
 
         .post-card h2 a {
             color: var(--text);
-            transition: color 0.3s;
+            transition: all 0.3s;
         }
 
         .post-card h2 a:hover {
@@ -219,35 +209,43 @@
         }
 
         .post-meta {
-            font-size: 0.9rem;
-            color: var(--muted);
-            margin-bottom: 12px;
             display: flex;
-            align-items: center;
-            gap: 12px;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 1rem;
+            color: var(--muted);
+            margin-bottom: 20px;
         }
 
         .post-summary {
             color: var(--text-2nd);
-            margin: 0 0 16px;
-            line-height: 1.7;
-            opacity: 0.9;
+            margin: 0 0 24px;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            opacity: 0.95;
         }
 
         .post-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 12px;
         }
 
         .tag {
-            background: rgba(125, 211, 252, 0.12);
+            background: var(--accent-glow);
             color: var(--accent);
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            border: 1px solid rgba(125, 211, 252, 0.2);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .tag:hover {
+            background: var(--accent);
+            color: #0f172a;
+            transform: translateY(-4px);
         }
 
         .theme-toggle {
@@ -265,22 +263,23 @@
             padding: 16px;
             border-radius: 50%;
             cursor: pointer;
-            width: 60px;
-            height: 60px;
-            font-size: 1.3rem;
+            width: 64px;
+            height: 64px;
+            font-size: 1.4rem;
             box-shadow: var(--shadow);
             transition: all 0.3s ease;
         }
 
         .theme-toggle button:hover {
             transform: scale(1.1) rotate(180deg);
+            box-shadow: 0 20px 40px var(--card-glow);
             border-color: var(--accent);
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(40px);
             }
 
             to {
@@ -289,17 +288,62 @@
             }
         }
 
+        /* Staggered delay for up to 12 posts */
+        .post-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .post-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .post-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .post-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .post-card:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .post-card:nth-child(6) {
+            animation-delay: 0.6s;
+        }
+
+        .post-card:nth-child(7) {
+            animation-delay: 0.7s;
+        }
+
+        .post-card:nth-child(8) {
+            animation-delay: 0.8s;
+        }
+
+        .post-card:nth-child(9) {
+            animation-delay: 0.9s;
+        }
+
+        .post-card:nth-child(10) {
+            animation-delay: 1.0s;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 40px 20px;
             }
 
             .post-card {
-                padding: 20px;
+                padding: 32px;
             }
 
-            .post-card h2 {
-                font-size: 1.2rem;
+            .page-title {
+                font-size: 2.8rem;
+            }
+
+            .back-link {
+                padding: 14px 24px;
             }
         }
 
@@ -342,8 +386,9 @@
         </nav>
 
         <header class="page-header">
-            <h1 class="page-title">📝 Blog</h1>
-            <p class="page-subtitle">Chia sẻ kiến thức về lập trình mạng, Java và JavaScript</p>
+            <h1 class="page-title">📝 Blog Cá Nhân</h1>
+            <p class="page-subtitle">Chia sẻ kiến thức lập trình mạng máy tính, Java & JavaScript với ví dụ thực hành
+            </p>
         </header>
 
         <div class="posts-list">
@@ -352,14 +397,14 @@
                 <h2><a href="{{ .Permalink }}">{{ .Title }}</a></h2>
                 <div class="post-meta">
                     <span>📅 {{ .Date.Format "02/01/2006" }}</span>
-                    {{ if .Params.categories }}<span>📁 {{ delimit .Params.categories ", " }}</span>{{ end }}
                     <span>⏱️ {{ .ReadingTime }} phút đọc</span>
+                    {{ if .Params.categories }}<span>📁 {{ delimit .Params.categories ", " }}</span>{{ end }}
                 </div>
-                <p class="post-summary">{{ .Summary | truncate 180 }}</p>
+                <p class="post-summary">{{ .Summary | truncate 200 }}</p>
                 {{ if .Params.tags }}
                 <div class="post-tags">
                     {{ range .Params.tags }}
-                    <span class="tag">{{ . }}</span>
+                    <span class="tag">#{{ . }}</span>
                     {{ end }}
                 </div>
                 {{ end }}
