@@ -665,11 +665,26 @@
         const musicBtn = document.getElementById('btn-music');
         const audio = document.getElementById('bg-music');
         let isPlaying = localStorage.getItem('musicPlaying') === 'true';
+        const savedTime = parseFloat(localStorage.getItem('musicTime')) || 0;
 
+        
+        audio.currentTime = savedTime;
         if (isPlaying) {
             audio.play().catch(() => { });
             musicBtn.textContent = '🔇';
         }
+
+        
+        setInterval(() => {
+            if (!audio.paused) {
+                localStorage.setItem('musicTime', audio.currentTime);
+            }
+        }, 500);
+
+        
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('musicTime', audio.currentTime);
+        });
 
         musicBtn.addEventListener('click', () => {
             if (isPlaying) {

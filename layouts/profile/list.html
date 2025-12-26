@@ -574,20 +574,40 @@
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         });
 
-        // Music toggle
+        // Music toggle with position persistence
         const musicBtn = document.getElementById('btn-music');
         const audio = document.getElementById('bg-music');
-        let isPlaying = false;
+        let isPlaying = localStorage.getItem('musicPlaying') === 'true';
+        const savedTime = parseFloat(localStorage.getItem('musicTime')) || 0;
+
+        // Restore position and play if was playing
+        audio.currentTime = savedTime;
+        if (isPlaying) {
+            audio.play().catch(() => { });
+            musicBtn.textContent = '🔇';
+        }
+
+        // Save position periodically
+        setInterval(() => {
+            if (!audio.paused) {
+                localStorage.setItem('musicTime', audio.currentTime);
+            }
+        }, 500);
+
+        // Save position before leaving page
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('musicTime', audio.currentTime);
+        });
 
         musicBtn.addEventListener('click', () => {
             if (isPlaying) {
                 audio.pause();
                 musicBtn.textContent = '🎵';
-                musicBtn.title = 'Bật nhạc nền';
+                localStorage.setItem('musicPlaying', 'false');
             } else {
                 audio.play();
                 musicBtn.textContent = '🔇';
-                musicBtn.title = 'Tắt nhạc nền';
+                localStorage.setItem('musicPlaying', 'true');
             }
             isPlaying = !isPlaying;
         });
