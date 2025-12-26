@@ -1,1 +1,241 @@
-<!doctype html><html lang=vi><head><meta name=generator content="Hugo 0.153.2"><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Blog cá nhân – Ngô Phạm Ngọc Tú</title><meta name=description content="Blog cá nhân — Ngô Phạm Ngọc Tú"><style>:root{--bg:#0f1720;--surface:#0b1220;--muted:#9aa6b2;--text:#e6eef3;--accent:#7dd3fc}[data-theme=light]{--bg:#f6f8fa;--surface:#ffffff;--muted:#475569;--text:#0b1220;--accent:#0ea5e9}html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,segoe ui,Roboto,helvetica neue,Arial}.container{display:flex;min-height:100vh;gap:24px;padding:24px;box-sizing:border-box}.aside{width:280px;flex:0 0 280px;background:linear-gradient(180deg,rgba(255,255,255,2%),transparent);border-radius:12px;padding:20px;box-sizing:border-box}.avatar{width:120px;height:120px;border-radius:12px;object-fit:cover;display:block;margin:0 auto 12px;background:#10202a}.menu{list-style:none;padding:0;margin:12px 0 0;display:flex;flex-direction:column;gap:8px}.menu a{color:var(--text);text-decoration:none;padding:10px;border-radius:8px;display:block}.menu a:hover{background:rgba(255,255,255,3%)}.theme-toggle{margin-top:16px;text-align:center}.main{flex:1;background:linear-gradient(180deg,rgba(255,255,255,1%),transparent);border-radius:12px;padding:28px;box-sizing:border-box}.name{font-size:2.4rem;margin:0 0 8px}.subtitle{color:var(--muted);margin:0 0 18px}.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.card{background:rgba(255,255,255,2%);padding:12px;border-radius:8px}@media(max-width:800px){.container{flex-direction:column;padding:16px}.aside{width:100%;flex:unset;display:flex;align-items:center;gap:12px}.avatar{margin:0;width:84px;height:84px}.menu{flex-direction:row;gap:6px;margin-left:auto}.main{padding:18px}}@media(prefers-color-scheme:light){:root{--bg:#f6f8fa;--surface:#ffffff;--muted:#475569;--text:#0b1220;--accent:#0ea5e9}}</style></head><body><div class=container id=site-root><aside class=aside><img class=avatar src=/images/avatar.png alt=Avatar><nav><ul class=menu><li><a href=/blog-ca-nhan/>Home</a></li><li><a href=/blog-ca-nhan/posts/>Blog</a></li><li><a href=/blog-ca-nhan/profile/>Profile</a></li></ul></nav><div class=theme-toggle><button id=btn-theme aria-label="Toggle theme" style="background:0 0;border:1px solid rgba(255,255,255,4%);color:var(--text);padding:8px;border-radius:8px;cursor:pointer">Toggle theme</button></div></aside><main class=main><h1 class=name>Ngô Phạm Ngọc Tú</h1><p class=subtitle>Sinh viên năm 3 — HUTECH · MSSV 2280603518 · Lớp 22DTHE5</p><section class=card><h2 style="margin:0 0 8px">Giới thiệu ngắn</h2><p style=margin:0;color:var(--muted)>Tôi là sinh viên ngành Công nghệ thông tin, đam mê phát triển phần mềm và lập trình mạng. Tôi viết blog chia sẻ kiến thức Java, JavaScript và kỹ thuật lập trình mạng/web cùng các ví dụ thực hành.</p></section><div style=height:12px></div><div class=info><div class=card><h3 style="margin:0 0 8px">Mục tiêu nghề nghiệp</h3><p style=margin:0;color:var(--muted)>Phát triển kỹ năng backend & hệ thống mạng, xây dựng REST API, cải thiện bảo mật và hiệu năng cho ứng dụng mạng.</p></div><div class=card><h3 style="margin:0 0 8px">Kỹ năng</h3><ul style=margin:0;color:var(--muted)><li>Java</li><li>JavaScript</li><li>HTML/CSS</li><li>Git / GitHub</li><li>Kiến thức cơ bản lập trình mạng (TCP/UDP, HTTP)</li></ul></div><div class=card><h3 style="margin:0 0 8px">Liên hệ</h3><p style=margin:0;color:var(--muted)>Email: 2280603518@student.hutech.edu.vn<br>GitHub: <a href=https://github.com/hihi99s style=color:var(--accent)>hihi99s</a></p></div></div></main></div><script>(function(){const e=document.documentElement,s=document.getElementById("btn-theme"),t=localStorage.getItem("theme");function n(t){t==="light"?e.setAttribute("data-theme","light"):e.removeAttribute("data-theme")}t&&n(t),s.addEventListener("click",()=>{const t=e.getAttribute("data-theme")==="light"?"dark":"light";n(t),localStorage.setItem("theme",t)})})()</script></body></html>
+<!doctype html>
+<html lang="vi">
+
+<head>
+	<meta name="generator" content="Hugo 0.153.2"><script src="/blog-ca-nhan/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=blog-ca-nhan/livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Blog cá nhân – Ngô Phạm Ngọc Tú</title>
+  <meta name="description" content="Blog cá nhân — Ngô Phạm Ngọc Tú">
+  <style>
+    :root {
+      --bg: #0f1720;
+      --surface: #0b1220;
+      --muted: #9aa6b2;
+      --text: #e6eef3;
+      --accent: #7dd3fc;
+    }
+
+    [data-theme="light"] {
+      --bg: #f6f8fa;
+      --surface: #ffffff;
+      --muted: #475569;
+      --text: #0b1220;
+      --accent: #0ea5e9
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+      gap: 24px;
+      padding: 24px;
+      box-sizing: border-box
+    }
+
+     
+    .aside {
+      width: 280px;
+      flex: 0 0 280px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+      border-radius: 12px;
+      padding: 20px;
+      box-sizing: border-box
+    }
+
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 12px;
+      object-fit: cover;
+      display: block;
+      margin: 0 auto 12px;
+      background: #10202a
+    }
+
+    .menu {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .menu a {
+      color: var(--text);
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 8px;
+      display: block
+    }
+
+    .menu a:hover {
+      background: rgba(255, 255, 255, 0.03)
+    }
+
+    .theme-toggle {
+      margin-top: 16px;
+      text-align: center
+    }
+
+     
+    .main {
+      flex: 1;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), transparent);
+      border-radius: 12px;
+      padding: 28px;
+      box-sizing: border-box
+    }
+
+    .name {
+      font-size: 2.4rem;
+      margin: 0 0 8px
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0 0 18px
+    }
+
+    .info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.02);
+      padding: 12px;
+      border-radius: 8px
+    }
+
+     
+    @media (max-width:800px) {
+      .container {
+        flex-direction: column;
+        padding: 16px
+      }
+
+      .aside {
+        width: 100%;
+        flex: unset;
+        display: flex;
+        align-items: center;
+        gap: 12px
+      }
+
+      .avatar {
+        margin: 0;
+        width: 84px;
+        height: 84px
+      }
+
+      .menu {
+        flex-direction: row;
+        gap: 6px;
+        margin-left: auto
+      }
+
+      .main {
+        padding: 18px
+      }
+    }
+
+     
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f6f8fa;
+        --surface: #ffffff;
+        --muted: #475569;
+        --text: #0b1220;
+        --accent: #0ea5e9
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="site-root">
+    <aside class="aside">
+      <img class="avatar" src="/images/avatar.png" alt="Avatar">
+      <nav>
+        <ul class="menu">
+          <li><a href="/blog-ca-nhan/">Home</a></li>
+          <li><a href="/blog-ca-nhan/posts/">Blog</a></li>
+          <li><a href="/blog-ca-nhan/profile/">Profile</a></li>
+        </ul>
+      </nav>
+      <div class="theme-toggle">
+        <button id="btn-theme" aria-label="Toggle theme"
+          style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text);padding:8px;border-radius:8px;cursor:pointer">Toggle
+          theme</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <h1 class="name">Ngô Phạm Ngọc Tú</h1>
+      <p class="subtitle">Sinh viên năm 4 — HUTECH · MSSV 2280603518 · Lớp 22DTHE5</p>
+
+      <section class="card">
+        <h2 style="margin:0 0 8px">Giới thiệu ngắn</h2>
+        <p style="margin:0;color:var(--muted)">Tôi là sinh viên ngành Công nghệ thông tin, đam mê phát triển phần mềm và
+          lập trình mạng. Tôi viết blog chia sẻ kiến thức Java, JavaScript và kỹ thuật lập trình mạng/web cùng các ví dụ
+          thực hành.</p>
+      </section>
+
+      <div style="height:12px"></div>
+
+      <div class="info">
+        <div class="card">
+          <h3 style="margin:0 0 8px">Mục tiêu nghề nghiệp</h3>
+          <p style="margin:0;color:var(--muted)">Phát triển kỹ năng backend & hệ thống mạng, xây dựng REST API, cải
+            thiện bảo mật và hiệu năng cho ứng dụng mạng.</p>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 8px">Kỹ năng</h3>
+          <ul style="margin:0;color:var(--muted)">
+            <li>Java</li>
+            <li>JavaScript</li>
+            <li>HTML/CSS</li>
+            <li>Git / GitHub</li>
+            <li>Kiến thức cơ bản lập trình mạng (TCP/UDP, HTTP)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 8px">Liên hệ</h3>
+          <p style="margin:0;color:var(--muted)">Email: phamngoctu710@gmail.com<br>GitHub: <a
+              href="https://github.com/hihi99s" style="color:var(--accent)">hihi99s</a></p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const root = document.documentElement;
+      const btn = document.getElementById('btn-theme');
+      const stored = localStorage.getItem('theme');
+      function applyTheme(t) {
+        if (t === 'light') root.setAttribute('data-theme', 'light'); else root.removeAttribute('data-theme');
+      }
+      if (stored) applyTheme(stored);
+      btn.addEventListener('click', () => {
+        const now = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        applyTheme(now);
+        localStorage.setItem('theme', now);
+      });
+    })();
+  </script>
+</body>
+
+</html>
