@@ -1,0 +1,36 @@
+
+baseURL = "https://hihi99s.github.io/blog-ca-nhan/"
+languageCode = "vi"
+title = "Blog cá nhân – Ngô Phạm Ngọc Tú"
+theme = "PaperMod"
+enableRobotsTXT = true
+defaultContentLanguage = "vi"
+
+[params]
+	author = "Ngô Phạm Ngọc Tú"
+	# Hint for theme to support dark mode; actual behavior depends on the theme.
+	enableDarkMode = true
+	defaultColorMode = "auto"
+
+[markup]
+	[markup.highlight]
+		codeFences = true
+		guessSyntax = false
+		lineNos = false
+		noClasses = false
+		style = "monokai"
+
+[[menu.main]]
+	name = "Home"
+	url = "/"
+	weight = 1
+
+[[menu.main]]
+	name = "Blog"
+	url = "/posts/"
+	weight = 2
+
+[[menu.main]]
+	name = "Profile"
+	url = "/profile/"
+	weight = 3

@@ -1,0 +1,447 @@
++++
+title = "Socket Programming trong Java: Hướng dẫn chi tiết"
+date = "2025-12-15T10:00:00+07:00"
+draft = false
+tags = ["Java", "Socket", "Network", "TCP"]
+categories = ["Lập trình mạng"]
++++
+
+# Socket Programming trong Java: Hướng dẫn chi tiết
+
+**Socket** là endpoint của kết nối mạng hai chiều giữa hai chương trình chạy trên mạng. Trong Java, package `java.net` cung cấp các class để làm việc với socket một cách dễ dàng.
+
+## Khái niệm cơ bản
+
+### Socket là gì?
+
+Socket là sự kết hợp của:
+- **IP Address**: Xác định máy tính trên mạng
+- **Port Number**: Xác định ứng dụng trên máy tính (0-65535)
+
+```
+Socket = IP Address + Port Number
+Ví dụ: 192.168.1.100:8080
+```
+
+### Mô hình Client-Server
+
+```
+┌──────────────┐                    ┌──────────────┐
+│    Client    │                    │    Server    │
+├──────────────┤                    ├──────────────┤
+│ Socket       │◄──── Kết nối ─────►│ ServerSocket │
+│              │                    │     ↓        │
+│              │◄═══ Giao tiếp ════►│   Socket     │
+└──────────────┘                    └──────────────┘
+```
+
+## TCP Socket trong Java
+
+### Server Side
+
+```java
+import java.net.*;
+import java.io.*;
+
+public class TCPServer {
+    public static void main(String[] args) {
+        int port = 8080;
+        
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+            System.out.println("Server đang lắng nghe tại port " + port);
+            
+            while (true) {
+                // Chờ client kết nối
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Client đã kết nối: " + 
+                    clientSocket.getInetAddress().getHostAddress());
+                
+                // Xử lý client trong thread riêng
+                new ClientHandler(clientSocket).start();
+            }
+            
+        } catch (IOException e) {
+            System.err.println("Lỗi server: " + e.getMessage());
+        }
+    }
+}
+
+class ClientHandler extends Thread {
+    private Socket clientSocket;
+    
+    public ClientHandler(Socket socket) {
+        this.clientSocket = socket;
+    }
+    
+    @Override
+    public void run() {
+        try (
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(clientSocket.getInputStream()));
+            PrintWriter out = new PrintWriter(
+                clientSocket.getOutputStream(), true)
+        ) {
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                System.out.println("Nhận được: " + inputLine);
+                
+                // Echo back với xử lý
+                String response = "Server nhận: " + inputLine.toUpperCase();
+                out.println(response);
+                
+                if ("bye".equalsIgnoreCase(inputLine)) {
+                    break;
+                }
+            }
+            
+        } catch (IOException e) {
+            System.err.println("Lỗi xử lý client: " + e.getMessage());
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+
+### Client Side
+
+```java
+import java.net.*;
+import java.io.*;
+import java.util.Scanner;
+
+public class TCPClient {
+    public static void main(String[] args) {
+        String serverAddress = "localhost";
+        int port = 8080;
+        
+        try (
+            Socket socket = new Socket(serverAddress, port);
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(socket.getInputStream()));
+            Scanner scanner = new Scanner(System.in)
+        ) {
+            System.out.println("Đã kết nối tới server!");
+            System.out.println("Nhập tin nhắn (gõ 'bye' để thoát):");
+            
+            String userInput;
+            while (true) {
+                System.out.print("Bạn: ");
+                userInput = scanner.nextLine();
+                
+                // Gửi tới server
+                out.println(userInput);
+                
+                // Nhận phản hồi
+                String response = in.readLine();
+                System.out.println("Server: " + response);
+                
+                if ("bye".equalsIgnoreCase(userInput)) {
+                    break;
+                }
+            }
+            
+        } catch (UnknownHostException e) {
+            System.err.println("Không tìm thấy server: " + serverAddress);
+        } catch (IOException e) {
+            System.err.println("Lỗi I/O: " + e.getMessage());
+        }
+    }
+}
+```
+
+## UDP Socket trong Java
+
+### UDP Server
+
+```java
+import java.net.*;
+
+public class UDPServer {
+    public static void main(String[] args) {
+        int port = 9090;
+        byte[] buffer = new byte[1024];
+        
+        try (DatagramSocket socket = new DatagramSocket(port)) {
+            System.out.println("UDP Server đang chờ tại port " + port);
+            
+            while (true) {
+                // Nhận datagram
+                DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+                socket.receive(request);
+                
+                String message = new String(request.getData(), 0, request.getLength());
+                System.out.println("Nhận từ " + request.getAddress() + ": " + message);
+                
+                // Gửi phản hồi
+                String response = "Echo: " + message;
+                byte[] responseData = response.getBytes();
+                DatagramPacket responsePacket = new DatagramPacket(
+                    responseData,
+                    responseData.length,
+                    request.getAddress(),
+                    request.getPort()
+                );
+                socket.send(responsePacket);
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Lỗi: " + e.getMessage());
+        }
+    }
+}
+```
+
+### UDP Client
+
+```java
+import java.net.*;
+import java.util.Scanner;
+
+public class UDPClient {
+    public static void main(String[] args) {
+        String serverAddress = "localhost";
+        int port = 9090;
+        
+        try (
+            DatagramSocket socket = new DatagramSocket();
+            Scanner scanner = new Scanner(System.in)
+        ) {
+            InetAddress serverAddr = InetAddress.getByName(serverAddress);
+            byte[] buffer = new byte[1024];
+            
+            System.out.println("UDP Client sẵn sàng. Nhập tin nhắn:");
+            
+            while (true) {
+                System.out.print("Bạn: ");
+                String message = scanner.nextLine();
+                
+                if ("exit".equalsIgnoreCase(message)) break;
+                
+                // Gửi datagram
+                byte[] sendData = message.getBytes();
+                DatagramPacket sendPacket = new DatagramPacket(
+                    sendData, sendData.length, serverAddr, port);
+                socket.send(sendPacket);
+                
+                // Nhận phản hồi
+                DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
+                socket.receive(receivePacket);
+                
+                String response = new String(
+                    receivePacket.getData(), 0, receivePacket.getLength());
+                System.out.println("Server: " + response);
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Lỗi: " + e.getMessage());
+        }
+    }
+}
+```
+
+## Ứng dụng thực tế: Chat Server Multi-Client
+
+```java
+import java.net.*;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
+
+public class ChatServer {
+    private static Set<ClientHandler> clientHandlers = 
+        ConcurrentHashMap.newKeySet();
+    
+    public static void main(String[] args) throws IOException {
+        int port = 8888;
+        ServerSocket serverSocket = new ServerSocket(port);
+        System.out.println("Chat Server chạy tại port " + port);
+        
+        while (true) {
+            Socket socket = serverSocket.accept();
+            ClientHandler handler = new ClientHandler(socket);
+            clientHandlers.add(handler);
+            handler.start();
+        }
+    }
+    
+    // Gửi tin nhắn tới tất cả clients
+    public static void broadcast(String message, ClientHandler sender) {
+        for (ClientHandler client : clientHandlers) {
+            if (client != sender) {
+                client.sendMessage(message);
+            }
+        }
+    }
+    
+    public static void removeClient(ClientHandler client) {
+        clientHandlers.remove(client);
+    }
+}
+
+class ClientHandler extends Thread {
+    private Socket socket;
+    private PrintWriter out;
+    private BufferedReader in;
+    private String username;
+    
+    public ClientHandler(Socket socket) {
+        this.socket = socket;
+    }
+    
+    @Override
+    public void run() {
+        try {
+            in = new BufferedReader(
+                new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+            
+            // Yêu cầu username
+            out.println("Nhập tên của bạn:");
+            username = in.readLine();
+            
+            ChatServer.broadcast(username + " đã tham gia chat!", this);
+            System.out.println(username + " đã kết nối");
+            
+            String message;
+            while ((message = in.readLine()) != null) {
+                if (message.equalsIgnoreCase("/quit")) {
+                    break;
+                }
+                ChatServer.broadcast(username + ": " + message, this);
+            }
+            
+        } catch (IOException e) {
+            System.err.println("Lỗi với client " + username);
+        } finally {
+            cleanup();
+        }
+    }
+    
+    public void sendMessage(String message) {
+        out.println(message);
+    }
+    
+    private void cleanup() {
+        try {
+            ChatServer.broadcast(username + " đã rời chat!", this);
+            ChatServer.removeClient(this);
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### Chat Client
+
+```java
+import java.net.*;
+import java.io.*;
+import java.util.Scanner;
+
+public class ChatClient {
+    public static void main(String[] args) {
+        String server = "localhost";
+        int port = 8888;
+        
+        try (Socket socket = new Socket(server, port)) {
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(socket.getInputStream()));
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            Scanner scanner = new Scanner(System.in);
+            
+            // Thread đọc tin nhắn từ server
+            Thread readThread = new Thread(() -> {
+                try {
+                    String message;
+                    while ((message = in.readLine()) != null) {
+                        System.out.println(message);
+                    }
+                } catch (IOException e) {
+                    System.out.println("Mất kết nối!");
+                }
+            });
+            readThread.start();
+            
+            // Gửi tin nhắn
+            while (true) {
+                String input = scanner.nextLine();
+                out.println(input);
+                if (input.equalsIgnoreCase("/quit")) {
+                    break;
+                }
+            }
+            
+        } catch (IOException e) {
+            System.err.println("Không thể kết nối: " + e.getMessage());
+        }
+    }
+}
+```
+
+## Các class quan trọng trong java.net
+
+| Class | Mô tả |
+|-------|-------|
+| `Socket` | TCP client socket |
+| `ServerSocket` | TCP server socket |
+| `DatagramSocket` | UDP socket |
+| `DatagramPacket` | UDP packet |
+| `InetAddress` | Địa chỉ IP |
+| `URL` | Uniform Resource Locator |
+| `URLConnection` | Kết nối tới URL |
+
+## Best Practices
+
+### 1. Luôn đóng Socket trong finally hoặc try-with-resources
+
+```java
+try (Socket socket = new Socket(host, port)) {
+    // Xử lý
+} // Tự động đóng
+```
+
+### 2. Set timeout để tránh block vô hạn
+
+```java
+socket.setSoTimeout(5000); // 5 giây timeout
+```
+
+### 3. Xử lý multi-client bằng Thread Pool
+
+```java
+ExecutorService executor = Executors.newFixedThreadPool(10);
+while (true) {
+    Socket client = serverSocket.accept();
+    executor.execute(new ClientHandler(client));
+}
+```
+
+### 4. Xử lý exception đúng cách
+
+```java
+try {
+    // Socket operations
+} catch (UnknownHostException e) {
+    // Không tìm thấy host
+} catch (SocketTimeoutException e) {
+    // Timeout
+} catch (IOException e) {
+    // Lỗi I/O khác
+}
+```
+
+## Kết luận
+
+**Socket Programming** trong Java là kỹ năng quan trọng cho lập trình mạng. Với các class như `Socket`, `ServerSocket`, `DatagramSocket`, bạn có thể xây dựng các ứng dụng mạng từ đơn giản đến phức tạp. Nắm vững kiến thức này là nền tảng để phát triển các ứng dụng client-server chuyên nghiệp.
+
+---
+
+*Bài viết thuộc series Lập trình mạng Java - Blog Ngô Phạm Ngọc Tú*
