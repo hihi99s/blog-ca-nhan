@@ -321,11 +321,13 @@
             text-align: center;
             border: 1px solid var(--border);
             transition: all 0.3s;
+            cursor: pointer;
         }
 
         .cert-item:hover {
             transform: translateY(-8px);
             box-shadow: 0 20px 40px var(--card-glow);
+            border-color: var(--accent);
         }
 
         .cert-item strong {
@@ -338,6 +340,89 @@
         .cert-item span {
             color: var(--muted);
             font-size: 0.9rem;
+        }
+
+        /* Badge Modal */
+        .badge-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .badge-modal.active {
+            display: flex;
+        }
+
+        .badge-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            padding: 32px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            text-align: center;
+            max-width: 400px;
+            position: relative;
+            animation: scaleIn 0.3s ease;
+        }
+
+        .badge-content img {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .badge-content h3 {
+            color: var(--accent);
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .badge-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .badge-close:hover {
+            color: var(--accent);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .floating-buttons {
@@ -528,13 +613,35 @@
 
             <div class="card card-full">
                 <h3>Chứng chỉ Cisco Networking Academy</h3>
+                <p style="color: var(--muted); margin-bottom: 20px;">Click vào chứng chỉ để xem huy hiệu</p>
                 <div class="cert-grid">
-                    <div class="cert-item"><strong>Networking Basics</strong><span>21/11/2025</span></div>
-                    <div class="cert-item"><strong>JavaScript Essentials 1</strong><span>01/12/2025</span></div>
-                    <div class="cert-item"><strong>JavaScript Essentials 2</strong><span>22/12/2025</span></div>
-                    <div class="cert-item"><strong>Introduction to Cybersecurity</strong><span>19/11/2024</span></div>
+                    <div class="cert-item"
+                        onclick="showBadge('{{ `images/badges/networking-basics.png` | relURL }}', 'Networking Basics')">
+                        <strong>Networking Basics</strong><span>21/11/2025</span>
+                    </div>
+                    <div class="cert-item"
+                        onclick="showBadge('{{ `images/badges/javascript-1.png` | relURL }}', 'JavaScript Essentials 1')">
+                        <strong>JavaScript Essentials 1</strong><span>01/12/2025</span>
+                    </div>
+                    <div class="cert-item"
+                        onclick="showBadge('{{ `images/badges/javascript-2.png` | relURL }}', 'JavaScript Essentials 2')">
+                        <strong>JavaScript Essentials 2</strong><span>22/12/2025</span>
+                    </div>
+                    <div class="cert-item"
+                        onclick="showBadge('{{ `images/badges/cybersecurity.png` | relURL }}', 'Introduction to Cybersecurity')">
+                        <strong>Introduction to Cybersecurity</strong><span>19/11/2024</span>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Badge Modal -->
+    <div id="badge-modal" class="badge-modal" onclick="closeBadge()">
+        <div class="badge-content" onclick="event.stopPropagation()">
+            <button class="badge-close" onclick="closeBadge()">×</button>
+            <img id="badge-image" src="" alt="Badge">
+            <h3 id="badge-title"></h3>
         </div>
     </div>
 
@@ -621,6 +728,22 @@
                 localStorage.setItem('musicPlaying', 'true');
             }
             isPlaying = !isPlaying;
+        });
+
+        // Badge modal functions
+        function showBadge(imgSrc, title) {
+            document.getElementById('badge-image').src = imgSrc;
+            document.getElementById('badge-title').textContent = title;
+            document.getElementById('badge-modal').classList.add('active');
+        }
+
+        function closeBadge() {
+            document.getElementById('badge-modal').classList.remove('active');
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeBadge();
         });
     </script>
 </body>
