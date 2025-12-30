@@ -93,4 +93,4 @@ draft = false
 
 ---
 
-*Tôi sẵn sàng cung cấp CV chi tiết hoặc portfolio dự án khi cần.*
+

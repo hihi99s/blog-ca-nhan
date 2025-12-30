@@ -299,14 +299,17 @@ Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. 
             font-weight: 600;
         }
 
-        .theme-toggle {
+        .floating-buttons {
             position: fixed;
             bottom: 32px;
             right: 32px;
             z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .theme-toggle button {
+        .floating-buttons button {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
             border: 2px solid var(--border);
@@ -321,7 +324,7 @@ Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. 
             transition: all 0.3s ease;
         }
 
-        .theme-toggle button:hover {
+        .floating-buttons button:hover {
             transform: scale(1.1) rotate(180deg);
             box-shadow: 0 20px 40px var(--card-glow);
             border-color: var(--accent);
@@ -707,7 +710,13 @@ Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. 
         </article>
     </div>
 
-    <div class="theme-toggle">
+    
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="floating-buttons">
+        <button id="btn-music" aria-label="Bật/Tắt nhạc" title="Bật nhạc nền">🎵</button>
         <button id="btn-theme" aria-label="Chuyển đổi theme">🌙</button>
     </div>
 
@@ -735,6 +744,55 @@ Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. 
             isDark = !isDark;
             applyTheme(isDark);
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+        
+        const musicBtn = document.getElementById('btn-music');
+        const audio = document.getElementById('bg-music');
+        let isPlaying = localStorage.getItem('musicPlaying') === 'true';
+        const savedTime = parseFloat(localStorage.getItem('musicTime')) || 0;
+
+        
+        audio.addEventListener('loadedmetadata', () => {
+            audio.currentTime = savedTime;
+            if (isPlaying) {
+                audio.play().catch(() => { });
+                musicBtn.textContent = '🔇';
+            }
+        });
+
+        
+        if (audio.readyState >= 1) {
+            audio.currentTime = savedTime;
+            if (isPlaying) {
+                audio.play().catch(() => { });
+                musicBtn.textContent = '🔇';
+            }
+        }
+
+        
+        setInterval(() => {
+            if (!audio.paused) {
+                localStorage.setItem('musicTime', audio.currentTime);
+            }
+        }, 500);
+
+        
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('musicTime', audio.currentTime);
+        });
+
+        musicBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                musicBtn.textContent = '🎵';
+                localStorage.setItem('musicPlaying', 'false');
+            } else {
+                audio.play();
+                musicBtn.textContent = '🔇';
+                localStorage.setItem('musicPlaying', 'true');
+            }
+            isPlaying = !isPlaying;
         });
     </script>
 </body>
