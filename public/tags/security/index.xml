@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Security on Blog cá nhân – Ngô Phạm Ngọc Tú</title>
-    <link>http://localhost:60876/blog-ca-nhan/tags/security/</link>
+    <link>http://localhost:59148/blog-ca-nhan/tags/security/</link>
     <description>Recent content in Security on Blog cá nhân – Ngô Phạm Ngọc Tú</description>
     <generator>Hugo -- 0.153.2</generator>
     <language>vi</language>
     <lastBuildDate>Fri, 12 Dec 2025 10:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:60876/blog-ca-nhan/tags/security/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:59148/blog-ca-nhan/tags/security/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Bảo mật cơ bản trong Giao tiếp Mạng</title>
-      <link>http://localhost:60876/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/</link>
+      <link>http://localhost:59148/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/</link>
       <pubDate>Fri, 12 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:60876/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/</guid>
+      <guid>http://localhost:59148/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/</guid>
       <description>&lt;h1 id=&#34;bảo-mật-cơ-bản-trong-giao-tiếp-mạng&#34;&gt;Bảo mật cơ bản trong Giao tiếp Mạng&lt;/h1&gt;
 &lt;p&gt;Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. Bài viết này sẽ giới thiệu các khái niệm và kỹ thuật bảo mật cơ bản khi phát triển ứng dụng web và mạng.&lt;/p&gt;
 &lt;h2 id=&#34;tại-sao-cần-bảo-mật-mạng&#34;&gt;Tại sao cần Bảo mật Mạng?&lt;/h2&gt;
