@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Blog cá nhân – Ngô Phạm Ngọc Tú</title>
-    <link>http://localhost:1313/blog-ca-nhan/</link>
+    <link>http://localhost:60876/blog-ca-nhan/</link>
     <description>Recent content on Blog cá nhân – Ngô Phạm Ngọc Tú</description>
     <generator>Hugo -- 0.153.2</generator>
     <language>vi</language>
     <lastBuildDate>Sat, 20 Dec 2025 10:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/blog-ca-nhan/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:60876/blog-ca-nhan/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Async/Await trong JavaScript: Hướng dẫn chi tiết</title>
-      <link>http://localhost:1313/blog-ca-nhan/posts/async-await-javascript/</link>
+      <link>http://localhost:60876/blog-ca-nhan/posts/async-await-javascript/</link>
       <pubDate>Sat, 20 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/posts/async-await-javascript/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/posts/async-await-javascript/</guid>
       <description>&lt;h1 id=&#34;asyncawait-trong-javascript-hướng-dẫn-chi-tiết&#34;&gt;Async/Await trong JavaScript: Hướng dẫn chi tiết&lt;/h1&gt;
 &lt;p&gt;Trong lập trình JavaScript hiện đại, việc xử lý các tác vụ bất đồng bộ là điều không thể tránh khỏi. &lt;strong&gt;Async/Await&lt;/strong&gt; là cú pháp được giới thiệu trong ES2017 (ES8) giúp code bất đồng bộ trở nên dễ đọc và dễ bảo trì hơn rất nhiều.&lt;/p&gt;
 &lt;h2 id=&#34;tại-sao-cần-asyncawait&#34;&gt;Tại sao cần Async/Await?&lt;/h2&gt;
@@ -20,9 +20,9 @@
     </item>
     <item>
       <title>Fetch API và Giao tiếp HTTP trong JavaScript</title>
-      <link>http://localhost:1313/blog-ca-nhan/posts/fetch-api-http/</link>
+      <link>http://localhost:60876/blog-ca-nhan/posts/fetch-api-http/</link>
       <pubDate>Fri, 19 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/posts/fetch-api-http/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/posts/fetch-api-http/</guid>
       <description>&lt;h1 id=&#34;fetch-api-và-giao-tiếp-http-trong-javascript&#34;&gt;Fetch API và Giao tiếp HTTP trong JavaScript&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;Fetch API&lt;/strong&gt; là giao diện hiện đại trong JavaScript để thực hiện các HTTP request. Nó thay thế XMLHttpRequest (XHR) cũ với cú pháp đơn giản hơn và dựa trên Promise.&lt;/p&gt;
 &lt;h2 id=&#34;http-là-gì&#34;&gt;HTTP là gì?&lt;/h2&gt;
@@ -42,9 +42,9 @@
     </item>
     <item>
       <title>DOM và Event trong Lập trình Web</title>
-      <link>http://localhost:1313/blog-ca-nhan/posts/dom-event-web/</link>
+      <link>http://localhost:60876/blog-ca-nhan/posts/dom-event-web/</link>
       <pubDate>Thu, 18 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/posts/dom-event-web/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/posts/dom-event-web/</guid>
       <description>&lt;h1 id=&#34;dom-và-event-trong-lập-trình-web&#34;&gt;DOM và Event trong Lập trình Web&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;DOM (Document Object Model)&lt;/strong&gt; là giao diện lập trình cho phép JavaScript tương tác với cấu trúc HTML của trang web. Hiểu về DOM và Event là nền tảng quan trọng cho mọi lập trình viên web.&lt;/p&gt;
 &lt;h2 id=&#34;dom-là-gì&#34;&gt;DOM là gì?&lt;/h2&gt;
@@ -194,9 +194,9 @@
     </item>
     <item>
       <title>TCP và UDP: Hai giao thức vận chuyển cơ bản</title>
-      <link>http://localhost:1313/blog-ca-nhan/posts/tcp-udp-co-ban/</link>
+      <link>http://localhost:60876/blog-ca-nhan/posts/tcp-udp-co-ban/</link>
       <pubDate>Wed, 17 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/posts/tcp-udp-co-ban/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/posts/tcp-udp-co-ban/</guid>
       <description>&lt;h1 id=&#34;tcp-và-udp-hai-giao-thức-vận-chuyển-cơ-bản&#34;&gt;TCP và UDP: Hai giao thức vận chuyển cơ bản&lt;/h1&gt;
 &lt;p&gt;Trong lập trình mạng, &lt;strong&gt;TCP&lt;/strong&gt; và &lt;strong&gt;UDP&lt;/strong&gt; là hai giao thức vận chuyển (Transport Layer) quan trọng nhất. Hiểu rõ đặc điểm và use case của từng giao thức giúp bạn thiết kế ứng dụng mạng hiệu quả.&lt;/p&gt;
 &lt;h2 id=&#34;mô-hình-osi-và-tcpip&#34;&gt;Mô hình OSI và TCP/IP&lt;/h2&gt;
@@ -204,9 +204,9 @@
     </item>
     <item>
       <title>WebSocket trong JavaScript: Giao tiếp Realtime</title>
-      <link>http://localhost:1313/blog-ca-nhan/posts/websocket-javascript/</link>
+      <link>http://localhost:60876/blog-ca-nhan/posts/websocket-javascript/</link>
       <pubDate>Tue, 16 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/posts/websocket-javascript/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/posts/websocket-javascript/</guid>
       <description>&lt;h1 id=&#34;websocket-trong-javascript-giao-tiếp-realtime&#34;&gt;WebSocket trong JavaScript: Giao tiếp Realtime&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;WebSocket&lt;/strong&gt; là giao thức cho phép giao tiếp hai chiều (full-duplex) giữa client và server thông qua một kết nối TCP duy nhất. Đây là công nghệ quan trọng cho các ứng dụng realtime như chat, game online, live updates.&lt;/p&gt;
 &lt;h2 id=&#34;tại-sao-cần-websocket&#34;&gt;Tại sao cần WebSocket?&lt;/h2&gt;
@@ -215,9 +215,9 @@
     </item>
     <item>
       <title>Socket Programming trong Java: Hướng dẫn chi tiết</title>
-      <link>http://localhost:1313/blog-ca-nhan/posts/socket-java/</link>
+      <link>http://localhost:60876/blog-ca-nhan/posts/socket-java/</link>
       <pubDate>Mon, 15 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/posts/socket-java/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/posts/socket-java/</guid>
       <description>&lt;h1 id=&#34;socket-programming-trong-java-hướng-dẫn-chi-tiết&#34;&gt;Socket Programming trong Java: Hướng dẫn chi tiết&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;Socket&lt;/strong&gt; là endpoint của kết nối mạng hai chiều giữa hai chương trình chạy trên mạng. Trong Java, package &lt;code&gt;java.net&lt;/code&gt; cung cấp các class để làm việc với socket một cách dễ dàng.&lt;/p&gt;
 &lt;h2 id=&#34;khái-niệm-cơ-bản&#34;&gt;Khái niệm cơ bản&lt;/h2&gt;
@@ -629,9 +629,9 @@ Ví dụ: 192.168.1.100:8080
     </item>
     <item>
       <title>Bất đồng bộ và Xử lý đồng thời trong Lập trình</title>
-      <link>http://localhost:1313/blog-ca-nhan/posts/bat-dong-bo-xu-ly-dong-thoi/</link>
+      <link>http://localhost:60876/blog-ca-nhan/posts/bat-dong-bo-xu-ly-dong-thoi/</link>
       <pubDate>Sun, 14 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/posts/bat-dong-bo-xu-ly-dong-thoi/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/posts/bat-dong-bo-xu-ly-dong-thoi/</guid>
       <description>&lt;h1 id=&#34;bất-đồng-bộ-và-xử-lý-đồng-thời-trong-lập-trình&#34;&gt;Bất đồng bộ và Xử lý đồng thời trong Lập trình&lt;/h1&gt;
 &lt;p&gt;Trong lập trình hiện đại, việc xử lý nhiều tác vụ cùng lúc là điều cần thiết. Bài viết này sẽ giải thích khái niệm &lt;strong&gt;bất đồng bộ (Asynchronous)&lt;/strong&gt; và &lt;strong&gt;xử lý đồng thời (Concurrency)&lt;/strong&gt; trong JavaScript và Java.&lt;/p&gt;
 &lt;h2 id=&#34;đồng-bộ-vs-bất-đồng-bộ&#34;&gt;Đồng bộ vs Bất đồng bộ&lt;/h2&gt;
@@ -640,9 +640,9 @@ Ví dụ: 192.168.1.100:8080
     </item>
     <item>
       <title>REST API và Kiến trúc Client-Server</title>
-      <link>http://localhost:1313/blog-ca-nhan/posts/rest-api-client-server/</link>
+      <link>http://localhost:60876/blog-ca-nhan/posts/rest-api-client-server/</link>
       <pubDate>Sat, 13 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/posts/rest-api-client-server/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/posts/rest-api-client-server/</guid>
       <description>&lt;h1 id=&#34;rest-api-và-kiến-trúc-client-server&#34;&gt;REST API và Kiến trúc Client-Server&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;REST (Representational State Transfer)&lt;/strong&gt; là kiến trúc phổ biến nhất để xây dựng API cho ứng dụng web. Bài viết này sẽ giải thích REST API và mô hình Client-Server một cách chi tiết.&lt;/p&gt;
 &lt;h2 id=&#34;kiến-trúc-client-server&#34;&gt;Kiến trúc Client-Server&lt;/h2&gt;
@@ -667,9 +667,9 @@ Ví dụ: 192.168.1.100:8080
     </item>
     <item>
       <title>Bảo mật cơ bản trong Giao tiếp Mạng</title>
-      <link>http://localhost:1313/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/</link>
+      <link>http://localhost:60876/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/</link>
       <pubDate>Fri, 12 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/posts/bao-mat-giao-tiep-mang/</guid>
       <description>&lt;h1 id=&#34;bảo-mật-cơ-bản-trong-giao-tiếp-mạng&#34;&gt;Bảo mật cơ bản trong Giao tiếp Mạng&lt;/h1&gt;
 &lt;p&gt;Bảo mật là yếu tố quan trọng hàng đầu trong lập trình mạng. Bài viết này sẽ giới thiệu các khái niệm và kỹ thuật bảo mật cơ bản khi phát triển ứng dụng web và mạng.&lt;/p&gt;
 &lt;h2 id=&#34;tại-sao-cần-bảo-mật-mạng&#34;&gt;Tại sao cần Bảo mật Mạng?&lt;/h2&gt;

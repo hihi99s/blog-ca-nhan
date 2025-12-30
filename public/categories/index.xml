@@ -2,24 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Categories on Blog cá nhân – Ngô Phạm Ngọc Tú</title>
-    <link>http://localhost:1313/blog-ca-nhan/categories/</link>
+    <link>http://localhost:60876/blog-ca-nhan/categories/</link>
     <description>Recent content in Categories on Blog cá nhân – Ngô Phạm Ngọc Tú</description>
     <generator>Hugo -- 0.153.2</generator>
     <language>vi</language>
     <lastBuildDate>Sat, 20 Dec 2025 10:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/blog-ca-nhan/categories/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:60876/blog-ca-nhan/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>JavaScript</title>
-      <link>http://localhost:1313/blog-ca-nhan/categories/javascript/</link>
+      <link>http://localhost:60876/blog-ca-nhan/categories/javascript/</link>
       <pubDate>Sat, 20 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/categories/javascript/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/categories/javascript/</guid>
       <description></description>
     </item>
     <item>
       <title>Lập Trình Mạng</title>
-      <link>http://localhost:1313/blog-ca-nhan/categories/l%E1%BA%ADp-tr%C3%ACnh-m%E1%BA%A1ng/</link>
+      <link>http://localhost:60876/blog-ca-nhan/categories/l%E1%BA%ADp-tr%C3%ACnh-m%E1%BA%A1ng/</link>
       <pubDate>Wed, 17 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/categories/l%E1%BA%ADp-tr%C3%ACnh-m%E1%BA%A1ng/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/categories/l%E1%BA%ADp-tr%C3%ACnh-m%E1%BA%A1ng/</guid>
       <description></description>
     </item>
   </channel>

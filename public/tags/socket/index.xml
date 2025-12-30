@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Socket on Blog cá nhân – Ngô Phạm Ngọc Tú</title>
-    <link>http://localhost:1313/blog-ca-nhan/tags/socket/</link>
+    <link>http://localhost:60876/blog-ca-nhan/tags/socket/</link>
     <description>Recent content in Socket on Blog cá nhân – Ngô Phạm Ngọc Tú</description>
     <generator>Hugo -- 0.153.2</generator>
     <language>vi</language>
     <lastBuildDate>Mon, 15 Dec 2025 10:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/blog-ca-nhan/tags/socket/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:60876/blog-ca-nhan/tags/socket/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Socket Programming trong Java: Hướng dẫn chi tiết</title>
-      <link>http://localhost:1313/blog-ca-nhan/posts/socket-java/</link>
+      <link>http://localhost:60876/blog-ca-nhan/posts/socket-java/</link>
       <pubDate>Mon, 15 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/posts/socket-java/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/posts/socket-java/</guid>
       <description>&lt;h1 id=&#34;socket-programming-trong-java-hướng-dẫn-chi-tiết&#34;&gt;Socket Programming trong Java: Hướng dẫn chi tiết&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;Socket&lt;/strong&gt; là endpoint của kết nối mạng hai chiều giữa hai chương trình chạy trên mạng. Trong Java, package &lt;code&gt;java.net&lt;/code&gt; cung cấp các class để làm việc với socket một cách dễ dàng.&lt;/p&gt;
 &lt;h2 id=&#34;khái-niệm-cơ-bản&#34;&gt;Khái niệm cơ bản&lt;/h2&gt;

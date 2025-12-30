@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Event on Blog cá nhân – Ngô Phạm Ngọc Tú</title>
-    <link>http://localhost:1313/blog-ca-nhan/tags/event/</link>
+    <link>http://localhost:60876/blog-ca-nhan/tags/event/</link>
     <description>Recent content in Event on Blog cá nhân – Ngô Phạm Ngọc Tú</description>
     <generator>Hugo -- 0.153.2</generator>
     <language>vi</language>
     <lastBuildDate>Thu, 18 Dec 2025 10:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/blog-ca-nhan/tags/event/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:60876/blog-ca-nhan/tags/event/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>DOM và Event trong Lập trình Web</title>
-      <link>http://localhost:1313/blog-ca-nhan/posts/dom-event-web/</link>
+      <link>http://localhost:60876/blog-ca-nhan/posts/dom-event-web/</link>
       <pubDate>Thu, 18 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/posts/dom-event-web/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/posts/dom-event-web/</guid>
       <description>&lt;h1 id=&#34;dom-và-event-trong-lập-trình-web&#34;&gt;DOM và Event trong Lập trình Web&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;DOM (Document Object Model)&lt;/strong&gt; là giao diện lập trình cho phép JavaScript tương tác với cấu trúc HTML của trang web. Hiểu về DOM và Event là nền tảng quan trọng cho mọi lập trình viên web.&lt;/p&gt;
 &lt;h2 id=&#34;dom-là-gì&#34;&gt;DOM là gì?&lt;/h2&gt;

@@ -2,157 +2,157 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Tags on Blog cá nhân – Ngô Phạm Ngọc Tú</title>
-    <link>http://localhost:1313/blog-ca-nhan/tags/</link>
+    <link>http://localhost:60876/blog-ca-nhan/tags/</link>
     <description>Recent content in Tags on Blog cá nhân – Ngô Phạm Ngọc Tú</description>
     <generator>Hugo -- 0.153.2</generator>
     <language>vi</language>
     <lastBuildDate>Sat, 20 Dec 2025 10:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/blog-ca-nhan/tags/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:60876/blog-ca-nhan/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Async</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/async/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/async/</link>
       <pubDate>Sat, 20 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/async/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/async/</guid>
       <description></description>
     </item>
     <item>
       <title>JavaScript</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/javascript/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/javascript/</link>
       <pubDate>Sat, 20 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/javascript/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/javascript/</guid>
       <description></description>
     </item>
     <item>
       <title>Web</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/web/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/web/</link>
       <pubDate>Sat, 20 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/web/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/web/</guid>
       <description></description>
     </item>
     <item>
       <title>API</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/api/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/api/</link>
       <pubDate>Fri, 19 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/api/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/api/</guid>
       <description></description>
     </item>
     <item>
       <title>HTTP</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/http/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/http/</link>
       <pubDate>Fri, 19 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/http/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/http/</guid>
       <description></description>
     </item>
     <item>
       <title>DOM</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/dom/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/dom/</link>
       <pubDate>Thu, 18 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/dom/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/dom/</guid>
       <description></description>
     </item>
     <item>
       <title>Event</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/event/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/event/</link>
       <pubDate>Thu, 18 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/event/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/event/</guid>
       <description></description>
     </item>
     <item>
       <title>Network</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/network/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/network/</link>
       <pubDate>Wed, 17 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/network/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/network/</guid>
       <description></description>
     </item>
     <item>
       <title>Protocol</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/protocol/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/protocol/</link>
       <pubDate>Wed, 17 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/protocol/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/protocol/</guid>
       <description></description>
     </item>
     <item>
       <title>TCP</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/tcp/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/tcp/</link>
       <pubDate>Wed, 17 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/tcp/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/tcp/</guid>
       <description></description>
     </item>
     <item>
       <title>UDP</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/udp/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/udp/</link>
       <pubDate>Wed, 17 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/udp/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/udp/</guid>
       <description></description>
     </item>
     <item>
       <title>Realtime</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/realtime/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/realtime/</link>
       <pubDate>Tue, 16 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/realtime/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/realtime/</guid>
       <description></description>
     </item>
     <item>
       <title>WebSocket</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/websocket/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/websocket/</link>
       <pubDate>Tue, 16 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/websocket/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/websocket/</guid>
       <description></description>
     </item>
     <item>
       <title>Java</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/java/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/java/</link>
       <pubDate>Mon, 15 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/java/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/java/</guid>
       <description></description>
     </item>
     <item>
       <title>Socket</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/socket/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/socket/</link>
       <pubDate>Mon, 15 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/socket/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/socket/</guid>
       <description></description>
     </item>
     <item>
       <title>Concurrency</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/concurrency/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/concurrency/</link>
       <pubDate>Sun, 14 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/concurrency/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/concurrency/</guid>
       <description></description>
     </item>
     <item>
       <title>Client-Server</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/client-server/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/client-server/</link>
       <pubDate>Sat, 13 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/client-server/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/client-server/</guid>
       <description></description>
     </item>
     <item>
       <title>REST</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/rest/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/rest/</link>
       <pubDate>Sat, 13 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/rest/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/rest/</guid>
       <description></description>
     </item>
     <item>
       <title>HTTPS</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/https/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/https/</link>
       <pubDate>Fri, 12 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/https/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/https/</guid>
       <description></description>
     </item>
     <item>
       <title>Security</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/security/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/security/</link>
       <pubDate>Fri, 12 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/security/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/security/</guid>
       <description></description>
     </item>
     <item>
       <title>SSL</title>
-      <link>http://localhost:1313/blog-ca-nhan/tags/ssl/</link>
+      <link>http://localhost:60876/blog-ca-nhan/tags/ssl/</link>
       <pubDate>Fri, 12 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/tags/ssl/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/tags/ssl/</guid>
       <description></description>
     </item>
   </channel>

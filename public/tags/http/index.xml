@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>HTTP on Blog cá nhân – Ngô Phạm Ngọc Tú</title>
-    <link>http://localhost:1313/blog-ca-nhan/tags/http/</link>
+    <link>http://localhost:60876/blog-ca-nhan/tags/http/</link>
     <description>Recent content in HTTP on Blog cá nhân – Ngô Phạm Ngọc Tú</description>
     <generator>Hugo -- 0.153.2</generator>
     <language>vi</language>
     <lastBuildDate>Fri, 19 Dec 2025 10:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/blog-ca-nhan/tags/http/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:60876/blog-ca-nhan/tags/http/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Fetch API và Giao tiếp HTTP trong JavaScript</title>
-      <link>http://localhost:1313/blog-ca-nhan/posts/fetch-api-http/</link>
+      <link>http://localhost:60876/blog-ca-nhan/posts/fetch-api-http/</link>
       <pubDate>Fri, 19 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/posts/fetch-api-http/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/posts/fetch-api-http/</guid>
       <description>&lt;h1 id=&#34;fetch-api-và-giao-tiếp-http-trong-javascript&#34;&gt;Fetch API và Giao tiếp HTTP trong JavaScript&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;Fetch API&lt;/strong&gt; là giao diện hiện đại trong JavaScript để thực hiện các HTTP request. Nó thay thế XMLHttpRequest (XHR) cũ với cú pháp đơn giản hơn và dựa trên Promise.&lt;/p&gt;
 &lt;h2 id=&#34;http-là-gì&#34;&gt;HTTP là gì?&lt;/h2&gt;
@@ -32,9 +32,9 @@
     </item>
     <item>
       <title>REST API và Kiến trúc Client-Server</title>
-      <link>http://localhost:1313/blog-ca-nhan/posts/rest-api-client-server/</link>
+      <link>http://localhost:60876/blog-ca-nhan/posts/rest-api-client-server/</link>
       <pubDate>Sat, 13 Dec 2025 10:00:00 +0700</pubDate>
-      <guid>http://localhost:1313/blog-ca-nhan/posts/rest-api-client-server/</guid>
+      <guid>http://localhost:60876/blog-ca-nhan/posts/rest-api-client-server/</guid>
       <description>&lt;h1 id=&#34;rest-api-và-kiến-trúc-client-server&#34;&gt;REST API và Kiến trúc Client-Server&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;REST (Representational State Transfer)&lt;/strong&gt; là kiến trúc phổ biến nhất để xây dựng API cho ứng dụng web. Bài viết này sẽ giải thích REST API và mô hình Client-Server một cách chi tiết.&lt;/p&gt;
 &lt;h2 id=&#34;kiến-trúc-client-server&#34;&gt;Kiến trúc Client-Server&lt;/h2&gt;
