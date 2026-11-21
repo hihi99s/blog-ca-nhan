@@ -1,50 +1,35 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head><script src="/blog-ca-nhan/livereload.js?mindelay=10&amp;v=2&amp;port=59148&amp;path=blog-ca-nhan/livereload" data-no-instant defer></script><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>API – Blog cá nhân – Ngô Phạm Ngọc Tú</title>
-<meta name="description" content="">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-</head>
-
-<body> 
-<header class="page-header">
-  <h1>
-    API
-  </h1>
-</header>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Fetch API và Giao tiếp HTTP trong JavaScript
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Fetch API và Giao tiếp HTTP trong JavaScript Fetch API là giao diện hiện đại trong JavaScript để thực hiện các HTTP request. Nó thay thế XMLHttpRequest (XHR) cũ với cú pháp đơn giản hơn và dựa trên Promise.
+<!doctype html><html lang=vi><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>API – Ngô Phạm Ngọc Tú | Portfolio & Blog</title><meta name=description content="Portfolio, CV và Blog kỹ thuật của Ngô Phạm Ngọc Tú — Nhân viên IT / Full-stack Developer (Java Spring Boot, .NET, Node.js, React, SQL)."><link rel=icon href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%230f172a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='700' font-size='26' fill='%2360a5fa'>NT</text></svg>"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel=stylesheet><link rel=stylesheet href="/blog-ca-nhan/css/portfolio.css?v=202611"><script>(function(){try{var e=localStorage.getItem("theme");e==="light"&&document.documentElement.setAttribute("data-theme","light")}catch{}})()</script></head><body><header class=site-header><div class="page-wrap nav-inner"><a href=/blog-ca-nhan/ class=brand><span class=brand-mark>NT</span>
+<span>Ngô Phạm Ngọc Tú</span></a><nav class=nav-links aria-label="Điều hướng chính"><a href=/blog-ca-nhan/ class=nav-link>Trang chủ</a>
+<a href=/blog-ca-nhan/profile/ class=nav-link>Hồ sơ & CV</a>
+<a href=/blog-ca-nhan/posts/ class=nav-link>Bài viết</a></nav><div class=nav-actions><a href=https://github.com/hihi99s class=icon-btn target=_blank rel="noopener noreferrer" aria-label="GitHub cá nhân" title=GitHub><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483.0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951.0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65.0.0.84-.27 2.75 1.026A9.564 9.564.0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688.0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855.0 1.338-.012 2.419-.012 2.747.0.268.18.58.688.482A10.019 10.019.0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+</a><button type=button id=nav-theme-toggle class=icon-btn aria-label="Chuyển giao diện Sáng/Tối" title="Chuyển giao diện Sáng/Tối">
+<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><path d="M12 3a6 6 0 009 9 9 9 0 11-9-9z"/></svg>
+</button>
+<a href=/blog-ca-nhan/files/CV_Ngo_Pham_Ngoc_Tu.pdf class="btn btn-primary btn-sm nav-cv-desktop" target=_blank rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6A2 2 0 004 4v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+<span>Xem CV</span>
+</a><button type=button id=mobile-menu-toggle class="icon-btn mobile-menu-btn" aria-label="Mở menu điều hướng" aria-expanded=false>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button></div></div><div id=mobile-drawer class=mobile-drawer><a href=/blog-ca-nhan/ class=nav-link>Trang chủ</a>
+<a href=/blog-ca-nhan/profile/ class=nav-link>Hồ sơ & CV</a>
+<a href=/blog-ca-nhan/posts/ class=nav-link>Bài viết</a>
+<a href=/blog-ca-nhan/files/CV_Ngo_Pham_Ngoc_Tu.pdf class="btn btn-primary btn-sm" target=_blank rel="noopener noreferrer" style=margin-top:6px>Xem CV (PDF)</a></div></header><main class=site-main><header class=page-header><h1>API</h1></header><article class="post-entry tag-entry"><header class=entry-header><h2 class=entry-hint-parent>Fetch API và Giao tiếp HTTP trong JavaScript</h2></header><div class=entry-content><p>Fetch API và Giao tiếp HTTP trong JavaScript Fetch API là giao diện hiện đại trong JavaScript để thực hiện các HTTP request. Nó thay thế XMLHttpRequest (XHR) cũ với cú pháp đơn giản hơn và dựa trên Promise.
 HTTP là gì? HTTP (HyperText Transfer Protocol) là giao thức truyền thông giữa client và server trên web. Mỗi HTTP request bao gồm:
-Method (GET, POST, PUT, DELETE, …) URL (địa chỉ tài nguyên) Headers (thông tin bổ sung) Body (dữ liệu gửi đi - với POST, PUT) Cú pháp cơ bản của Fetch fetch(url, options) .then(response =&gt; response.json()) .then(data =&gt; console.log(data)) .catch(error =&gt; console.error(error)); Hoặc với Async/Await:
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-12-19 10:00:00 +0700 +07'>19 tháng 12, 2025</span>&nbsp;·&nbsp;<span>Ngô Phạm Ngọc Tú</span></footer>
-  <a class="entry-link" aria-label="post link to Fetch API và Giao tiếp HTTP trong JavaScript" href="http://localhost:59148/blog-ca-nhan/posts/fetch-api-http/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">REST API và Kiến trúc Client-Server
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>REST API và Kiến trúc Client-Server REST (Representational State Transfer) là kiến trúc phổ biến nhất để xây dựng API cho ứng dụng web. Bài viết này sẽ giải thích REST API và mô hình Client-Server một cách chi tiết.
-Kiến trúc Client-Server Mô hình cơ bản ┌──────────────┐ HTTP Request ┌──────────────┐│ │ ─────────────────────────────►│ ││ CLIENT │ │ SERVER ││ │◄───────────────────────────── │ │└──────────────┘ HTTP Response └──────────────┘(Browser, (API,Mobile App, Database,Desktop App) Business Logic) Đặc điểm Client: Gửi request, hiển thị dữ liệu cho user Server: Xử lý logic, lưu trữ dữ liệu, trả response Stateless: Server không lưu trạng thái client giữa các request Separation of Concerns: Tách biệt UI và logic REST là gì? REST là một kiến trúc (không phải giao thức) với các nguyên tắc thiết kế API:
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-12-13 10:00:00 +0700 +07'>13 tháng 12, 2025</span>&nbsp;·&nbsp;<span>Ngô Phạm Ngọc Tú</span></footer>
-  <a class="entry-link" aria-label="post link to REST API và Kiến trúc Client-Server" href="http://localhost:59148/blog-ca-nhan/posts/rest-api-client-server/"></a>
-</article>
-</body>
-
-</html>
+Method (GET, POST, PUT, DELETE, …) URL (địa chỉ tài nguyên) Headers (thông tin bổ sung) Body (dữ liệu gửi đi - với POST, PUT) Cú pháp cơ bản của Fetch fetch(url, options) .then(response => response.json()) .then(data => console.log(data)) .catch(error => console.error(error)); Hoặc với Async/Await:
+...</p></div><footer class=entry-footer><span title='2025-12-19 10:00:00 +0700 +07'>19 tháng 12, 2025</span>&nbsp;·&nbsp;<span>Ngô Phạm Ngọc Tú</span></footer><a class=entry-link aria-label="post link to Fetch API và Giao tiếp HTTP trong JavaScript" href=https://hihi99s.github.io/blog-ca-nhan/posts/fetch-api-http/></a></article><article class="post-entry tag-entry"><header class=entry-header><h2 class=entry-hint-parent>REST API và Kiến trúc Client-Server</h2></header><div class=entry-content><p>REST API và Kiến trúc Client-Server REST (Representational State Transfer) là kiến trúc phổ biến nhất để xây dựng API cho ứng dụng web. Bài viết này sẽ giải thích REST API và mô hình Client-Server một cách chi tiết.
+Kiến trúc Client-Server Mô hình cơ bản ┌──────────────┐ HTTP Request ┌──────────────┐
+│ │ ─────────────────────────────►│ │
+│ CLIENT │ │ SERVER │
+│ │◄───────────────────────────── │ │
+└──────────────┘ HTTP Response └──────────────┘
+(Browser, (API,
+Mobile App, Database,
+Desktop App) Business Logic) Đặc điểm Client: Gửi request, hiển thị dữ liệu cho user Server: Xử lý logic, lưu trữ dữ liệu, trả response Stateless: Server không lưu trạng thái client giữa các request Separation of Concerns: Tách biệt UI và logic REST là gì? REST là một kiến trúc (không phải giao thức) với các nguyên tắc thiết kế API:
+...</p></div><footer class=entry-footer><span title='2025-12-13 10:00:00 +0700 +07'>13 tháng 12, 2025</span>&nbsp;·&nbsp;<span>Ngô Phạm Ngọc Tú</span></footer><a class=entry-link aria-label="post link to REST API và Kiến trúc Client-Server" href=https://hihi99s.github.io/blog-ca-nhan/posts/rest-api-client-server/></a></article></main><footer class=site-footer><div class="page-wrap footer-inner"><span>&copy; 2026 Ngô Phạm Ngọc Tú &#183; HUTECH Công nghệ Phần mềm</span><div class=footer-links><a href=https://github.com/hihi99s target=_blank rel="noopener noreferrer">GitHub</a>
+<a href=mailto:phamngoctu710@gmail.com>phamngoctu710@gmail.com</a>
+<a href=/blog-ca-nhan/files/CV_Ngo_Pham_Ngoc_Tu.pdf target=_blank rel="noopener noreferrer">CV (PDF)</a>
+<a href=/blog-ca-nhan/posts/>Bài viết</a></div></div></footer><audio id=bg-music loop preload=none><source src=https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3 type=audio/mpeg></audio><div class=floating-tools aria-label="Tiện ích trang"><button type=button id=btn-top class="icon-btn back-to-top" aria-label="Lên đầu trang" title="Lên đầu trang">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+<button type=button id=btn-music class=icon-btn aria-label="Bật hoặc tắt nhạc nền" title="Nhạc nền Lofi">
+<svg class="icon-music-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+<svg class="icon-music-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg></button></div><script>(function(){var e,t,s,i,r,c,l,d,u,h,g,a=document.documentElement,n=document.getElementById("nav-theme-toggle"),p=n?n.querySelector(".icon-sun"):null,f=n?n.querySelector(".icon-moon"):null;function m(){var e=a.getAttribute("data-theme")==="light";p&&f&&(p.style.display=e?"none":"block",f.style.display=e?"block":"none")}m(),n&&n.addEventListener("click",function(){var e=a.getAttribute("data-theme")==="light";if(e){a.removeAttribute("data-theme");try{localStorage.setItem("theme","dark")}catch{}}else{a.setAttribute("data-theme","light");try{localStorage.setItem("theme","light")}catch{}}m()}),r=document.getElementById("mobile-menu-toggle"),u=document.getElementById("mobile-drawer"),r&&u&&r.addEventListener("click",function(){var e=u.classList.toggle("open");r.setAttribute("aria-expanded",e?"true":"false")}),t=document.getElementById("btn-music"),e=document.getElementById("bg-music"),l=t?t.querySelector(".icon-music-off"):null,d=t?t.querySelector(".icon-music-on"):null;function o(e){if(!t)return;t.classList.toggle("is-active",e),l&&d&&(l.style.display=e?"none":"block",d.style.display=e?"block":"none")}if(t&&e){c=!1,s=0;try{c=localStorage.getItem("musicPlaying")==="true",s=parseFloat(localStorage.getItem("musicTime"))||0}catch{}c&&e.addEventListener("loadedmetadata",function(){e.currentTime=s,e.play().then(function(){o(!0)}).catch(function(){o(!1)})},{once:!0}),setInterval(function(){if(!e.paused)try{localStorage.setItem("musicTime",String(e.currentTime))}catch{}},1e3),window.addEventListener("beforeunload",function(){try{localStorage.setItem("musicTime",String(e.currentTime))}catch{}}),t.addEventListener("click",function(){if(e.paused)s>0&&e.currentTime===0&&e.addEventListener("loadedmetadata",function(){e.currentTime=s},{once:!0}),e.play().then(function(){o(!0);try{localStorage.setItem("musicPlaying","true")}catch{}}).catch(function(){o(!1)});else{e.pause(),o(!1);try{localStorage.setItem("musicPlaying","false")}catch{}}})}i=document.getElementById("btn-top"),i&&(window.addEventListener("scroll",function(){i.classList.toggle("visible",window.scrollY>360)},{passive:!0}),i.addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"})})),h=document.querySelector(".article-prose"),h&&(g=h.querySelectorAll("pre"),g.forEach(function(e){var t,s=e.parentNode,n=document.createElement("div");n.className="code-block-wrap",s.insertBefore(n,e),n.appendChild(e),t=document.createElement("button"),t.type="button",t.className="copy-code-btn",t.textContent="Copy",t.addEventListener("click",function(){var n=e.innerText||e.textContent||"";navigator.clipboard&&navigator.clipboard.writeText&&navigator.clipboard.writeText(n).then(function(){t.textContent="Copied",setTimeout(function(){t.textContent="Copy"},1800)})}),n.appendChild(t)}))})()</script></body></html>

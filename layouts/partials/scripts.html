@@ -1,0 +1,143 @@
+<script>
+  (function () {
+    // 1. Theme Toggle
+    var root = document.documentElement;
+    var themeBtn = document.getElementById('nav-theme-toggle');
+    var sunIcon = themeBtn ? themeBtn.querySelector('.icon-sun') : null;
+    var moonIcon = themeBtn ? themeBtn.querySelector('.icon-moon') : null;
+
+    function syncThemeUI() {
+      var isLight = root.getAttribute('data-theme') === 'light';
+      if (sunIcon && moonIcon) {
+        sunIcon.style.display = isLight ? 'none' : 'block';
+        moonIcon.style.display = isLight ? 'block' : 'none';
+      }
+    }
+    syncThemeUI();
+
+    if (themeBtn) {
+      themeBtn.addEventListener('click', function () {
+        var isLight = root.getAttribute('data-theme') === 'light';
+        if (isLight) {
+          root.removeAttribute('data-theme');
+          try { localStorage.setItem('theme', 'dark'); } catch (e) {}
+        } else {
+          root.setAttribute('data-theme', 'light');
+          try { localStorage.setItem('theme', 'light'); } catch (e) {}
+        }
+        syncThemeUI();
+      });
+    }
+
+    // 2. Mobile Menu Drawer
+    var menuBtn = document.getElementById('mobile-menu-toggle');
+    var drawer = document.getElementById('mobile-drawer');
+    if (menuBtn && drawer) {
+      menuBtn.addEventListener('click', function () {
+        var isOpen = drawer.classList.toggle('open');
+        menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+    }
+
+    // 3. Background Lofi Audio Toggle with Persistence
+    var musicBtn = document.getElementById('btn-music');
+    var audio = document.getElementById('bg-music');
+    var iconOff = musicBtn ? musicBtn.querySelector('.icon-music-off') : null;
+    var iconOn = musicBtn ? musicBtn.querySelector('.icon-music-on') : null;
+
+    function syncMusicUI(playing) {
+      if (!musicBtn) return;
+      musicBtn.classList.toggle('is-active', playing);
+      if (iconOff && iconOn) {
+        iconOff.style.display = playing ? 'none' : 'block';
+        iconOn.style.display = playing ? 'block' : 'none';
+      }
+    }
+
+    if (musicBtn && audio) {
+      var isPlaying = false;
+      var savedTime = 0;
+      try {
+        isPlaying = localStorage.getItem('musicPlaying') === 'true';
+        savedTime = parseFloat(localStorage.getItem('musicTime')) || 0;
+      } catch (e) {}
+
+      if (isPlaying) {
+        audio.addEventListener('loadedmetadata', function () {
+          audio.currentTime = savedTime;
+          audio.play().then(function () { syncMusicUI(true); }).catch(function () { syncMusicUI(false); });
+        }, { once: true });
+      }
+
+      setInterval(function () {
+        if (!audio.paused) {
+          try { localStorage.setItem('musicTime', String(audio.currentTime)); } catch (e) {}
+        }
+      }, 1000);
+
+      window.addEventListener('beforeunload', function () {
+        try { localStorage.setItem('musicTime', String(audio.currentTime)); } catch (e) {}
+      });
+
+      musicBtn.addEventListener('click', function () {
+        if (!audio.paused) {
+          audio.pause();
+          syncMusicUI(false);
+          try { localStorage.setItem('musicPlaying', 'false'); } catch (e) {}
+        } else {
+          if (savedTime > 0 && audio.currentTime === 0) {
+            audio.addEventListener('loadedmetadata', function () {
+              audio.currentTime = savedTime;
+            }, { once: true });
+          }
+          audio.play().then(function () {
+            syncMusicUI(true);
+            try { localStorage.setItem('musicPlaying', 'true'); } catch (e) {}
+          }).catch(function () {
+            syncMusicUI(false);
+          });
+        }
+      });
+    }
+
+    // 4. Back to Top
+    var topBtn = document.getElementById('btn-top');
+    if (topBtn) {
+      window.addEventListener('scroll', function () {
+        topBtn.classList.toggle('visible', window.scrollY > 360);
+      }, { passive: true });
+
+      topBtn.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    // 5. Auto-attach Copy buttons to <pre> code blocks in articles
+    var prose = document.querySelector('.article-prose');
+    if (prose) {
+      var blocks = prose.querySelectorAll('pre');
+      blocks.forEach(function (pre) {
+        var parent = pre.parentNode;
+        var wrap = document.createElement('div');
+        wrap.className = 'code-block-wrap';
+        parent.insertBefore(wrap, pre);
+        wrap.appendChild(pre);
+
+        var copyBtn = document.createElement('button');
+        copyBtn.type = 'button';
+        copyBtn.className = 'copy-code-btn';
+        copyBtn.textContent = 'Copy';
+        copyBtn.addEventListener('click', function () {
+          var codeText = pre.innerText || pre.textContent || '';
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(codeText).then(function () {
+              copyBtn.textContent = 'Copied';
+              setTimeout(function () { copyBtn.textContent = 'Copy'; }, 1800);
+            });
+          }
+        });
+        wrap.appendChild(copyBtn);
+      });
+    }
+  })();
+</script>

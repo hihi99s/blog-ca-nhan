@@ -1,13 +1,13 @@
-
 baseURL = "https://hihi99s.github.io/blog-ca-nhan/"
 languageCode = "vi"
-title = "Blog cá nhân – Ngô Phạm Ngọc Tú"
+title = "Ngô Phạm Ngọc Tú | Portfolio & Blog"
 theme = "PaperMod"
 enableRobotsTXT = true
 defaultContentLanguage = "vi"
 
 [params]
 	author = "Ngô Phạm Ngọc Tú"
+	description = "Portfolio, CV và Blog kỹ thuật của Ngô Phạm Ngọc Tú — Nhân viên IT / Full-stack Developer (Java Spring Boot, .NET, Node.js, React, SQL)."
 	# Hint for theme to support dark mode; actual behavior depends on the theme.
 	enableDarkMode = true
 	defaultColorMode = "auto"

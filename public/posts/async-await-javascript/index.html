@@ -1,691 +1,164 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head><script src="/blog-ca-nhan/livereload.js?mindelay=10&amp;v=2&amp;port=59148&amp;path=blog-ca-nhan/livereload" data-no-instant defer></script><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Async/Await trong JavaScript: Hướng dẫn chi tiết – Blog cá nhân – Ngô Phạm Ngọc Tú</title>
-<meta name="description" content="">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-</head>
-
-<body>
-<!doctype html>
-<html lang="vi">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Async/Await trong JavaScript: Hướng dẫn chi tiết – Blog cá nhân – Ngô Phạm Ngọc Tú</title>
-    <meta name="description" content="Async/Await trong JavaScript: Hướng dẫn chi tiết
-Trong lập trình JavaScript hiện đại, việc xử lý các tác vụ bất đồng bộ là điều không thể tránh khỏi. …">
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
-    <style>
-        :root {
-            --bg: #0a0e1a;
-            --bg-gradient: linear-gradient(135deg, #0a0e1a 0%, #1a2332 50%, #0f172a 100%);
-            --card-bg: rgba(30, 41, 59, 0.6);
-            --card-glow: rgba(125, 211, 252, 0.1);
-            --text: #f8fafc;
-            --text-2nd: #e2e8f0;
-            --muted: #94a3b8;
-            --accent: #7dd3fc;
-            --accent-glow: rgba(125, 211, 252, 0.4);
-            --border: rgba(125, 211, 252, 0.1);
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        [data-theme="light"] {
-            --bg: #f8fafc;
-            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --card-glow: rgba(14, 165, 233, 0.1);
-            --text: #0f172a;
-            --text-2nd: #1e293b;
-            --muted: #64748b;
-            --accent: #0ea5e9;
-            --accent-glow: rgba(14, 165, 233, 0.3);
-            --border: rgba(14, 165, 233, 0.15);
-            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            color: var(--text);
-            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.8;
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background:
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 60px 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .back-nav {
-            width: 100%;
-            max-width: 800px;
-            margin-bottom: 40px;
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 32px;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            color: var(--text);
-            font-weight: 600;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .back-link:hover {
-            border-color: var(--accent);
-            box-shadow: 0 20px 40px var(--card-glow);
-            transform: translateY(-4px);
-            text-decoration: none;
-        }
-
-        .back-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s;
-        }
-
-        .back-link:hover::before {
-            left: 100%;
-        }
-
-        .article-header {
-            text-align: center;
-            margin-bottom: 60px;
-            animation: fadeInUp 1s ease-out;
-        }
-
-        .article-title {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--text) 0%, var(--accent) 50%, var(--text-2nd) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin: 0 0 20px;
-            letter-spacing: -0.02em;
-        }
-
-        .article-meta {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            font-size: 1rem;
-            color: var(--muted);
-            margin-bottom: 24px;
-        }
-
-        .article-tags {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .tag {
-            background: var(--accent-glow);
-            color: var(--accent);
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            border: 1px solid var(--border);
-            transition: all 0.3s;
-        }
-
-        .tag:hover {
-            background: var(--accent);
-            color: #0f172a;
-            transform: translateY(-4px);
-        }
-
-        .article-content {
-            width: 100%;
-            max-width: 800px;
-            background: var(--card-bg);
-            backdrop-filter: blur(24px);
-            padding: 48px;
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            animation: fadeInUp 1.2s ease-out 0.2s both;
-        }
-
-        .article-content h1,
-        .article-content h2,
-        .article-content h3,
-        .article-content h4 {
-            color: var(--accent);
-            margin: 40px 0 20px;
-            font-weight: 700;
-        }
-
-        .article-content h1 {
-            font-size: 2.2rem;
-        }
-
-        .article-content h2 {
-            font-size: 1.8rem;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 12px;
-        }
-
-        .article-content h3 {
-            font-size: 1.5rem;
-        }
-
-        .article-content h4 {
-            font-size: 1.2rem;
-        }
-
-        .article-content p,
-        .article-content ul,
-        .article-content ol {
-            color: var(--text-2nd);
-            margin-bottom: 24px;
-        }
-
-        .article-content blockquote {
-            border-left: 5px solid var(--accent);
-            background: var(--accent-glow);
-            padding: 24px;
-            border-radius: 0 16px 16px 0;
-            margin: 32px 0;
-            font-style: italic;
-        }
-
-        .article-content pre {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.9));
-            border-radius: 20px;
-            padding: 32px;
-            overflow-x: auto;
-            margin: 32px 0;
-            border: 1px solid var(--border);
-            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.4);
-        }
-
-        .article-content pre code {
-            font-family: 'JetBrains Mono', ui-monospace, monospace;
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: var(--text);
-            background: transparent;
-            padding: 0;
-        }
-
-        .article-content code {
-            background: rgba(125, 211, 252, 0.15);
-            color: #f472b6;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 0.9em;
-        }
-
-        .article-content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 24px 0;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .article-content th,
-        .article-content td {
-            padding: 14px 16px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .article-content th {
-            background: rgba(125, 211, 252, 0.1);
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        .floating-buttons {
-            position: fixed;
-            bottom: 32px;
-            right: 32px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .floating-buttons button {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 2px solid var(--border);
-            color: var(--text);
-            padding: 16px;
-            border-radius: 50%;
-            cursor: pointer;
-            width: 64px;
-            height: 64px;
-            font-size: 1.4rem;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-        }
-
-        .floating-buttons button:hover {
-            transform: scale(1.1) rotate(180deg);
-            box-shadow: 0 20px 40px var(--card-glow);
-            border-color: var(--accent);
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 40px 20px;
-            }
-
-            .article-content {
-                padding: 32px;
-            }
-
-            .article-title {
-                font-size: 2.5rem;
-            }
-
-            .back-link {
-                padding: 14px 24px;
-            }
-        }
-
-        @media (prefers-color-scheme: light) {
-            :root:not([data-theme]) {
-                --bg: #f8fafc;
-                --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
-                --card-bg: rgba(255, 255, 255, 0.9);
-                --text: #0f172a;
-                --text-2nd: #1e293b;
-                --muted: #64748b;
-                --accent: #0ea5e9;
-                --border: rgba(14, 165, 233, 0.15);
-            }
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 4px;
-        }
-    </style>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
-        rel="stylesheet">
-</head>
-
-<body>
-    <div class="container">
-        <nav class="back-nav">
-            <a href="/blog-ca-nhan/posts/" class="back-link">← Quay lại danh sách bài viết</a>
-        </nav>
-
-        <header class="article-header">
-            <h1 class="article-title">Async/Await trong JavaScript: Hướng dẫn chi tiết</h1>
-            <div class="article-meta">
-                <span>📅 20/12/2025</span>
-                <span>⏱️ 4 phút đọc</span>
-                <span>📁 JavaScript</span>
-            </div>
-            
-            <div class="article-tags">
-                
-                <span class="tag">#JavaScript</span>
-                
-                <span class="tag">#Async</span>
-                
-                <span class="tag">#Web</span>
-                
-            </div>
-            
-        </header>
-
-        <article class="article-content">
-            <h1 id="asyncawait-trong-javascript-hướng-dẫn-chi-tiết">Async/Await trong JavaScript: Hướng dẫn chi tiết</h1>
-<p>Trong lập trình JavaScript hiện đại, việc xử lý các tác vụ bất đồng bộ là điều không thể tránh khỏi. <strong>Async/Await</strong> là cú pháp được giới thiệu trong ES2017 (ES8) giúp code bất đồng bộ trở nên dễ đọc và dễ bảo trì hơn rất nhiều.</p>
-<h2 id="tại-sao-cần-asyncawait">Tại sao cần Async/Await?</h2>
-<p>Trước khi có Async/Await, chúng ta phải sử dụng <strong>callback</strong> hoặc <strong>Promise chains</strong>, dẫn đến code khó đọc:</p>
-<h3 id="callback-hell-địa-ngục-callback">Callback Hell (Địa ngục callback)</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// Callback hell - khó đọc và bảo trì
-</span></span></span><span class="line"><span class="cl"><span class="nx">getData</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">getMoreData</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">getEvenMoreData</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">getFinalData</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">d</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">            <span class="p">});</span>
-</span></span><span class="line"><span class="cl">        <span class="p">});</span>
-</span></span><span class="line"><span class="cl">    <span class="p">});</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></div><h3 id="promise-chains">Promise Chains</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// Promise chains - tốt hơn nhưng vẫn rườm rà
-</span></span></span><span class="line"><span class="cl"><span class="nx">getData</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">a</span> <span class="p">=&gt;</span> <span class="nx">getMoreData</span><span class="p">(</span><span class="nx">a</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">b</span> <span class="p">=&gt;</span> <span class="nx">getEvenMoreData</span><span class="p">(</span><span class="nx">b</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">c</span> <span class="p">=&gt;</span> <span class="nx">getFinalData</span><span class="p">(</span><span class="nx">c</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">d</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">d</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">));</span>
-</span></span></code></pre></div><h3 id="asyncawait---giải-pháp-tối-ưu">Async/Await - Giải pháp tối ưu</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// Async/Await - rõ ràng như code đồng bộ
-</span></span></span><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">fetchAllData</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">try</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">a</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getData</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">b</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getMoreData</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">c</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getEvenMoreData</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">d</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getFinalData</span><span class="p">(</span><span class="nx">c</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">d</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><h2 id="cách-hoạt-động-của-asyncawait">Cách hoạt động của Async/Await</h2>
-<h3 id="từ-khóa-async">Từ khóa <code>async</code></h3>
-<p>Khi đặt <code>async</code> trước một function, function đó sẽ <strong>luôn trả về một Promise</strong>:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">sayHello</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s2">&#34;Xin chào!&#34;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// Tương đương với:
-</span></span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">sayHello</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="s2">&#34;Xin chào!&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// Sử dụng
-</span></span></span><span class="line"><span class="cl"><span class="nx">sayHello</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="nx">message</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">));</span> <span class="c1">// &#34;Xin chào!&#34;
-</span></span></span></code></pre></div><h3 id="từ-khóa-await">Từ khóa <code>await</code></h3>
-<p><code>await</code> chỉ được sử dụng <strong>bên trong async function</strong> và nó sẽ:</p>
-<ul>
-<li>Tạm dừng thực thi function</li>
-<li>Chờ Promise hoàn thành</li>
-<li>Trả về giá trị resolved của Promise</li>
-</ul>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">demo</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Bắt đầu&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="c1">// Tạm dừng 2 giây
-</span></span></span><span class="line"><span class="cl">    <span class="kr">await</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="p">=&gt;</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="mi">2000</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Sau 2 giây&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">demo</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl"><span class="c1">// Output:
-</span></span></span><span class="line"><span class="cl"><span class="c1">// &#34;Bắt đầu&#34;
-</span></span></span><span class="line"><span class="cl"><span class="c1">// (chờ 2 giây)
-</span></span></span><span class="line"><span class="cl"><span class="c1">// &#34;Sau 2 giây&#34;
-</span></span></span></code></pre></div><h2 id="ví-dụ-thực-tế-gọi-api">Ví dụ thực tế: Gọi API</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">layThongTinNguoiDung</span><span class="p">(</span><span class="nx">userId</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">try</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="c1">// Gọi API lấy thông tin user
-</span></span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="sb">`https://api.example.com/users/</span><span class="si">${</span><span class="nx">userId</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        
-</span></span><span class="line"><span class="cl">        <span class="c1">// Kiểm tra response
-</span></span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="sb">`HTTP error! status: </span><span class="si">${</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        
-</span></span><span class="line"><span class="cl">        <span class="c1">// Parse JSON
-</span></span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">userData</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">        
-</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Thông tin người dùng:&#34;</span><span class="p">,</span> <span class="nx">userData</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">userData</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        
-</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&#34;Lỗi khi lấy thông tin:&#34;</span><span class="p">,</span> <span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// Sử dụng
-</span></span></span><span class="line"><span class="cl"><span class="nx">layThongTinNguoiDung</span><span class="p">(</span><span class="mi">123</span><span class="p">);</span>
-</span></span></code></pre></div><h2 id="xử-lý-nhiều-promise-song-song">Xử lý nhiều Promise song song</h2>
-<h3 id="tuần-tự-sequential---chậm">Tuần tự (Sequential) - Chậm</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">tuanTu</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">start</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/api/user&#39;</span><span class="p">);</span>      <span class="c1">// Chờ xong mới chạy tiếp
-</span></span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">posts</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/api/posts&#39;</span><span class="p">);</span>    <span class="c1">// Chờ xong mới chạy tiếp
-</span></span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">comments</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/api/comments&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Thời gian: </span><span class="si">${</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">start</span><span class="si">}</span><span class="sb">ms`</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// Giả sử mỗi request mất 1s =&gt; Tổng: ~3000ms
-</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><h3 id="song-song-parallel---nhanh">Song song (Parallel) - Nhanh</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">songSong</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">start</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="c1">// Khởi động tất cả requests cùng lúc
-</span></span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">[</span><span class="nx">user</span><span class="p">,</span> <span class="nx">posts</span><span class="p">,</span> <span class="nx">comments</span><span class="p">]</span> <span class="o">=</span> <span class="kr">await</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/api/user&#39;</span><span class="p">),</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/api/posts&#39;</span><span class="p">),</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/api/comments&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">]);</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Thời gian: </span><span class="si">${</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">start</span><span class="si">}</span><span class="sb">ms`</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// Tổng: ~1000ms (thời gian của request lâu nhất)
-</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><h2 id="xử-lý-lỗi-với-trycatch">Xử lý lỗi với try/catch</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">fetchData</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">try</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;https://api.example.com/data&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">data</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="c1">// Xử lý lỗi mạng hoặc lỗi parse JSON
-</span></span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">error</span> <span class="k">instanceof</span> <span class="nx">TypeError</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&#34;Lỗi mạng:&#34;</span><span class="p">,</span> <span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&#34;Lỗi khác:&#34;</span><span class="p">,</span> <span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="c1">// Luôn chạy dù có lỗi hay không
-</span></span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Hoàn thành request&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><h2 id="asyncawait-với-vòng-lặp">Async/Await với vòng lặp</h2>
-<h3 id="tuần-tự-trong-vòng-lặp">Tuần tự trong vòng lặp</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">processItems</span><span class="p">(</span><span class="nx">items</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">item</span> <span class="k">of</span> <span class="nx">items</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="c1">// Mỗi item được xử lý tuần tự
-</span></span></span><span class="line"><span class="cl">        <span class="kr">await</span> <span class="nx">processItem</span><span class="p">(</span><span class="nx">item</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><h3 id="song-song-trong-vòng-lặp">Song song trong vòng lặp</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">processItemsParallel</span><span class="p">(</span><span class="nx">items</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// Tất cả items được xử lý cùng lúc
-</span></span></span><span class="line"><span class="cl">    <span class="kr">await</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">items</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">item</span> <span class="p">=&gt;</span> <span class="nx">processItem</span><span class="p">(</span><span class="nx">item</span><span class="p">)));</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><h2 id="những-lưu-ý-quan-trọng">Những lưu ý quan trọng</h2>
-<ol>
-<li>
-<p><strong><code>await</code> chỉ dùng trong <code>async</code> function</strong> - Sử dụng ngoài sẽ gây lỗi cú pháp</p>
-</li>
-<li>
-<p><strong>Async function luôn trả về Promise</strong> - Kể cả khi return giá trị thường</p>
-</li>
-<li>
-<p><strong>Không quên <code>try/catch</code></strong> - Lỗi không được xử lý sẽ gây Unhandled Promise Rejection</p>
-</li>
-<li>
-<p><strong>Cân nhắc tuần tự vs song song</strong> - Sử dụng <code>Promise.all()</code> khi các tác vụ độc lập</p>
-</li>
-</ol>
-<h2 id="kết-luận">Kết luận</h2>
-<p><strong>Async/Await</strong> là công cụ mạnh mẽ giúp viết code bất đồng bộ trong JavaScript một cách rõ ràng và dễ bảo trì. Hiểu và sử dụng thành thạo Async/Await là kỹ năng quan trọng cho mọi lập trình viên JavaScript hiện đại.</p>
-<hr>
-<p><em>Bài viết thuộc series JavaScript cho lập trình mạng - Blog Ngô Phạm Ngọc Tú</em></p>
-
-        </article>
-    </div>
-
-    
-    <audio id="bg-music" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
-    </audio>
-
-    <div class="floating-buttons">
-        <button id="btn-music" aria-label="Bật/Tắt nhạc" title="Bật nhạc nền">🎵</button>
-        <button id="btn-theme" aria-label="Chuyển đổi theme">🌙</button>
-    </div>
-
-    <script>
-        const root = document.documentElement;
-        const btn = document.getElementById('btn-theme');
-        const stored = localStorage.getItem('theme');
-        let isDark = !stored || stored !== 'light';
-
-        function applyTheme(isDarkMode) {
-            if (isDarkMode) {
-                root.removeAttribute('data-theme');
-                btn.textContent = '☀️';
-            } else {
-                root.setAttribute('data-theme', 'light');
-                btn.textContent = '🌙';
-            }
-        }
-
-        if (stored) isDark = stored !== 'light';
-        else if (window.matchMedia('(prefers-color-scheme: dark)').matches) isDark = true;
-        applyTheme(isDark);
-
-        btn.addEventListener('click', () => {
-            isDark = !isDark;
-            applyTheme(isDark);
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        });
-
-        
-        const musicBtn = document.getElementById('btn-music');
-        const audio = document.getElementById('bg-music');
-        let isPlaying = localStorage.getItem('musicPlaying') === 'true';
-        const savedTime = parseFloat(localStorage.getItem('musicTime')) || 0;
-
-        
-        audio.addEventListener('loadedmetadata', () => {
-            audio.currentTime = savedTime;
-            if (isPlaying) {
-                audio.play().catch(() => { });
-                musicBtn.textContent = '🔇';
-            }
-        });
-
-        
-        if (audio.readyState >= 1) {
-            audio.currentTime = savedTime;
-            if (isPlaying) {
-                audio.play().catch(() => { });
-                musicBtn.textContent = '🔇';
-            }
-        }
-
-        
-        setInterval(() => {
-            if (!audio.paused) {
-                localStorage.setItem('musicTime', audio.currentTime);
-            }
-        }, 500);
-
-        
-        window.addEventListener('beforeunload', () => {
-            localStorage.setItem('musicTime', audio.currentTime);
-        });
-
-        musicBtn.addEventListener('click', () => {
-            if (isPlaying) {
-                audio.pause();
-                musicBtn.textContent = '🎵';
-                localStorage.setItem('musicPlaying', 'false');
-            } else {
-                audio.play();
-                musicBtn.textContent = '🔇';
-                localStorage.setItem('musicPlaying', 'true');
-            }
-            isPlaying = !isPlaying;
-        });
-    </script>
-</body>
-
-</html>
-
-</body>
-
-</html>
+<!doctype html><html lang=vi><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Async/Await trong JavaScript: Hướng dẫn chi tiết – Ngô Phạm Ngọc Tú | Portfolio & Blog</title><meta name=description content="Async/Await trong JavaScript: Hướng dẫn chi tiết Trong lập trình JavaScript hiện đại, việc xử lý các tác vụ bất đồng bộ là điều không thể tránh khỏi. …"><link rel=icon href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%230f172a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='700' font-size='26' fill='%2360a5fa'>NT</text></svg>"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel=stylesheet><link rel=stylesheet href="/blog-ca-nhan/css/portfolio.css?v=202611"><script>(function(){try{var e=localStorage.getItem("theme");e==="light"&&document.documentElement.setAttribute("data-theme","light")}catch{}})()</script></head><body><header class=site-header><div class="page-wrap nav-inner"><a href=/blog-ca-nhan/ class=brand><span class=brand-mark>NT</span>
+<span>Ngô Phạm Ngọc Tú</span></a><nav class=nav-links aria-label="Điều hướng chính"><a href=/blog-ca-nhan/ class=nav-link>Trang chủ</a>
+<a href=/blog-ca-nhan/profile/ class=nav-link>Hồ sơ & CV</a>
+<a href=/blog-ca-nhan/posts/ class="nav-link active">Bài viết</a></nav><div class=nav-actions><a href=https://github.com/hihi99s class=icon-btn target=_blank rel="noopener noreferrer" aria-label="GitHub cá nhân" title=GitHub><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483.0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951.0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65.0.0.84-.27 2.75 1.026A9.564 9.564.0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688.0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855.0 1.338-.012 2.419-.012 2.747.0.268.18.58.688.482A10.019 10.019.0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+</a><button type=button id=nav-theme-toggle class=icon-btn aria-label="Chuyển giao diện Sáng/Tối" title="Chuyển giao diện Sáng/Tối">
+<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><path d="M12 3a6 6 0 009 9 9 9 0 11-9-9z"/></svg>
+</button>
+<a href=/blog-ca-nhan/files/CV_Ngo_Pham_Ngoc_Tu.pdf class="btn btn-primary btn-sm nav-cv-desktop" target=_blank rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6A2 2 0 004 4v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+<span>Xem CV</span>
+</a><button type=button id=mobile-menu-toggle class="icon-btn mobile-menu-btn" aria-label="Mở menu điều hướng" aria-expanded=false>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button></div></div><div id=mobile-drawer class=mobile-drawer><a href=/blog-ca-nhan/ class=nav-link>Trang chủ</a>
+<a href=/blog-ca-nhan/profile/ class=nav-link>Hồ sơ & CV</a>
+<a href=/blog-ca-nhan/posts/ class="nav-link active">Bài viết</a>
+<a href=/blog-ca-nhan/files/CV_Ngo_Pham_Ngoc_Tu.pdf class="btn btn-primary btn-sm" target=_blank rel="noopener noreferrer" style=margin-top:6px>Xem CV (PDF)</a></div></header><main class=site-main><div class=article-wrap><nav class=breadcrumb aria-label="Đường dẫn"><a href=/blog-ca-nhan/>Trang chủ</a>
+<span>/</span>
+<a href=/blog-ca-nhan/posts/>Bài viết</a>
+<span>/</span>
+<span style=color:var(--text-2nd);overflow:hidden;text-overflow:ellipsis;white-space:nowrap>Async/Await trong JavaScript: Hướng dẫn chi tiết</span></nav><header class=article-header-card><div class=post-meta-line style=margin-bottom:12px><span>20/12/2025</span>
+<span>&#183;</span>
+<span>4 phút đọc</span>
+<span>&#183;</span>
+<span class=role-badge>JavaScript</span></div><h1 class=article-h1>Async/Await trong JavaScript: Hướng dẫn chi tiết</h1><div class=tech-stack><span class=tech-chip>#JavaScript</span>
+<span class=tech-chip>#Async</span>
+<span class=tech-chip>#Web</span></div></header><article class="card article-prose"><h1 id=asyncawait-trong-javascript-hướng-dẫn-chi-tiết>Async/Await trong JavaScript: Hướng dẫn chi tiết</h1><p>Trong lập trình JavaScript hiện đại, việc xử lý các tác vụ bất đồng bộ là điều không thể tránh khỏi. <strong>Async/Await</strong> là cú pháp được giới thiệu trong ES2017 (ES8) giúp code bất đồng bộ trở nên dễ đọc và dễ bảo trì hơn rất nhiều.</p><h2 id=tại-sao-cần-asyncawait>Tại sao cần Async/Await?</h2><p>Trước khi có Async/Await, chúng ta phải sử dụng <strong>callback</strong> hoặc <strong>Promise chains</strong>, dẫn đến code khó đọc:</p><h3 id=callback-hell-địa-ngục-callback>Callback Hell (Địa ngục callback)</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// Callback hell - khó đọc và bảo trì
+</span></span></span><span class=line><span class=cl><span class=nx>getData</span><span class=p>(</span><span class=kd>function</span><span class=p>(</span><span class=nx>a</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>getMoreData</span><span class=p>(</span><span class=nx>a</span><span class=p>,</span> <span class=kd>function</span><span class=p>(</span><span class=nx>b</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>getEvenMoreData</span><span class=p>(</span><span class=nx>b</span><span class=p>,</span> <span class=kd>function</span><span class=p>(</span><span class=nx>c</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>getFinalData</span><span class=p>(</span><span class=nx>c</span><span class=p>,</span> <span class=kd>function</span><span class=p>(</span><span class=nx>d</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>d</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=p>});</span>
+</span></span><span class=line><span class=cl>        <span class=p>});</span>
+</span></span><span class=line><span class=cl>    <span class=p>});</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span></code></pre></div><h3 id=promise-chains>Promise Chains</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// Promise chains - tốt hơn nhưng vẫn rườm rà
+</span></span></span><span class=line><span class=cl><span class=nx>getData</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>then</span><span class=p>(</span><span class=nx>a</span> <span class=p>=&gt;</span> <span class=nx>getMoreData</span><span class=p>(</span><span class=nx>a</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>then</span><span class=p>(</span><span class=nx>b</span> <span class=p>=&gt;</span> <span class=nx>getEvenMoreData</span><span class=p>(</span><span class=nx>b</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>then</span><span class=p>(</span><span class=nx>c</span> <span class=p>=&gt;</span> <span class=nx>getFinalData</span><span class=p>(</span><span class=nx>c</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>then</span><span class=p>(</span><span class=nx>d</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>d</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=k>catch</span><span class=p>(</span><span class=nx>error</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>error</span><span class=p>(</span><span class=nx>error</span><span class=p>));</span>
+</span></span></code></pre></div><h3 id=asyncawait---giải-pháp-tối-ưu>Async/Await - Giải pháp tối ưu</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// Async/Await - rõ ràng như code đồng bộ
+</span></span></span><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>fetchAllData</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>try</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kr>const</span> <span class=nx>a</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>getData</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=kr>const</span> <span class=nx>b</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>getMoreData</span><span class=p>(</span><span class=nx>a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=kr>const</span> <span class=nx>c</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>getEvenMoreData</span><span class=p>(</span><span class=nx>b</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=kr>const</span> <span class=nx>d</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>getFinalData</span><span class=p>(</span><span class=nx>c</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>d</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=k>catch</span> <span class=p>(</span><span class=nx>error</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>console</span><span class=p>.</span><span class=nx>error</span><span class=p>(</span><span class=nx>error</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=cách-hoạt-động-của-asyncawait>Cách hoạt động của Async/Await</h2><h3 id=từ-khóa-async>Từ khóa <code>async</code></h3><p>Khi đặt <code>async</code> trước một function, function đó sẽ <strong>luôn trả về một Promise</strong>:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>sayHello</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=s2>&#34;Xin chào!&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Tương đương với:
+</span></span></span><span class=line><span class=cl><span class=kd>function</span> <span class=nx>sayHello</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nb>Promise</span><span class=p>.</span><span class=nx>resolve</span><span class=p>(</span><span class=s2>&#34;Xin chào!&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Sử dụng
+</span></span></span><span class=line><span class=cl><span class=nx>sayHello</span><span class=p>().</span><span class=nx>then</span><span class=p>(</span><span class=nx>message</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>message</span><span class=p>));</span> <span class=c1>// &#34;Xin chào!&#34;
+</span></span></span></code></pre></div><h3 id=từ-khóa-await>Từ khóa <code>await</code></h3><p><code>await</code> chỉ được sử dụng <strong>bên trong async function</strong> và nó sẽ:</p><ul><li>Tạm dừng thực thi function</li><li>Chờ Promise hoàn thành</li><li>Trả về giá trị resolved của Promise</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>demo</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;Bắt đầu&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=c1>// Tạm dừng 2 giây
+</span></span></span><span class=line><span class=cl>    <span class=kr>await</span> <span class=k>new</span> <span class=nb>Promise</span><span class=p>(</span><span class=nx>resolve</span> <span class=p>=&gt;</span> <span class=nx>setTimeout</span><span class=p>(</span><span class=nx>resolve</span><span class=p>,</span> <span class=mi>2000</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;Sau 2 giây&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>demo</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=c1>// Output:
+</span></span></span><span class=line><span class=cl><span class=c1>// &#34;Bắt đầu&#34;
+</span></span></span><span class=line><span class=cl><span class=c1>// (chờ 2 giây)
+</span></span></span><span class=line><span class=cl><span class=c1>// &#34;Sau 2 giây&#34;
+</span></span></span></code></pre></div><h2 id=ví-dụ-thực-tế-gọi-api>Ví dụ thực tế: Gọi API</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>layThongTinNguoiDung</span><span class=p>(</span><span class=nx>userId</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>try</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Gọi API lấy thông tin user
+</span></span></span><span class=line><span class=cl>        <span class=kr>const</span> <span class=nx>response</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>fetch</span><span class=p>(</span><span class=sb>`https://api.example.com/users/</span><span class=si>${</span><span class=nx>userId</span><span class=si>}</span><span class=sb>`</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=c1>// Kiểm tra response
+</span></span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=nx>response</span><span class=p>.</span><span class=nx>ok</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>throw</span> <span class=k>new</span> <span class=nb>Error</span><span class=p>(</span><span class=sb>`HTTP error! status: </span><span class=si>${</span><span class=nx>response</span><span class=p>.</span><span class=nx>status</span><span class=si>}</span><span class=sb>`</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=c1>// Parse JSON
+</span></span></span><span class=line><span class=cl>        <span class=kr>const</span> <span class=nx>userData</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>response</span><span class=p>.</span><span class=nx>json</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;Thông tin người dùng:&#34;</span><span class=p>,</span> <span class=nx>userData</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nx>userData</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=k>catch</span> <span class=p>(</span><span class=nx>error</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>console</span><span class=p>.</span><span class=nx>error</span><span class=p>(</span><span class=s2>&#34;Lỗi khi lấy thông tin:&#34;</span><span class=p>,</span> <span class=nx>error</span><span class=p>.</span><span class=nx>message</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>throw</span> <span class=nx>error</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Sử dụng
+</span></span></span><span class=line><span class=cl><span class=nx>layThongTinNguoiDung</span><span class=p>(</span><span class=mi>123</span><span class=p>);</span>
+</span></span></code></pre></div><h2 id=xử-lý-nhiều-promise-song-song>Xử lý nhiều Promise song song</h2><h3 id=tuần-tự-sequential---chậm>Tuần tự (Sequential) - Chậm</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>tuanTu</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>start</span> <span class=o>=</span> <span class=nb>Date</span><span class=p>.</span><span class=nx>now</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>user</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>fetch</span><span class=p>(</span><span class=s1>&#39;/api/user&#39;</span><span class=p>);</span>      <span class=c1>// Chờ xong mới chạy tiếp
+</span></span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>posts</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>fetch</span><span class=p>(</span><span class=s1>&#39;/api/posts&#39;</span><span class=p>);</span>    <span class=c1>// Chờ xong mới chạy tiếp
+</span></span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>comments</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>fetch</span><span class=p>(</span><span class=s1>&#39;/api/comments&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=sb>`Thời gian: </span><span class=si>${</span><span class=nb>Date</span><span class=p>.</span><span class=nx>now</span><span class=p>()</span> <span class=o>-</span> <span class=nx>start</span><span class=si>}</span><span class=sb>ms`</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// Giả sử mỗi request mất 1s =&gt; Tổng: ~3000ms
+</span></span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h3 id=song-song-parallel---nhanh>Song song (Parallel) - Nhanh</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>songSong</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>start</span> <span class=o>=</span> <span class=nb>Date</span><span class=p>.</span><span class=nx>now</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=c1>// Khởi động tất cả requests cùng lúc
+</span></span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=p>[</span><span class=nx>user</span><span class=p>,</span> <span class=nx>posts</span><span class=p>,</span> <span class=nx>comments</span><span class=p>]</span> <span class=o>=</span> <span class=kr>await</span> <span class=nb>Promise</span><span class=p>.</span><span class=nx>all</span><span class=p>([</span>
+</span></span><span class=line><span class=cl>        <span class=nx>fetch</span><span class=p>(</span><span class=s1>&#39;/api/user&#39;</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=nx>fetch</span><span class=p>(</span><span class=s1>&#39;/api/posts&#39;</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=nx>fetch</span><span class=p>(</span><span class=s1>&#39;/api/comments&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>]);</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=sb>`Thời gian: </span><span class=si>${</span><span class=nb>Date</span><span class=p>.</span><span class=nx>now</span><span class=p>()</span> <span class=o>-</span> <span class=nx>start</span><span class=si>}</span><span class=sb>ms`</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// Tổng: ~1000ms (thời gian của request lâu nhất)
+</span></span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=xử-lý-lỗi-với-trycatch>Xử lý lỗi với try/catch</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>fetchData</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>try</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kr>const</span> <span class=nx>response</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>fetch</span><span class=p>(</span><span class=s1>&#39;https://api.example.com/data&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=kr>const</span> <span class=nx>data</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>response</span><span class=p>.</span><span class=nx>json</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nx>data</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=k>catch</span> <span class=p>(</span><span class=nx>error</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Xử lý lỗi mạng hoặc lỗi parse JSON
+</span></span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nx>error</span> <span class=k>instanceof</span> <span class=nx>TypeError</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>console</span><span class=p>.</span><span class=nx>error</span><span class=p>(</span><span class=s2>&#34;Lỗi mạng:&#34;</span><span class=p>,</span> <span class=nx>error</span><span class=p>.</span><span class=nx>message</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>console</span><span class=p>.</span><span class=nx>error</span><span class=p>(</span><span class=s2>&#34;Lỗi khác:&#34;</span><span class=p>,</span> <span class=nx>error</span><span class=p>.</span><span class=nx>message</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=kc>null</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=k>finally</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Luôn chạy dù có lỗi hay không
+</span></span></span><span class=line><span class=cl>        <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;Hoàn thành request&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=asyncawait-với-vòng-lặp>Async/Await với vòng lặp</h2><h3 id=tuần-tự-trong-vòng-lặp>Tuần tự trong vòng lặp</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>processItems</span><span class=p>(</span><span class=nx>items</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=p>(</span><span class=kr>const</span> <span class=nx>item</span> <span class=k>of</span> <span class=nx>items</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Mỗi item được xử lý tuần tự
+</span></span></span><span class=line><span class=cl>        <span class=kr>await</span> <span class=nx>processItem</span><span class=p>(</span><span class=nx>item</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h3 id=song-song-trong-vòng-lặp>Song song trong vòng lặp</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>processItemsParallel</span><span class=p>(</span><span class=nx>items</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// Tất cả items được xử lý cùng lúc
+</span></span></span><span class=line><span class=cl>    <span class=kr>await</span> <span class=nb>Promise</span><span class=p>.</span><span class=nx>all</span><span class=p>(</span><span class=nx>items</span><span class=p>.</span><span class=nx>map</span><span class=p>(</span><span class=nx>item</span> <span class=p>=&gt;</span> <span class=nx>processItem</span><span class=p>(</span><span class=nx>item</span><span class=p>)));</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=những-lưu-ý-quan-trọng>Những lưu ý quan trọng</h2><ol><li><p><strong><code>await</code> chỉ dùng trong <code>async</code> function</strong> - Sử dụng ngoài sẽ gây lỗi cú pháp</p></li><li><p><strong>Async function luôn trả về Promise</strong> - Kể cả khi return giá trị thường</p></li><li><p><strong>Không quên <code>try/catch</code></strong> - Lỗi không được xử lý sẽ gây Unhandled Promise Rejection</p></li><li><p><strong>Cân nhắc tuần tự vs song song</strong> - Sử dụng <code>Promise.all()</code> khi các tác vụ độc lập</p></li></ol><h2 id=kết-luận>Kết luận</h2><p><strong>Async/Await</strong> là công cụ mạnh mẽ giúp viết code bất đồng bộ trong JavaScript một cách rõ ràng và dễ bảo trì. Hiểu và sử dụng thành thạo Async/Await là kỹ năng quan trọng cho mọi lập trình viên JavaScript hiện đại.</p><hr><p><em>Bài viết thuộc series JavaScript cho lập trình mạng - Blog Ngô Phạm Ngọc Tú</em></p></article><div class=article-nav-grid><a href=/blog-ca-nhan/posts/fetch-api-http/ class=article-nav-card><span class=article-nav-label>&larr; Bài trước</span>
+<span class=article-nav-title>Fetch API và Giao tiếp HTTP trong JavaScript</span></a></div><div style=margin-top:24px><a href=/blog-ca-nhan/posts/ class="btn btn-secondary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+<span>Quay lại danh sách bài viết</span></a></div></div></main><footer class=site-footer><div class="page-wrap footer-inner"><span>&copy; 2026 Ngô Phạm Ngọc Tú &#183; HUTECH Công nghệ Phần mềm</span><div class=footer-links><a href=https://github.com/hihi99s target=_blank rel="noopener noreferrer">GitHub</a>
+<a href=mailto:phamngoctu710@gmail.com>phamngoctu710@gmail.com</a>
+<a href=/blog-ca-nhan/files/CV_Ngo_Pham_Ngoc_Tu.pdf target=_blank rel="noopener noreferrer">CV (PDF)</a>
+<a href=/blog-ca-nhan/posts/>Bài viết</a></div></div></footer><audio id=bg-music loop preload=none><source src=https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3 type=audio/mpeg></audio><div class=floating-tools aria-label="Tiện ích trang"><button type=button id=btn-top class="icon-btn back-to-top" aria-label="Lên đầu trang" title="Lên đầu trang">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+<button type=button id=btn-music class=icon-btn aria-label="Bật hoặc tắt nhạc nền" title="Nhạc nền Lofi">
+<svg class="icon-music-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+<svg class="icon-music-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg></button></div><script>(function(){var e,t,s,i,r,c,l,d,u,h,g,a=document.documentElement,n=document.getElementById("nav-theme-toggle"),p=n?n.querySelector(".icon-sun"):null,f=n?n.querySelector(".icon-moon"):null;function m(){var e=a.getAttribute("data-theme")==="light";p&&f&&(p.style.display=e?"none":"block",f.style.display=e?"block":"none")}m(),n&&n.addEventListener("click",function(){var e=a.getAttribute("data-theme")==="light";if(e){a.removeAttribute("data-theme");try{localStorage.setItem("theme","dark")}catch{}}else{a.setAttribute("data-theme","light");try{localStorage.setItem("theme","light")}catch{}}m()}),r=document.getElementById("mobile-menu-toggle"),u=document.getElementById("mobile-drawer"),r&&u&&r.addEventListener("click",function(){var e=u.classList.toggle("open");r.setAttribute("aria-expanded",e?"true":"false")}),t=document.getElementById("btn-music"),e=document.getElementById("bg-music"),l=t?t.querySelector(".icon-music-off"):null,d=t?t.querySelector(".icon-music-on"):null;function o(e){if(!t)return;t.classList.toggle("is-active",e),l&&d&&(l.style.display=e?"none":"block",d.style.display=e?"block":"none")}if(t&&e){c=!1,s=0;try{c=localStorage.getItem("musicPlaying")==="true",s=parseFloat(localStorage.getItem("musicTime"))||0}catch{}c&&e.addEventListener("loadedmetadata",function(){e.currentTime=s,e.play().then(function(){o(!0)}).catch(function(){o(!1)})},{once:!0}),setInterval(function(){if(!e.paused)try{localStorage.setItem("musicTime",String(e.currentTime))}catch{}},1e3),window.addEventListener("beforeunload",function(){try{localStorage.setItem("musicTime",String(e.currentTime))}catch{}}),t.addEventListener("click",function(){if(e.paused)s>0&&e.currentTime===0&&e.addEventListener("loadedmetadata",function(){e.currentTime=s},{once:!0}),e.play().then(function(){o(!0);try{localStorage.setItem("musicPlaying","true")}catch{}}).catch(function(){o(!1)});else{e.pause(),o(!1);try{localStorage.setItem("musicPlaying","false")}catch{}}})}i=document.getElementById("btn-top"),i&&(window.addEventListener("scroll",function(){i.classList.toggle("visible",window.scrollY>360)},{passive:!0}),i.addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"})})),h=document.querySelector(".article-prose"),h&&(g=h.querySelectorAll("pre"),g.forEach(function(e){var t,s=e.parentNode,n=document.createElement("div");n.className="code-block-wrap",s.insertBefore(n,e),n.appendChild(e),t=document.createElement("button"),t.type="button",t.className="copy-code-btn",t.textContent="Copy",t.addEventListener("click",function(){var n=e.innerText||e.textContent||"";navigator.clipboard&&navigator.clipboard.writeText&&navigator.clipboard.writeText(n).then(function(){t.textContent="Copied",setTimeout(function(){t.textContent="Copy"},1800)})}),n.appendChild(t)}))})()</script></body></html>
